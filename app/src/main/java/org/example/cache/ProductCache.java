@@ -6,10 +6,8 @@ import org.example.model.Product;
 
 public class ProductCache {
   private final Map<String, Product> cache;
-  private final int maxSize;
 
   public ProductCache(int maxSize) {
-    this.maxSize = maxSize;
     this.cache =
         new LinkedHashMap<>() {
           @Override
@@ -40,9 +38,5 @@ public class ProductCache {
 
   public void clear() {
     cache.clear();
-  }
-
-  private int size() {
-    return cache.size();
   }
 }

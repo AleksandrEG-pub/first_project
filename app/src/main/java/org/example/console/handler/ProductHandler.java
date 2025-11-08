@@ -29,10 +29,7 @@ public class ProductHandler {
             consoleUI.printMessage("Product added successfully!");
             consoleUI.displayProduct(product);
             consoleUI.pressEnterToContinue();
-        } catch (AccessDeniedException e) {
-            consoleUI.printError(e.getMessage());
-            consoleUI.pressEnterToContinue();
-        } catch (IllegalArgumentException e) {
+        } catch (AccessDeniedException | IllegalArgumentException e) {
             consoleUI.printError(e.getMessage());
             consoleUI.pressEnterToContinue();
         }
@@ -63,10 +60,7 @@ public class ProductHandler {
             consoleUI.printMessage("Product updated successfully!");
             consoleUI.displayProduct(updated);
             consoleUI.pressEnterToContinue();
-        } catch (AccessDeniedException e) {
-            consoleUI.printError(e.getMessage());
-            consoleUI.pressEnterToContinue();
-        } catch (IllegalArgumentException e) {
+        } catch (AccessDeniedException | IllegalArgumentException e) {
             consoleUI.printError(e.getMessage());
             consoleUI.pressEnterToContinue();
         }

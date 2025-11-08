@@ -18,4 +18,11 @@ public class AuditHandler {
     consoleUI.displayAuditLogs(allLogs);
     consoleUI.pressEnterToContinue();
   }
+
+  public void handleViewAuditLogsByUsername() {
+    String username = consoleUI.readString("Enter username to filter audit logs: ");
+    List<org.example.model.AuditLog> logs = auditRepository.findByUsername(username);
+    consoleUI.displayAuditLogs(logs);
+    consoleUI.pressEnterToContinue();
+  }
 }

@@ -2,7 +2,6 @@ package org.example.repository;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 import org.example.model.AuditLog;
 
 public class InMemoryAuditRepository implements AuditRepository {
@@ -28,7 +27,7 @@ public class InMemoryAuditRepository implements AuditRepository {
     }
     return auditLogs.stream()
         .filter(log -> username.equals(log.getUsername()))
-        .collect(Collectors.toList());
+        .toList();
   }
 
   @Override

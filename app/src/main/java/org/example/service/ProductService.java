@@ -3,7 +3,6 @@ package org.example.service;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 import org.example.cache.ProductCache;
 import org.example.model.AuditAction;
 import org.example.model.Product;
@@ -53,9 +52,8 @@ public class ProductService {
     Product saved = productRepository.save(product);
     productCache.put(saved.getId(), saved);
 
-    String username = UNKNOWN_USER;
     auditService.logAction(
-        username,
+        UNKNOWN_USER,
         AuditAction.ADD_PRODUCT,
         "Initialized product: " + saved.getId() + " - " + saved.getName());
 

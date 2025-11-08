@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 import org.example.model.Product;
 
 public class InMemoryProductRepository implements ProductRepository {
@@ -55,7 +54,7 @@ public class InMemoryProductRepository implements ProductRepository {
         .filter(
             product ->
                 product.getName() != null && product.getName().toLowerCase().contains(searchTerm))
-        .collect(Collectors.toList());
+        .toList();
   }
 
   @Override
@@ -68,7 +67,7 @@ public class InMemoryProductRepository implements ProductRepository {
         .filter(
             product ->
                 product.getCategory() != null && product.getCategory().equals(categoryFilter))
-        .collect(Collectors.toList());
+        .toList();
   }
 
   @Override
@@ -79,7 +78,7 @@ public class InMemoryProductRepository implements ProductRepository {
     String brandFilter = brand.trim();
     return products.values().stream()
         .filter(product -> product.getBrand() != null && product.getBrand().equals(brandFilter))
-        .collect(Collectors.toList());
+        .toList();
   }
 
   @Override
@@ -94,6 +93,6 @@ public class InMemoryProductRepository implements ProductRepository {
               boolean matchesMax = maxPrice == null || product.getPrice().compareTo(maxPrice) <= 0;
               return matchesMin && matchesMax;
             })
-        .collect(Collectors.toList());
+        .toList();
   }
 }
