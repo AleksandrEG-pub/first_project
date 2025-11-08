@@ -1,0 +1,21 @@
+package org.example.console.handler;
+
+import java.util.List;
+import org.example.console.ConsoleUI;
+import org.example.repository.AuditRepository;
+
+public class AuditHandler {
+  private final ConsoleUI consoleUI;
+  private final AuditRepository auditRepository;
+
+  public AuditHandler(ConsoleUI consoleUI, AuditRepository auditRepository) {
+    this.consoleUI = consoleUI;
+    this.auditRepository = auditRepository;
+  }
+
+  public void handleViewAllAuditLogs() {
+    List<org.example.model.AuditLog> allLogs = auditRepository.findAll();
+    consoleUI.displayAuditLogs(allLogs);
+    consoleUI.pressEnterToContinue();
+  }
+}

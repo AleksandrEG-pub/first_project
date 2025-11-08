@@ -8,66 +8,58 @@ import org.example.service.AuthService;
 import org.example.service.ProductService;
 
 public class DataInitializer {
-  private DataInitializer() {
-  }
+  private DataInitializer() {}
 
   public static void initializeDefaultData(
       UserRepository userRepository, ProductService productService) {
-    // Create default admin user (username: admin, password: admin)
-    String adminPasswordHash = AuthService.hashPassword("admin");
-    User adminUser = new User("admin", adminPasswordHash, Role.ADMIN);
-    userRepository.save(adminUser);
+    createUser("Admin123!", "admin", Role.ADMIN, userRepository);
+    createUser("User123!", "user", Role.USER, userRepository);
 
-    // Create default regular user (username: user, password: user)
-    String userPasswordHash = AuthService.hashPassword("user");
-    User regularUser = new User("user", userPasswordHash, Role.USER);
-    userRepository.save(regularUser);
-
-    // Add sample products
+    // Add sample products (using internal method that bypasses auth for initialization)
     try {
-      productService.addProduct(
+      productService.addProductInternal(
           "Laptop Pro 15",
           "High-performance laptop with 16GB RAM and 512GB SSD",
           "Electronics",
           "TechBrand",
           new BigDecimal("1299.99"));
-      productService.addProduct(
+      productService.addProductInternal(
           "Wireless Mouse",
           "Ergonomic wireless mouse with long battery life",
           "Electronics",
           "TechBrand",
           new BigDecimal("29.99"));
-      productService.addProduct(
+      productService.addProductInternal(
           "Office Chair",
           "Comfortable ergonomic office chair with lumbar support",
           "Furniture",
           "ComfortSeat",
           new BigDecimal("199.99"));
-      productService.addProduct(
+      productService.addProductInternal(
           "Desk Lamp",
           "LED desk lamp with adjustable brightness",
           "Furniture",
           "BrightLight",
           new BigDecimal("49.99"));
-      productService.addProduct(
+      productService.addProductInternal(
           "Running Shoes",
           "Lightweight running shoes with cushioned sole",
           "Sports",
           "SportMax",
           new BigDecimal("89.99"));
-      productService.addProduct(
+      productService.addProductInternal(
           "Yoga Mat",
           "Non-slip yoga mat with carrying strap",
           "Sports",
           "FitLife",
           new BigDecimal("24.99"));
-      productService.addProduct(
+      productService.addProductInternal(
           "Coffee Maker",
           "Programmable coffee maker with thermal carafe",
           "Appliances",
           "BrewMaster",
           new BigDecimal("79.99"));
-      productService.addProduct(
+      productService.addProductInternal(
           "Blender",
           "High-speed blender for smoothies and soups",
           "Appliances",
@@ -78,5 +70,11 @@ public class DataInitializer {
       System.err.println("Warning: Could not initialize all sample products: " + e.getMessage());
     }
   }
-}
 
+  private static void createUser(
+      String password, String admin, Role admin1, UserRepository userRepository) {
+    String adminPasswordHash = AuthService.hashPassword(password);
+    User adminUser = new User(admin, adminPasswordHash, admin1);
+    userRepository.save(adminUser);
+  }
+}

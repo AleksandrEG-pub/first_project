@@ -30,6 +30,14 @@ public class ProductService {
 
   public Product addProduct(
       String name, String description, String category, String brand, BigDecimal price) {
+    // Require ADMIN role for product modifications
+    authService.requireAdmin();
+    return addProductInternal(name, description, category, brand, price);
+  }
+
+  /** Internal method to add product without authentication check. Used for initialization only. */
+  public Product addProductInternal(
+      String name, String description, String category, String brand, BigDecimal price) {
     validateProductData(name, description, category, brand, price);
 
     String id = UUID.randomUUID().toString();
@@ -45,14 +53,11 @@ public class ProductService {
     Product saved = productRepository.save(product);
     productCache.put(saved.getId(), saved);
 
-    String username =
-        authService.getCurrentUser() != null
-            ? authService.getCurrentUser().getUsername()
-            : UNKNOWN_USER;
+    String username = UNKNOWN_USER;
     auditService.logAction(
         username,
         AuditAction.ADD_PRODUCT,
-        "Added product: " + saved.getId() + " - " + saved.getName());
+        "Initialized product: " + saved.getId() + " - " + saved.getName());
 
     return saved;
   }
@@ -81,6 +86,8 @@ public class ProductService {
 
   public Product updateProduct(
       String id, String name, String description, String category, String brand, BigDecimal price) {
+    // Require ADMIN role for product modifications
+    authService.requireAdmin();
     if (id == null || id.trim().isEmpty()) {
       throw new IllegalArgumentException("Product ID cannot be null or empty");
     }
@@ -144,6 +151,8 @@ public class ProductService {
   }
 
   public boolean deleteProduct(String id) {
+    // Require ADMIN role for product deletions
+    authService.requireAdmin();
     if (id == null || id.trim().isEmpty()) {
       return false;
     }
@@ -171,6 +180,8 @@ public class ProductService {
   }
 
   public void clearCache() {
+    // Require ADMIN role for cache operations
+    authService.requireAdmin();
     productCache.clear();
   }
 
@@ -264,7 +275,7 @@ public class ProductService {
         .filter(product -> matchesBrand(product, brand))
         .filter(product -> matchesMinPrice(product, minPrice))
         .filter(product -> matchesMaxPrice(product, maxPrice))
-        .collect(Collectors.toList());
+        .toList();
   }
 
   private boolean matchesCategory(Product product, String category) {
