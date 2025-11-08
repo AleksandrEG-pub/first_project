@@ -1,7 +1,8 @@
 package org.example.console.menu;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
 import org.example.console.ConsoleUI;
 import org.example.console.MenuHandler;
 import org.example.console.handler.AuditHandler;
@@ -33,25 +34,19 @@ public class AuditLogMenu {
       return;
     }
 
-    String[] options = {
-      "View All Audit Logs",
-      "View Audit Logs by Username",
-      BACK_TO_MAIN_MENU_MESSAGE
-    };
-    Map<Integer, MenuHandler> handlers = new HashMap<>();
-    handlers.put(1, auditHandler::handleViewAllAuditLogs);
-    handlers.put(2, auditHandler::handleViewAuditLogsByUsername);
-    handlers.put(3, () -> {}); // Back to main menu - no action
+    LinkedHashMap<String, MenuHandler> options = new LinkedHashMap<>();
+    options.put("View All Audit Logs", auditHandler::handleViewAllAuditLogs);
+    options.put("View Audit Logs by Username", auditHandler::handleViewAuditLogsByUsername);
+    options.put(BACK_TO_MAIN_MENU_MESSAGE, () -> {}); // Back to main menu - no action
 
-    consoleUI.printMenu("Audit Log (Admin Only)", options);
+    consoleUI.printMenu("Audit Log (Admin Only)", new ArrayList<>(options.keySet()));
     int choice = consoleUI.readInt(SELECT_OPTION_MESSAGE);
 
-    MenuHandler handler = handlers.get(choice);
-    if (handler != null) {
-      handler.handle();
+    List<MenuHandler> handlers = new ArrayList<>(options.values());
+    if (choice >= 1 && choice <= handlers.size()) {
+      handlers.get(choice - 1).handle();
     } else {
       consoleUI.printError(INVALID_OPTION_MESSAGE);
     }
   }
 }
-

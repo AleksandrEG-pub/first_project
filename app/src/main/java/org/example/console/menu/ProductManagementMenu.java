@@ -1,6 +1,8 @@
 package org.example.console.menu;
 
-import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import org.example.console.ConsoleUI;
 import org.example.console.MenuHandler;
@@ -20,31 +22,22 @@ public class ProductManagementMenu {
   }
 
   public void show() {
-    String[] options = {
-      "Add Product",
-      "Edit Product",
-      "Delete Product",
-      "View All Products",
-      "Clear Cache",
-      BACK_TO_MAIN_MENU_MESSAGE
-    };
-    Map<Integer, MenuHandler> handlers = new HashMap<>();
-    handlers.put(1, productHandler::handleAddProduct);
-    handlers.put(2, productHandler::handleEditProduct);
-    handlers.put(3, productHandler::handleDeleteProduct);
-    handlers.put(4, productHandler::handleViewAllProducts);
-    handlers.put(5, productHandler::handleClearCache);
-    handlers.put(6, () -> {}); // Back to main menu - no action
+    Map<String, MenuHandler> options = new LinkedHashMap<>();
+    options.put("Add Product", productHandler::handleAddProduct);
+    options.put("Edit Product", productHandler::handleEditProduct);
+    options.put("Delete Product", productHandler::handleDeleteProduct);
+    options.put("View All Products", productHandler::handleViewAllProducts);
+    options.put("Clear Cache", productHandler::handleClearCache);
+    options.put(BACK_TO_MAIN_MENU_MESSAGE, () -> {}); // Back to main menu - no action
 
-    consoleUI.printMenu("Product Management", options);
+    consoleUI.printMenu("Product Management", new ArrayList<>(options.keySet()));
     int choice = consoleUI.readInt(SELECT_OPTION_MESSAGE);
 
-    MenuHandler handler = handlers.get(choice);
-    if (handler != null) {
-      handler.handle();
+    List<MenuHandler> handlers = new ArrayList<>(options.values());
+    if (choice >= 1 && choice <= handlers.size()) {
+      handlers.get(choice - 1).handle();
     } else {
       consoleUI.printError(INVALID_OPTION_MESSAGE);
     }
   }
 }
-

@@ -1,9 +1,8 @@
 package org.example.console.menu;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 import org.example.console.ConsoleUI;
 import org.example.console.MenuHandler;
 import org.example.service.AuthService;
@@ -32,32 +31,23 @@ public class MainMenu {
   }
 
   public void show() {
-    // Build menu options and handlers based on user role
-    List<String> optionsList = new ArrayList<>();
-    Map<Integer, MenuHandler> handlers = new HashMap<>();
+    LinkedHashMap<String, MenuHandler> options = new LinkedHashMap<>();
 
-    int optionNumber = 1;
-    optionsList.add("Product Management");
-    handlers.put(optionNumber++, productManagementMenu::show);
-
-    optionsList.add("Search & Filter");
-    handlers.put(optionNumber++, searchFilterMenu::show);
+    options.put("Product Management", productManagementMenu::show);
+    options.put("Search & Filter", searchFilterMenu::show);
 
     if (authService.isAdmin()) {
-      optionsList.add("View Audit Log");
-      handlers.put(optionNumber++, auditLogMenu::show);
+      options.put("View Audit Log", auditLogMenu::show);
     }
 
-    optionsList.add("Logout");
-    handlers.put(optionNumber, this::handleLogout);
+    options.put("Logout", this::handleLogout);
 
-    String[] options = optionsList.toArray(new String[0]);
-    consoleUI.printMenu("Product Catalog - Main Menu", options);
+    consoleUI.printMenu("Product Catalog - Main Menu", new ArrayList<>(options.keySet()));
     int choice = consoleUI.readInt(SELECT_OPTION_MESSAGE);
 
-    MenuHandler handler = handlers.get(choice);
-    if (handler != null) {
-      handler.handle();
+    List<MenuHandler> handlers = new ArrayList<>(options.values());
+    if (choice >= 1 && choice <= handlers.size()) {
+      handlers.get(choice - 1).handle();
     } else {
       consoleUI.printError(INVALID_OPTION_MESSAGE);
     }
@@ -69,4 +59,3 @@ public class MainMenu {
     consoleUI.pressEnterToContinue();
   }
 }
-

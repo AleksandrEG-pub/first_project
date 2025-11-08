@@ -1,5 +1,6 @@
 package org.example.console;
 
+import java.io.PrintStream;
 import java.math.BigDecimal;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -11,29 +12,36 @@ public class ConsoleUI {
   private static final DateTimeFormatter DATE_FORMATTER =
       DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
   private static final String PRESS_ENTER_TO_KEEP_MESSAGE = ", press Enter to keep): ";
+
   private final Scanner scanner;
+  private final PrintStream out;
 
   public ConsoleUI() {
-    this.scanner = new Scanner(System.in);
+    this(new Scanner(System.in), System.out);
   }
 
-  public void printMenu(String title, String[] options) {
+  public ConsoleUI(Scanner scanner, PrintStream out) {
+    this.scanner = scanner;
+    this.out = out;
+  }
+
+  public void printMenu(String title, List<String> options) {
     printSeparator();
-    System.out.println(title);
+    out.println(title);
     printSeparator();
-    for (int i = 0; i < options.length; i++) {
-      System.out.println((i + 1) + ". " + options[i]);
+    for (int i = 0; i < options.size(); i++) {
+      out.println((i + 1) + ". " + options.get(i));
     }
     printSeparator();
   }
 
   public void printSeparator() {
-    System.out.println("----------------------------------------");
+    out.println("----------------------------------------");
   }
 
   public int readInt(String prompt) {
     while (true) {
-      System.out.print(prompt);
+      out.print(prompt);
       try {
         String input = scanner.nextLine().trim();
         return Integer.parseInt(input);
@@ -44,7 +52,7 @@ public class ConsoleUI {
   }
 
   public void printError(String error) {
-    System.out.println("ERROR: " + error);
+    out.println("ERROR: " + error);
   }
 
   public void displayProduct(Product product) {
@@ -53,17 +61,17 @@ public class ConsoleUI {
       return;
     }
     printSeparator();
-    System.out.println("Product ID: " + product.getId());
-    System.out.println("Name: " + product.getName());
-    System.out.println("Description: " + product.getDescription());
-    System.out.println("Category: " + product.getCategory());
-    System.out.println("Brand: " + product.getBrand());
-    System.out.println("Price: " + product.getPrice());
+    out.println("Product ID: " + product.getId());
+    out.println("Name: " + product.getName());
+    out.println("Description: " + product.getDescription());
+    out.println("Category: " + product.getCategory());
+    out.println("Brand: " + product.getBrand());
+    out.println("Price: " + product.getPrice());
     printSeparator();
   }
 
   public void printMessage(String message) {
-    System.out.println(message);
+    out.println(message);
   }
 
   public void displayProducts(List<Product> products) {
@@ -73,14 +81,14 @@ public class ConsoleUI {
     }
 
     printSeparator();
-    System.out.println("Products (" + products.size() + "):");
+    out.println("Products (" + products.size() + "):");
     printSeparator();
     for (Product product : products) {
-      System.out.println("ID: " + product.getId());
-      System.out.println("Name: " + product.getName());
-      System.out.println("Category: " + product.getCategory());
-      System.out.println("Brand: " + product.getBrand());
-      System.out.println("Price: " + product.getPrice());
+      out.println("ID: " + product.getId());
+      out.println("Name: " + product.getName());
+      out.println("Category: " + product.getCategory());
+      out.println("Brand: " + product.getBrand());
+      out.println("Price: " + product.getPrice());
       printSeparator();
     }
   }
@@ -92,13 +100,13 @@ public class ConsoleUI {
     }
 
     printSeparator();
-    System.out.println("Audit Logs (" + logs.size() + "):");
+    out.println("Audit Logs (" + logs.size() + "):");
     printSeparator();
     for (AuditLog log : logs) {
-      System.out.println("Time: " + log.getTimestamp().format(DATE_FORMATTER));
-      System.out.println("User: " + log.getUsername());
-      System.out.println("Action: " + log.getAction());
-      System.out.println("Details: " + log.getDetails());
+      out.println("Time: " + log.getTimestamp().format(DATE_FORMATTER));
+      out.println("User: " + log.getUsername());
+      out.println("Action: " + log.getAction());
+      out.println("Details: " + log.getDetails());
       printSeparator();
     }
   }
@@ -110,17 +118,23 @@ public class ConsoleUI {
     String brand = readString("Enter product brand: ");
     BigDecimal price = readBigDecimal("Enter product price: ");
 
+    // Ensure price is provided for new product; otherwise caller should handle null
+    if (price == null) {
+      printError("Price is required for a new product.");
+      return null;
+    }
+
     return new Product(null, name, description, category, brand, price);
   }
 
   public String readString(String prompt) {
-    System.out.print(prompt);
+    out.print(prompt);
     return scanner.nextLine().trim();
   }
 
   public BigDecimal readBigDecimal(String prompt) {
     while (true) {
-      System.out.print(prompt);
+      out.print(prompt);
       try {
         String input = scanner.nextLine().trim();
         if (input.isEmpty()) {
@@ -132,17 +146,18 @@ public class ConsoleUI {
       }
     }
   }
+
   public Product readProductDataForUpdate(Product existing) {
     String name =
         readString(
-                "Enter product name (current: " + existing.getName() + PRESS_ENTER_TO_KEEP_MESSAGE);
+            "Enter product name (current: " + existing.getName() + PRESS_ENTER_TO_KEEP_MESSAGE);
     if (name.isEmpty()) {
       name = existing.getName();
     }
 
     String description =
         readString(
-                "Enter product description (current: "
+            "Enter product description (current: "
                 + existing.getDescription()
                 + PRESS_ENTER_TO_KEEP_MESSAGE);
     if (description.isEmpty()) {
@@ -151,7 +166,7 @@ public class ConsoleUI {
 
     String category =
         readString(
-                "Enter product category (current: "
+            "Enter product category (current: "
                 + existing.getCategory()
                 + PRESS_ENTER_TO_KEEP_MESSAGE);
     if (category.isEmpty()) {
@@ -160,14 +175,14 @@ public class ConsoleUI {
 
     String brand =
         readString(
-                "Enter product brand (current: " + existing.getBrand() + PRESS_ENTER_TO_KEEP_MESSAGE);
+            "Enter product brand (current: " + existing.getBrand() + PRESS_ENTER_TO_KEEP_MESSAGE);
     if (brand.isEmpty()) {
       brand = existing.getBrand();
     }
 
     String priceInput =
         readString(
-                "Enter product price (current: " + existing.getPrice() + PRESS_ENTER_TO_KEEP_MESSAGE);
+            "Enter product price (current: " + existing.getPrice() + PRESS_ENTER_TO_KEEP_MESSAGE);
     BigDecimal price;
     if (priceInput.isEmpty()) {
       price = existing.getPrice();
@@ -184,7 +199,7 @@ public class ConsoleUI {
   }
 
   public void pressEnterToContinue() {
-    System.out.print("Press Enter to continue...");
+    out.print("Press Enter to continue...");
     scanner.nextLine();
   }
 

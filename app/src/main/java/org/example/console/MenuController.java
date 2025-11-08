@@ -23,7 +23,6 @@ public class MenuController {
       AuthService authService,
       ProductService productService,
       AuditRepository auditRepository) {
-    this.consoleUI = consoleUI;
     this.authService = authService;
 
     // Initialize handlers
@@ -33,7 +32,7 @@ public class MenuController {
     AuditHandler auditHandler = new AuditHandler(consoleUI, auditRepository);
 
     // Initialize menus
-    this.loginMenu = new LoginMenu(consoleUI, loginHandler, authService);
+    this.loginMenu = new LoginMenu(consoleUI, loginHandler);
     ProductManagementMenu productManagementMenu =
         new ProductManagementMenu(consoleUI, productHandler);
     SearchFilterMenu searchFilterMenu = new SearchFilterMenu(consoleUI, searchHandler);
