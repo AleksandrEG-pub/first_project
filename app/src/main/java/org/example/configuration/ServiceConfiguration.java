@@ -10,6 +10,13 @@ import org.example.service.ProductSearchService;
 import org.example.service.ProductService;
 import org.example.service.ProductValidator;
 
+/**
+ * Base configuration for services and repositories.
+ *
+ * <p>Creates and wires core services (product, auth, audit) together with repositories and a
+ * size-limited product cache. Concrete subclasses provide repository implementations (file-based
+ * or in-memory).
+ */
 public abstract class ServiceConfiguration {
   private static final int PRODUCT_CACHE_SIZE = 1000;
   protected final ProductService productService;
