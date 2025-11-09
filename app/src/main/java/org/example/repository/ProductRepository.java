@@ -4,11 +4,12 @@ import org.example.model.Product;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
 
 public interface ProductRepository {
   Product save(Product product);
 
-  Product findById(String id);
+  Optional<Product> findById(String id);
 
   List<Product> findAll();
 

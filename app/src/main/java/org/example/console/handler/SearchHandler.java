@@ -2,8 +2,12 @@ package org.example.console.handler;
 
 import java.math.BigDecimal;
 import java.util.List;
-import org.example.console.ConsoleUI;
+import java.util.Optional;
+
+import org.example.console.ui.ConsoleUI;
+import org.example.model.Product;
 import org.example.service.ProductService;
+import org.example.service.SearchCriteria;
 
 public class SearchHandler {
   private final ConsoleUI consoleUI;
@@ -14,59 +18,80 @@ public class SearchHandler {
     this.productService = productService;
   }
 
+  public void handleSearchById() {
+    String id = consoleUI.readString("Enter product id to search): ");
+    Optional<Product> productOpt = productService.findById(id);
+    if (productOpt.isPresent()) {
+      consoleUI.displayProduct(productOpt.get());
+    } else {
+      consoleUI.printMessage("Product not found for id: " + id);
+    }
+  }
+
   public void handleSearchByName() {
-    String name = consoleUI.readString("Enter product name to search: ");
-    List<org.example.model.Product> results = productService.searchByName(name);
-    consoleUI.displayProducts(results);
-    consoleUI.pressEnterToContinue();
+    String name = consoleUI.readString("Enter product name to search): ");
+    SearchCriteria criteria = new SearchCriteria.Builder().name(name).build();
+    findByCriteria(criteria);
   }
 
   public void handleFilterByCategory() {
-    String category = consoleUI.readString("Enter category to filter: ");
-    List<org.example.model.Product> results = productService.filterByCategory(category);
-    consoleUI.displayProducts(results);
-    consoleUI.pressEnterToContinue();
+    String category = consoleUI.readString("Enter category to filter): ");
+    SearchCriteria criteria = new SearchCriteria.Builder().category(category).build();
+    findByCriteria(criteria);
   }
 
   public void handleFilterByBrand() {
-    String brand = consoleUI.readString("Enter brand to filter: ");
-    List<org.example.model.Product> results = productService.filterByBrand(brand);
-    consoleUI.displayProducts(results);
-    consoleUI.pressEnterToContinue();
+    String brand = consoleUI.readString("Enter brand to filter): ");
+    SearchCriteria criteria = new SearchCriteria.Builder().brand(brand).build();
+    findByCriteria(criteria);
   }
 
   public void handleFilterByPriceRange() {
-    String minInput = consoleUI.readString("Enter minimum price (press Enter to skip): ");
-    BigDecimal minPrice = minInput.isEmpty() ? null : new BigDecimal(minInput);
+    BigDecimal minPrice =
+        consoleUI
+            .readBigDecimal("Enter minimum price (press Enter to skip): ")
+            .orElse(BigDecimal.ZERO);
+    BigDecimal maxPrice =
+        consoleUI
+            .readBigDecimal("Enter maximum price (press Enter to skip): ")
+            .orElse(BigDecimal.valueOf(Double.MAX_VALUE));
 
-    String maxInput = consoleUI.readString("Enter maximum price (press Enter to skip): ");
-    BigDecimal maxPrice = maxInput.isEmpty() ? null : new BigDecimal(maxInput);
+    SearchCriteria criteria =
+        new SearchCriteria.Builder().minPrice(minPrice).maxPrice(maxPrice).build();
 
-    List<org.example.model.Product> results = productService.filterByPriceRange(minPrice, maxPrice);
-    consoleUI.displayProducts(results);
-    consoleUI.pressEnterToContinue();
+    findByCriteria(criteria);
   }
 
   public void handleCombinedFilters() {
-    String category = consoleUI.readString("Enter category to filter (press Enter to skip): ");
-    if (category.isEmpty()) {
-      category = null;
+    SearchCriteria.Builder builder = new SearchCriteria.Builder();
+
+    String name = consoleUI.readString("Enter name (press Enter to skip): ");
+    builder.name(name);
+
+    String category = consoleUI.readString("Enter category (press Enter to skip): ");
+    builder.category(category);
+
+    String brand = consoleUI.readString("Enter brand (press Enter to skip): ");
+    builder.brand(brand);
+
+    BigDecimal minPrice =
+        consoleUI.readBigDecimal("Enter minimum price (press Enter to skip): ").orElse(BigDecimal.ZERO);
+    builder.minPrice(minPrice);
+
+    BigDecimal maxPrice =
+        consoleUI.readBigDecimal(
+            "Enter maximum price (press Enter to skip): ").orElse(BigDecimal.valueOf(Double.MAX_VALUE));
+    builder.maxPrice(maxPrice);
+
+    findByCriteria(builder.build());
+  }
+
+  private void findByCriteria(SearchCriteria criteria) {
+    try {
+      List<Product> results = productService.search(criteria);
+      consoleUI.displayProducts(results);
+    } catch (Exception e) {
+      consoleUI.printError("Error during search: " + e.getMessage());
     }
-
-    String brand = consoleUI.readString("Enter brand to filter (press Enter to skip): ");
-    if (brand.isEmpty()) {
-      brand = null;
-    }
-
-    String minInput = consoleUI.readString("Enter minimum price (press Enter to skip): ");
-    BigDecimal minPrice = minInput.isEmpty() ? null : new BigDecimal(minInput);
-
-    String maxInput = consoleUI.readString("Enter maximum price (press Enter to skip): ");
-    BigDecimal maxPrice = maxInput.isEmpty() ? null : new BigDecimal(maxInput);
-
-    List<org.example.model.Product> results =
-        productService.applyCombinedFilters(category, brand, minPrice, maxPrice);
-    consoleUI.displayProducts(results);
-    consoleUI.pressEnterToContinue();
   }
 }

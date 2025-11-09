@@ -3,8 +3,7 @@ package org.example.console.menu;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
-import org.example.console.ConsoleUI;
-import org.example.console.MenuHandler;
+import org.example.console.ui.ConsoleUI;
 import org.example.service.AuthService;
 
 public class MainMenu {
@@ -33,13 +32,11 @@ public class MainMenu {
   public void show() {
     LinkedHashMap<String, MenuHandler> options = new LinkedHashMap<>();
 
-    options.put("Product Management", productManagementMenu::show);
-    options.put("Search & Filter", searchFilterMenu::show);
-
     if (authService.isAdmin()) {
       options.put("View Audit Log", auditLogMenu::show);
+      options.put("Product Management", productManagementMenu::show);
     }
-
+    options.put("Product search", searchFilterMenu::show);
     options.put("Logout", this::handleLogout);
 
     consoleUI.printMenu("Product Catalog - Main Menu", new ArrayList<>(options.keySet()));
@@ -56,6 +53,5 @@ public class MainMenu {
   private void handleLogout() {
     authService.logout();
     consoleUI.printMessage("Logged out successfully.");
-    consoleUI.pressEnterToContinue();
   }
 }

@@ -1,4 +1,4 @@
-package org.example.console;
+package org.example.console.menu;
 
 @FunctionalInterface
 public interface MenuHandler {

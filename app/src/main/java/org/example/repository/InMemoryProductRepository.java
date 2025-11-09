@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+
 import org.example.model.Product;
 
 public class InMemoryProductRepository implements ProductRepository {
@@ -24,11 +26,11 @@ public class InMemoryProductRepository implements ProductRepository {
   }
 
   @Override
-  public Product findById(String id) {
+  public Optional<Product> findById(String id) {
     if (id == null) {
-      return null;
+      return Optional.empty();
     }
-    return products.get(id);
+    return Optional.ofNullable(products.get(id));
   }
 
   @Override

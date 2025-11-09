@@ -3,8 +3,7 @@ package org.example.console.menu;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
-import org.example.console.ConsoleUI;
-import org.example.console.MenuHandler;
+import org.example.console.ui.ConsoleUI;
 import org.example.console.handler.SearchHandler;
 
 public class SearchFilterMenu {
@@ -22,6 +21,7 @@ public class SearchFilterMenu {
 
   public void show() {
     LinkedHashMap<String, MenuHandler> options = new LinkedHashMap<>();
+    options.put("Search by Id", searchHandler::handleSearchById);
     options.put("Search by Name", searchHandler::handleSearchByName);
     options.put("Filter by Category", searchHandler::handleFilterByCategory);
     options.put("Filter by Brand", searchHandler::handleFilterByBrand);

@@ -1,6 +1,6 @@
 package org.example.console.handler;
 
-import org.example.console.ConsoleUI;
+import org.example.console.ui.ConsoleUI;
 import org.example.service.AuthService;
 
 public class LoginHandler {
@@ -19,11 +19,8 @@ public class LoginHandler {
     if (authService.login(username, password)) {
       String roleInfo = authService.isAdmin() ? " (Admin)" : "";
       consoleUI.printMessage("Login successful! Welcome, " + username + roleInfo + ".");
-      consoleUI.pressEnterToContinue();
     } else {
       consoleUI.printError("Login failed. Invalid username or password, or account may be locked.");
-      consoleUI.pressEnterToContinue();
     }
   }
 }
-

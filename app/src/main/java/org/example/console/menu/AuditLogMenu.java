@@ -3,8 +3,7 @@ package org.example.console.menu;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
-import org.example.console.ConsoleUI;
-import org.example.console.MenuHandler;
+import org.example.console.ui.ConsoleUI;
 import org.example.console.handler.AuditHandler;
 import org.example.exception.AccessDeniedException;
 import org.example.service.AuthService;
@@ -30,7 +29,6 @@ public class AuditLogMenu {
       authService.requireAdmin();
     } catch (AccessDeniedException e) {
       consoleUI.printError(e.getMessage());
-      consoleUI.pressEnterToContinue();
       return;
     }
 

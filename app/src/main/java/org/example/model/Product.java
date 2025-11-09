@@ -27,6 +27,16 @@ public class Product {
     return new ProductBuilder();
   }
 
+  public static ProductBuilder builder(Product product) {
+    return new ProductBuilder()
+        .id(product.getId())
+        .name(product.getName())
+        .description(product.getDescription())
+        .brand(product.getBrand())
+        .category(product.getCategory())
+        .price(product.getPrice());
+  }
+
   public String getId() {
     return id;
   }
@@ -51,6 +61,10 @@ public class Product {
     this.description = description;
   }
 
+  public String getBrand() {
+    return brand;
+  }
+
   public String getCategory() {
     return category;
   }
@@ -59,20 +73,16 @@ public class Product {
     this.category = category;
   }
 
-  public String getBrand() {
-    return brand;
-  }
-
-  public void setBrand(String brand) {
-    this.brand = brand;
-  }
-
   public BigDecimal getPrice() {
     return price;
   }
 
   public void setPrice(BigDecimal price) {
     this.price = price;
+  }
+
+  public void setBrand(String brand) {
+    this.brand = brand;
   }
 
   @Override

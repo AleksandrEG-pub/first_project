@@ -19,8 +19,10 @@ import org.example.model.User;
 import org.example.repository.UserRepository;
 
 public class AuthService {
-  private static final int MAX_LOGIN_ATTEMPTS = 5;
-  private static final int LOCKOUT_DURATION_MINUTES = 15;
+  private static final String UNKNOWN_USER = "unknown";
+  private static final String ADMIN = "admin";
+  private static final int MAX_LOGIN_ATTEMPTS = 3;
+  private static final int LOCKOUT_DURATION_MINUTES = 3;
   private static final int MIN_PASSWORD_LENGTH = 8;
   private static final int PBKDF2_ITERATIONS = 100000;
   private static final int SALT_LENGTH = 16;
@@ -29,9 +31,9 @@ public class AuthService {
 
   private final UserRepository userRepository;
   private final AuditService auditService;
-  private User currentUser;
   // Rate limiting: track failed login attempts per username
   private final Map<String, LoginAttempt> loginAttempts = new ConcurrentHashMap<>();
+  private User currentUser;
 
   public AuthService(UserRepository userRepository, AuditService auditService) {
     this.userRepository = userRepository;
@@ -45,7 +47,8 @@ public class AuthService {
 
     // Check rate limiting
     if (isAccountLocked(username)) {
-      auditService.logAction(username, AuditAction.LOGIN, "Login failed: account locked due to too many attempts");
+      auditService.logAction(
+          username, AuditAction.LOGIN, "Login failed: account locked due to too many attempts");
       return false;
     }
 
@@ -70,42 +73,30 @@ public class AuthService {
     return true;
   }
 
-  /**
-   * Hash password using PBKDF2 with salt (Java built-in, no external dependencies)
-   * Format: base64(salt):base64(hash)
-   */
-  public static String hashPassword(String password) {
-    if (password == null) { 
-      throw new PasswordValidationException("Password cannot be null");
+  /** Rate limiting: check if account is locked */
+  private boolean isAccountLocked(String username) {
+    LoginAttempt attempt = loginAttempts.get(username);
+    if (attempt == null) {
+      return false;
     }
-    validatePasswordComplexity(password);
-    try {
-      // Generate random salt
-      SecureRandom random = new SecureRandom();
-      byte[] salt = new byte[SALT_LENGTH];
-      random.nextBytes(salt);
 
-      // Hash password with PBKDF2
-      PBEKeySpec spec = new PBEKeySpec(
-          password.toCharArray(),
-          salt,
-          PBKDF2_ITERATIONS,
-          KEY_LENGTH);
-      SecretKeyFactory factory = SecretKeyFactory.getInstance(PBKDF2_ALGORITHM);
-      byte[] hash = factory.generateSecret(spec).getEncoded();
-
-      // Encode salt and hash in base64, store as salt:hash
-      String saltBase64 = Base64.getEncoder().encodeToString(salt);
-      String hashBase64 = Base64.getEncoder().encodeToString(hash);
-      return saltBase64 + ":" + hashBase64;
-    } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
-      throw new PasswordHashingException("Failed to hash password", e);
+    // Check if lockout period has expired
+    if (attempt.isLockoutExpired()) {
+      loginAttempts.remove(username);
+      return false;
     }
+
+    return attempt.getCount() >= MAX_LOGIN_ATTEMPTS;
   }
 
-  /**
-   * Verify password against PBKDF2 hash
-   */
+  /** Rate limiting: record failed login attempt */
+  private void recordFailedAttempt(String username) {
+    LoginAttempt attempt = loginAttempts.getOrDefault(username, new LoginAttempt());
+    attempt.increment();
+    loginAttempts.put(username, attempt);
+  }
+
+  /** Verify password against PBKDF2 hash */
   private boolean verifyPassword(String password, String storedHash) {
     try {
       // Parse stored hash: format is salt:hash
@@ -118,11 +109,7 @@ public class AuthService {
       byte[] storedHashBytes = Base64.getDecoder().decode(parts[1]);
 
       // Hash the provided password with the same salt
-      PBEKeySpec spec = new PBEKeySpec(
-          password.toCharArray(),
-          salt,
-          PBKDF2_ITERATIONS,
-          KEY_LENGTH);
+      PBEKeySpec spec = new PBEKeySpec(password.toCharArray(), salt, PBKDF2_ITERATIONS, KEY_LENGTH);
       SecretKeyFactory factory = SecretKeyFactory.getInstance(PBKDF2_ALGORITHM);
       byte[] computedHash = factory.generateSecret(spec).getEncoded();
 
@@ -133,14 +120,40 @@ public class AuthService {
   }
 
   /**
-   * Validate password complexity requirements
+   * Hash password using PBKDF2 with salt (Java built-in, no external dependencies) Format:
+   * base64(salt):base64(hash)
    */
+  public static String hashPassword(String password) {
+    if (password == null) {
+      throw new PasswordValidationException("Password cannot be null");
+    }
+    validatePasswordComplexity(password);
+    try {
+      // Generate random salt
+      SecureRandom random = new SecureRandom();
+      byte[] salt = new byte[SALT_LENGTH];
+      random.nextBytes(salt);
+
+      // Hash password with PBKDF2
+      PBEKeySpec spec = new PBEKeySpec(password.toCharArray(), salt, PBKDF2_ITERATIONS, KEY_LENGTH);
+      SecretKeyFactory factory = SecretKeyFactory.getInstance(PBKDF2_ALGORITHM);
+      byte[] hash = factory.generateSecret(spec).getEncoded();
+
+      // Encode salt and hash in base64, store as salt:hash
+      String saltBase64 = Base64.getEncoder().encodeToString(salt);
+      String hashBase64 = Base64.getEncoder().encodeToString(hash);
+      return saltBase64 + ":" + hashBase64;
+    } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
+      throw new PasswordHashingException("Failed to hash password", e);
+    }
+  }
+
+  /** Validate password complexity requirements */
   public static void validatePasswordComplexity(String password) {
     if (password == null || password.length() < MIN_PASSWORD_LENGTH) {
       throw new PasswordValidationException(
           "Password must be at least " + MIN_PASSWORD_LENGTH + " characters long");
     }
-
     boolean hasUpperCase = false;
     boolean hasLowerCase = false;
     boolean hasDigit = false;
@@ -172,16 +185,7 @@ public class AuthService {
     }
   }
 
-  /**
-   * Check if user has ADMIN role
-   */
-  public boolean isAdmin() {
-    return isAuthenticated() && currentUser.getRole() == Role.ADMIN;
-  }
-
-  /**
-   * Require ADMIN role, throw exception if not
-   */
+  /** Require ADMIN role, throw exception if not */
   public void requireAdmin() {
     if (!isAdmin()) {
       String username = currentUser != null ? currentUser.getUsername() : "anonymous";
@@ -190,31 +194,13 @@ public class AuthService {
     }
   }
 
-  /**
-   * Rate limiting: record failed login attempt
-   */
-  private void recordFailedAttempt(String username) {
-    LoginAttempt attempt = loginAttempts.getOrDefault(username, new LoginAttempt());
-    attempt.increment();
-    loginAttempts.put(username, attempt);
+  /** Check if user has ADMIN role */
+  public boolean isAdmin() {
+    return isAuthenticated() && currentUser.getRole() == Role.ADMIN;
   }
 
-  /**
-   * Rate limiting: check if account is locked
-   */
-  private boolean isAccountLocked(String username) {
-    LoginAttempt attempt = loginAttempts.get(username);
-    if (attempt == null) {
-      return false;
-    }
-
-    // Check if lockout period has expired
-    if (attempt.isLockoutExpired()) {
-      loginAttempts.remove(username);
-      return false;
-    }
-
-    return attempt.getCount() >= MAX_LOGIN_ATTEMPTS;
+  public boolean isAuthenticated() {
+    return currentUser != null;
   }
 
   public void logout() {
@@ -225,17 +211,15 @@ public class AuthService {
     }
   }
 
-  public User getCurrentUser() {
-    return currentUser;
+  public String getCurrentUser() {
+    return currentUser != null ? currentUser.getUsername() : UNKNOWN_USER;
   }
 
-  public boolean isAuthenticated() {
-    return currentUser != null;
+  public String getAdminUserName() {
+    return ADMIN;
   }
 
-  /**
-   * Inner class to track login attempts
-   */
+  /** Inner class to track login attempts */
   private static class LoginAttempt {
     private int count;
     private LocalDateTime lastAttempt;
