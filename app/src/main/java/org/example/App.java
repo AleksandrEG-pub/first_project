@@ -3,9 +3,13 @@ package org.example;
 import org.example.configuration.ApplicationConfiguration;
 import org.example.exception.UserExitException;
 
+import java.util.Arrays;
+
 public class App {
   public static void main(String[] args) {
-    ApplicationConfiguration appConfig = new ApplicationConfiguration();
+    boolean inMemory = Arrays.stream(args)
+            .anyMatch(arg -> arg.contains("--in-memory=true"));
+    ApplicationConfiguration appConfig = new ApplicationConfiguration(inMemory);
 
     // Initialize default data and shutdown hook
     appConfig.initializeData();

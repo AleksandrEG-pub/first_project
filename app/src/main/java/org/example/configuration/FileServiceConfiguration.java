@@ -19,17 +19,4 @@ public class FileServiceConfiguration extends ServiceConfiguration {
         new FileUserRepository(ui, usersFile),
         new FileAuditRepository(ui, auditFile));
   }
-
-  // Optional: Provide access to specific file repositories if needed
-  public FileProductRepository getFileProductRepository() {
-    return (FileProductRepository) productRepository;
-  }
-
-  public FileUserRepository getFileUserRepository() {
-    return (FileUserRepository) userRepository;
-  }
-
-  public FileAuditRepository getFileAuditRepository() {
-    return (FileAuditRepository) auditRepository;
-  }
 }

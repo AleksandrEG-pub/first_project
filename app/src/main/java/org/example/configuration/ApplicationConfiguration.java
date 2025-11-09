@@ -11,9 +11,13 @@ public class ApplicationConfiguration {
   private final HandlerConfiguration handlers;
   private final MenuConfiguration menus;
 
-  public ApplicationConfiguration() {
+  public ApplicationConfiguration(boolean inMemory) {
     this.ui = new UIConfiguration();
-    this.services = new FileServiceConfiguration(ui.getConsoleUI());
+    if (inMemory) {
+      this.services = new InMemoryServiceConfiguration();
+    } else {
+      this.services = new FileServiceConfiguration(ui.getConsoleUI());
+    }
     this.handlers = new HandlerConfiguration(services, ui);
     this.menus = new MenuConfiguration(services, ui, handlers);
   }
