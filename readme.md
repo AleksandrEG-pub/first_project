@@ -18,35 +18,22 @@ git clone <repo-url>
 cd <repo-root>
 ```
 
-2. Verify Java is installed and `JAVA_HOME` is set. Example:
+2. Verify Java is installed and `JAVA_HOME` is set. Expected 17. Example:
 
 ```
 java -version
 echo $JAVA_HOME
 ```
 
-3. Build the project using the Gradle wrapper:
-
-```bash
-./gradlew clean build
-```
-
-4. (Optional) Run with in-memory mode to avoid file persistence (useful for tests):
-
-- Pass `--in-memory=true` as a JVM program argument when launching the app.
-
 ## How to launch
-- Run using the Gradle application plugin (if configured) or execute the produced JAR:
+- Run using start.sh or start-in-memory.sh scripts:
 
 ```bash
-# Run with Gradle (preferred during development)
-./gradlew run
+# Run with file based repository
+start.sh
 
-# Run the packaged JAR after build
-java -jar app/build/libs/app.jar
-
-# Run with in-memory flag
-./gradlew run --args='--in-memory=true'
+# Run with in-memory repository
+start-in-memory.sh
 ```
 
 ## Features
@@ -68,7 +55,7 @@ The initializer is implemented in `app/src/main/java/org/example/util/DataInitia
 
 ## Important notes on users
 Application does not support creation of custom users. 
-Not authenticated users can not log in and perform any actions.
+Not authenticated users can not perform any actions, except log in attempts
 
 
 ## Restrictions and known limitations
