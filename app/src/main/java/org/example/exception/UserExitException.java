@@ -5,4 +5,3 @@ public class UserExitException extends RuntimeException {
     super(message, cause);
   }
 }
-

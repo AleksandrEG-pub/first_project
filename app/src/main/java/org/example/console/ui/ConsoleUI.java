@@ -98,8 +98,4 @@ public class ConsoleUI {
   public void printError(String error) {
     io.printError(error);
   }
-
-  public void close() {
-    io.close();
-  }
 }

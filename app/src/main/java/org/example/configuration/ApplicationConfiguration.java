@@ -48,10 +48,6 @@ public class ApplicationConfiguration {
     }
   }
 
-  public void registerShutdownHook() {
-    Runtime.getRuntime().addShutdownHook(new Thread(this::shutdown));
-  }
-
   /**
    * Attempt to gracefully shutdown the application components (UI and other closeable resources).
    * This method intentionally swallows exceptions because it's called during shutdown.
@@ -59,11 +55,6 @@ public class ApplicationConfiguration {
   public void shutdown() {
     try {
       ui.getConsoleUI().printMessage("Shutting down...");
-    } catch (Exception ignored) {
-      // quit application
-    }
-    try {
-      ui.getConsoleUI().close();
     } catch (Exception ignored) {
       // quit application
     }
