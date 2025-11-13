@@ -1,0 +1,3 @@
+#!/bin/bash
+
+./gradlew shadowJar && java -jar ./app/build/libs/app-all.jar --in-memory=true

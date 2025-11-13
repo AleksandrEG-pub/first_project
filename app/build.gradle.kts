@@ -1,5 +1,6 @@
 plugins {
     application
+    id("com.gradleup.shadow") version "9.1.0"
 }
 
 repositories {
@@ -7,9 +8,6 @@ repositories {
 }
 
 dependencies {
-    testImplementation(libs.junit.jupiter)
-    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
-    implementation(libs.guava)
 }
 
 java {
@@ -24,4 +22,12 @@ application {
 
 tasks.named<Test>("test") {
     useJUnitPlatform()
+}
+
+tasks.shadowJar {
+    duplicatesStrategy = DuplicatesStrategy.INCLUDE
+    mergeServiceFiles()
+    manifest {
+        attributes["Main-Class"] = "org.example.App"
+    }
 }
