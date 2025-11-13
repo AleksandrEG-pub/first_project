@@ -1,4 +1,4 @@
-package org.example.repository;
+package org.example.repository.impl.file;
 
 import java.io.File;
 import java.math.BigDecimal;
@@ -8,6 +8,7 @@ import java.util.Optional;
 
 import org.example.console.ui.ConsoleUI;
 import org.example.model.Product;
+import org.example.repository.ProductRepository;
 
 public class FileProductRepository extends BaseFileRepository implements ProductRepository {
 

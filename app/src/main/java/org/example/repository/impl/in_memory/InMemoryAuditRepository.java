@@ -1,8 +1,9 @@
-package org.example.repository;
+package org.example.repository.impl.in_memory;
 
 import java.util.ArrayList;
 import java.util.List;
 import org.example.model.AuditLog;
+import org.example.repository.AuditRepository;
 
 public class InMemoryAuditRepository implements AuditRepository {
   private final List<AuditLog> auditLogs;

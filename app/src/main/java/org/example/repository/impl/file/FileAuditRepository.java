@@ -1,4 +1,4 @@
-package org.example.repository;
+package org.example.repository.impl.file;
 
 import java.io.File;
 import java.time.LocalDateTime;
@@ -9,6 +9,7 @@ import java.util.List;
 import org.example.console.ui.ConsoleUI;
 import org.example.model.AuditAction;
 import org.example.model.AuditLog;
+import org.example.repository.AuditRepository;
 
 public class FileAuditRepository extends BaseFileRepository implements AuditRepository {
 

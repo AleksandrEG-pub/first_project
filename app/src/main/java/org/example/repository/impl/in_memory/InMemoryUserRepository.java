@@ -1,6 +1,7 @@
-package org.example.repository;
+package org.example.repository.impl.in_memory;
 
 import org.example.model.User;
+import org.example.repository.UserRepository;
 
 import java.util.HashMap;
 import java.util.Map;

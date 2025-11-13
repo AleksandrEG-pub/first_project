@@ -1,4 +1,4 @@
-package org.example.repository;
+package org.example.repository.impl.in_memory;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.example.model.Product;
+import org.example.repository.ProductRepository;
 
 public class InMemoryProductRepository implements ProductRepository {
   private final Map<String, Product> products;

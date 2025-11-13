@@ -1,4 +1,4 @@
-package org.example.repository;
+package org.example.repository.impl.file;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -7,6 +7,7 @@ import java.util.List;
 import org.example.console.ui.ConsoleUI;
 import org.example.model.Role;
 import org.example.model.User;
+import org.example.repository.UserRepository;
 
 public class FileUserRepository extends BaseFileRepository implements UserRepository {
 
