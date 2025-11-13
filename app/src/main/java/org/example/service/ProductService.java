@@ -40,7 +40,6 @@ public class ProductService {
   }
 
   public Product addProduct(Product product) {
-    // Require ADMIN role for product modifications
     authService.requireAdmin();
     return addProductInternal(product);
   }
@@ -87,7 +86,6 @@ public class ProductService {
   }
 
   public Product updateProduct(String id, Product newProductData) {
-    // Require ADMIN role for product modifications
     authService.requireAdmin();
     if (id == null || id.trim().isEmpty()) {
       throw new IllegalArgumentException("Product ID cannot be null or empty");
