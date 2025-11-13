@@ -8,6 +8,7 @@ repositories {
 }
 
 dependencies {
+    implementation("org.liquibase:liquibase-core:4.30.0")
 }
 
 java {
