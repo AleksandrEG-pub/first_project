@@ -3,13 +3,14 @@ package org.example.repository.impl.file;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-
+import java.util.concurrent.atomic.AtomicLong;
 import org.example.console.ui.ConsoleUI;
 import org.example.model.Role;
 import org.example.model.User;
 import org.example.repository.UserRepository;
 
 public class FileUserRepository extends BaseFileRepository implements UserRepository {
+  private static final AtomicLong counter = new AtomicLong(0);
 
   public FileUserRepository(ConsoleUI ui, File file) {
     super(ui, file);
@@ -35,14 +36,17 @@ public class FileUserRepository extends BaseFileRepository implements UserReposi
     if (cols.length < 3) return new User();
 
     User user = new User();
-    user.setUsername(cols[0]);
-    user.setPasswordHash(cols[1]);
-    user.setRole(parseRole(cols[2]));
+    user.setId(Long.parseLong(cols[0]));
+    user.setUsername(cols[1]);
+    user.setPasswordHash(cols[2]);
+    user.setRole(parseRole(cols[3]));
     return user;
   }
 
   private Role parseRole(String roleStr) {
-    if (roleStr == null || roleStr.isEmpty()) return null;
+    if (roleStr == null || roleStr.isEmpty()) {
+      return null;
+    }
     try {
       return Role.valueOf(roleStr);
     } catch (IllegalArgumentException e) {
@@ -52,12 +56,14 @@ public class FileUserRepository extends BaseFileRepository implements UserReposi
 
   @Override
   public User save(User user) {
+    if (user == null) {
+      throw new IllegalArgumentException("User cannot be null");
+    }
+    if (user.getId() == null) {
+      user.setId(counter.getAndIncrement());
+    }
     return executeWithMetrics(
         () -> {
-          if (user == null) {
-            throw new IllegalArgumentException("User cannot be null");
-          }
-
           List<String> lines = readAllLines();
           List<String> newLines = new ArrayList<>();
           boolean updated = false;
