@@ -9,11 +9,11 @@ import java.util.Optional;
 public interface ProductRepository {
   Product save(Product product);
 
-  Optional<Product> findById(String id);
+  Optional<Product> findById(Long id);
 
   List<Product> findAll();
 
-  boolean delete(String id);
+  boolean delete(Long id);
 
   List<Product> searchByName(String name);
 

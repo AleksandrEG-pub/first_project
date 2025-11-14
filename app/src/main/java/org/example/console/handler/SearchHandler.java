@@ -19,7 +19,7 @@ public class SearchHandler {
   }
 
   public void handleSearchById() {
-    String id = consoleUI.readString("Enter product id to search): ");
+    Long id = consoleUI.readLong("Enter product id to search): ");
     Optional<Product> productOpt = productService.findById(id);
     if (productOpt.isPresent()) {
       consoleUI.displayProduct(productOpt.get());

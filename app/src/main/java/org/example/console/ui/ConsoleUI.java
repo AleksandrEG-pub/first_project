@@ -79,6 +79,10 @@ public class ConsoleUI {
     return inputHandler.readInt(prompt);
   }
 
+  public long readLong(String prompt) {
+    return inputHandler.readLong(prompt);
+  }
+
   public void printMessage(String message) {
     io.printMessage(message);
   }

@@ -5,19 +5,24 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-
+import java.util.concurrent.atomic.AtomicLong;
 import org.example.console.ui.ConsoleUI;
 import org.example.model.Product;
 import org.example.repository.ProductRepository;
 
 public class FileProductRepository extends BaseFileRepository implements ProductRepository {
+  private static final AtomicLong counter = new AtomicLong(0);
 
   public FileProductRepository(ConsoleUI ui, File file) {
     super(ui, file);
   }
 
+  public static void updateCounter(long value) {
+    counter.set(value);
+  }
+
   @Override
-  public Optional<Product> findById(String id) {
+  public Optional<Product> findById(Long id) {
     return executeWithMetrics(
         () -> {
           if (id == null) return Optional.empty();
@@ -38,7 +43,7 @@ public class FileProductRepository extends BaseFileRepository implements Product
     String[] cols = CsvUtils.splitCsv(line);
 
     Product product = new Product();
-    product.setId(cols.length > 0 ? cols[0] : null);
+    product.setId(cols.length > 0 ? getId(cols) : null);
     product.setName(cols.length > 1 ? cols[1] : null);
     product.setDescription(cols.length > 2 ? cols[2] : null);
     product.setCategory(cols.length > 3 ? cols[3] : null);
@@ -46,6 +51,10 @@ public class FileProductRepository extends BaseFileRepository implements Product
     product.setPrice(parsePrice(cols.length > 5 ? cols[5] : null));
 
     return product;
+  }
+
+  private static Long getId(String[] cols) {
+    return Long.parseLong(cols[0]);
   }
 
   private BigDecimal parsePrice(String priceStr) {
@@ -61,22 +70,24 @@ public class FileProductRepository extends BaseFileRepository implements Product
 
   @Override
   public Product save(Product product) {
+    if (product == null) {
+      throw new IllegalArgumentException("Product cannot be null");
+    }
+    if (product.getId() == null) {
+      Long id = counter.getAndIncrement();
+      product.setId(id);
+    }
     return executeWithMetrics(
         () -> {
-          if (product == null) {
-            throw new IllegalArgumentException("Product cannot be null");
-          }
-          if (product.getId() == null) {
-            throw new IllegalArgumentException("Product ID cannot be null");
-          }
-
           List<String> lines = readAllLines();
           List<String> newLines = new ArrayList<>();
           boolean updated = false;
 
           // Update existing or add new
           for (String line : lines) {
-            if (line.trim().isEmpty()) continue;
+            if (line.trim().isEmpty()) {
+                continue;
+            }
 
             Product existing = parseCsvLine(line);
             if (product.getId().equals(existing.getId())) {
@@ -99,7 +110,7 @@ public class FileProductRepository extends BaseFileRepository implements Product
   private String toCsvLine(Product product) {
     return String.join(
         ",",
-        CsvUtils.escapeCsv(product.getId()),
+        product.getId().toString(),
         CsvUtils.escapeCsv(product.getName()),
         CsvUtils.escapeCsv(product.getDescription()),
         CsvUtils.escapeCsv(product.getCategory()),
@@ -108,7 +119,7 @@ public class FileProductRepository extends BaseFileRepository implements Product
   }
 
   @Override
-  public boolean delete(String id) {
+  public boolean delete(Long id) {
     return executeWithMetrics(
         () -> {
           if (id == null) return false;

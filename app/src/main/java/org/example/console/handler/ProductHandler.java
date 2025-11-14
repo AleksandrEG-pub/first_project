@@ -35,7 +35,7 @@ public class ProductHandler {
 
   public void handleEditProduct() {
     try {
-      String id = consoleUI.readString("Enter product ID to edit: ");
+      Long id = consoleUI.readLong("Enter product ID to edit: ");
       Optional<Product> existing = productService.findById(id);
       if (existing.isEmpty()) {
         consoleUI.printError("Product not found.");
@@ -55,7 +55,7 @@ public class ProductHandler {
   }
 
   public void handleDeleteProduct() {
-    String id = consoleUI.readString("Enter product ID to delete: ");
+    Long id = consoleUI.readLong("Enter product ID to delete: ");
     Optional<Product> product = productService.findById(id);
 
     if (product.isEmpty()) {

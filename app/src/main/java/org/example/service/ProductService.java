@@ -2,7 +2,7 @@ package org.example.service;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
+
 import org.example.cache.ProductCache;
 import org.example.model.AuditAction;
 import org.example.model.Product;
@@ -47,8 +47,7 @@ public class ProductService {
   /** Internal method to add product without authentication check. Used for initialization only. */
   public Product addProductInternal(Product product) {
     productValidator.validateProductData(product);
-    String id = UUID.randomUUID().toString();
-    Product newProduct = Product.builder(product).id(id).build();
+    Product newProduct = Product.builder(product).build();
     Product saved = productRepository.save(newProduct);
     productCache.put(saved.getId(), saved);
     String adminUserName = authService.getAdminUserName();
@@ -60,10 +59,10 @@ public class ProductService {
     return saved;
   }
 
-  public boolean deleteProduct(String id) {
+  public boolean deleteProduct(Long id) {
     // Require ADMIN role for product deletions
     authService.requireAdmin();
-    if (id == null || id.trim().isEmpty()) {
+    if (id == null) {
       return false;
     }
     Optional<Product> product = productRepository.findById(id);
@@ -85,10 +84,10 @@ public class ProductService {
     return deleted;
   }
 
-  public Product updateProduct(String id, Product newProductData) {
+  public Product updateProduct(Long id, Product newProductData) {
     authService.requireAdmin();
-    if (id == null || id.trim().isEmpty()) {
-      throw new IllegalArgumentException("Product ID cannot be null or empty");
+    if (id == null) {
+      throw new IllegalArgumentException("Product ID cannot be null");
     }
     productValidator.validateProductData(newProductData);
 
@@ -116,7 +115,7 @@ public class ProductService {
     return updated;
   }
 
-  public Optional<Product> findById(String id) {
+  public Optional<Product> findById(Long id) {
     return productSearchService.findById(id);
   }
 

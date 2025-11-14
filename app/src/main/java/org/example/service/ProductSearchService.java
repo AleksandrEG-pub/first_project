@@ -117,8 +117,8 @@ public class ProductSearchService {
   }
 
 
-  public Optional<Product> findById(String id) {
-    if (id == null || id.trim().isEmpty()) {
+  public Optional<Product> findById(Long id) {
+    if (id == null) {
       return Optional.empty();
     }
     // Check cache first

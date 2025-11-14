@@ -6,12 +6,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicLong;
 
 import org.example.model.Product;
 import org.example.repository.ProductRepository;
 
 public class InMemoryProductRepository implements ProductRepository {
-  private final Map<String, Product> products;
+  private final AtomicLong counter = new AtomicLong(0);
+  private final Map<Long, Product> products;
 
   public InMemoryProductRepository() {
     this.products = new HashMap<>();
@@ -22,12 +24,15 @@ public class InMemoryProductRepository implements ProductRepository {
     if (product == null) {
       throw new IllegalArgumentException("Product cannot be null");
     }
+    if (product.getId() == null) {
+        product.setId(counter.incrementAndGet());
+    }
     products.put(product.getId(), product);
     return product;
   }
 
   @Override
-  public Optional<Product> findById(String id) {
+  public Optional<Product> findById(Long id) {
     if (id == null) {
       return Optional.empty();
     }
@@ -40,7 +45,7 @@ public class InMemoryProductRepository implements ProductRepository {
   }
 
   @Override
-  public boolean delete(String id) {
+  public boolean delete(Long id) {
     if (id == null) {
       return false;
     }

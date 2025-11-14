@@ -2,14 +2,15 @@ package org.example.configuration;
 
 import java.util.List;
 import org.example.model.Product;
+import org.example.repository.impl.file.FileProductRepository;
 import org.example.util.DataInitializer;
 
 /**
  * Central application configuration and lifecycle coordinator.
  *
  * <p>Constructs the required service, UI and handler configurations (either file-backed or
- * in-memory), provides lifecycle operations such as data initialization, startup and shutdown,
- * and registers a JVM shutdown hook.
+ * in-memory), provides lifecycle operations such as data initialization, startup and shutdown, and
+ * registers a JVM shutdown hook.
  */
 public class ApplicationConfiguration {
   private final ServiceConfiguration services;
@@ -37,14 +38,19 @@ public class ApplicationConfiguration {
     return ui;
   }
 
-  /**
-   * Initialize default data when the persistent store is empty.
-   */
+  /** Initialize default data when the persistent store is empty. */
   public void initializeData() {
-    List<Product> allProducts = services.getProductService().getAllProducts();
-    if (allProducts.isEmpty()) {
-      DataInitializer.initializeDefaultData(
-          services.getUserRepository(), services.getProductService());
+    if (services instanceof FileServiceConfiguration) {
+      List<Product> allProducts = services.getProductService().getAllProducts();
+      if (allProducts.isEmpty()) {
+        DataInitializer.initializeDefaultData(
+            services.getUserRepository(), services.getProductService());
+      } else {
+        allProducts.stream()
+            .mapToLong(Product::getId)
+            .max()
+            .ifPresent(maxId -> FileProductRepository.updateCounter(maxId + 1));
+      }
     }
   }
 
@@ -60,9 +66,7 @@ public class ApplicationConfiguration {
     }
   }
 
-  /**
-   * Start the application's main menu loop.
-   */
+  /** Start the application's main menu loop. */
   public void start() {
     menus.getMenuController().start();
   }

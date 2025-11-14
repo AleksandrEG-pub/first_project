@@ -26,6 +26,19 @@ public class InputHandler {
     }
   }
 
+  public long readLong(String prompt) {
+    while (true) {
+      try {
+        String input = io.readString(prompt);
+        return Long.parseLong(input);
+      } catch (NumberFormatException e) {
+        io.printError("Invalid input. Please enter a number.");
+      } catch (NoSuchElementException e) {
+        throw new UserExitException("Input closed", e);
+      }
+    }
+  }
+
   public Optional<BigDecimal> readBigDecimal(String prompt) {
     String input = readString(prompt);
     try {
