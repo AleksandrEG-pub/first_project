@@ -16,7 +16,11 @@ public class AuditService {
     if (username == null || action == null) {
       return;
     }
-    AuditLog auditLog = new AuditLog(LocalDateTime.now(), username, action, details);
+    AuditLog auditLog = new AuditLog();
+    auditLog.setTimestamp(LocalDateTime.now());
+    auditLog.setUsername(username);
+    auditLog.setAction(action);
+    auditLog.setDetails(details);
     auditRepository.save(auditLog);
   }
 }

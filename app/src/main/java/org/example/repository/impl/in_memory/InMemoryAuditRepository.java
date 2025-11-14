@@ -2,10 +2,13 @@ package org.example.repository.impl.in_memory;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicLong;
+
 import org.example.model.AuditLog;
 import org.example.repository.AuditRepository;
 
 public class InMemoryAuditRepository implements AuditRepository {
+  private static final AtomicLong counter = new AtomicLong(0);
   private final List<AuditLog> auditLogs;
 
   public InMemoryAuditRepository() {
@@ -16,6 +19,9 @@ public class InMemoryAuditRepository implements AuditRepository {
   public AuditLog save(AuditLog auditLog) {
     if (auditLog == null) {
       throw new IllegalArgumentException("AuditLog cannot be null");
+    }
+    if (auditLog.getId() == null) {
+      auditLog.setId(counter.getAndIncrement());
     }
     auditLogs.add(auditLog);
     return auditLog;

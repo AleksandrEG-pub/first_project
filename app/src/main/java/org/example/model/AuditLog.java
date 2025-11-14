@@ -4,18 +4,18 @@ import java.time.LocalDateTime;
 import java.util.Objects;
 
 public class AuditLog {
+  private Long id;
   private LocalDateTime timestamp;
   private String username;
   private AuditAction action;
   private String details;
 
-  public AuditLog() {}
+  public Long getId() {
+    return id;
+  }
 
-  public AuditLog(LocalDateTime timestamp, String username, AuditAction action, String details) {
-    this.timestamp = timestamp;
-    this.username = username;
-    this.action = action;
-    this.details = details;
+  public void setId(Long id) {
+    this.id = id;
   }
 
   public LocalDateTime getTimestamp() {
