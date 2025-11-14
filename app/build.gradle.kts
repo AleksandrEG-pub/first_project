@@ -9,6 +9,7 @@ repositories {
 
 dependencies {
     implementation("org.liquibase:liquibase-core:4.30.0")
+    implementation("org.postgresql:postgresql:42.7.8")
 }
 
 java {
