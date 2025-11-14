@@ -10,6 +10,16 @@ public class AuditLog {
   private AuditAction action;
   private String details;
 
+  public static AuditLog fromAuditLog(AuditLog other) {
+    AuditLog auditLog = new AuditLog();
+    auditLog.setId(other.getId());
+    auditLog.setTimestamp(other.getTimestamp());
+    auditLog.setUsername(other.getUsername());
+    auditLog.setAction(other.getAction());
+    auditLog.setDetails(other.getDetails());
+    return auditLog;
+  }
+
   public Long getId() {
     return id;
   }

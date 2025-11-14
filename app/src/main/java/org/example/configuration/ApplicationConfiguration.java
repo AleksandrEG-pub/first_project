@@ -2,6 +2,7 @@ package org.example.configuration;
 
 import java.util.List;
 import org.example.model.Product;
+import org.example.repository.impl.database.ConnectionManager;
 import org.example.repository.impl.file.FileProductRepository;
 import org.example.util.DataInitializer;
 
@@ -23,10 +24,12 @@ public class ApplicationConfiguration {
    */
   public ApplicationConfiguration(RepositoryType repositoryType) {
     this.ui = new UIConfiguration();
+    DatabaseProperties databaseProperties = new DatabaseProperties();
+    ConnectionManager connectionManager = new ConnectionManager(databaseProperties);
     switch (repositoryType) {
       case IN_MEMORY -> this.services = new InMemoryServiceConfiguration();
       case FILE -> this.services = new FileServiceConfiguration(ui.getConsoleUI());
-      case DATABASE -> this.services = new DatabaseServiceConfiguration(ui.getConsoleUI());
+      case DATABASE -> this.services = new DatabaseServiceConfiguration(ui.getConsoleUI(), connectionManager);
       default -> throw new IllegalArgumentException("Unsupported repository type: " + repositoryType);
     }
     this.handlers = new HandlerConfiguration(services, ui);

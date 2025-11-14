@@ -35,6 +35,7 @@ public class MenuController {
       consoleUI.printMessage("Exiting application (input closed or user requested exit).");
     } catch (RuntimeException e) {
       consoleUI.printError("Unexpected error: " + e.getMessage());
+      e.printStackTrace();
     }
   }
 }

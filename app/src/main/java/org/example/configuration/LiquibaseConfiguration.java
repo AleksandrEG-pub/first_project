@@ -17,7 +17,7 @@ import org.example.exception.InitializationException;
 public class LiquibaseConfiguration {
 
   private static final String CHANGELOG_FILE = "db/changelog/db.changelog-master.yaml";
-  private static final String URL = System.getenv("YLAB_PROJECT_POSTGRES_DB");
+  private static final String URL = System.getenv("YLAB_PROJECT_POSTGRES_URL");
   private static final String USER = System.getenv("YLAB_PROJECT_POSTGRES_USER");
   private static final String PASSWORD = System.getenv("YLAB_PROJECT_POSTGRES_PASSWORD");
   private static final String LIQUIBASE_SCHEME = System.getenv("YLAB_PROJECT_LIQUIBASE_SCHEME");
