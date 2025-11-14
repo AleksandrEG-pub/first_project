@@ -6,10 +6,9 @@ services:
     restart: unless-stopped
     ports:
       - "10350:5432"
-    environment:
-      POSTGRES_DB: "${YLAB_PROJECT_POSTGRES_DB}"
-      POSTGRES_USER: "${YLAB_PROJECT_POSTGRES_USER}"
-      POSTGRES_PASSWORD: "${YLAB_PROJECT_POSTGRES_PASSWORD}"
+    env_file:
+      - path: "./application.env"
+      - path: "./database.env"
     volumes:
       - database-data:/var/lib/postgresql/data
 
