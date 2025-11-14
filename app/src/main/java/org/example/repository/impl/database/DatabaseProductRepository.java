@@ -1,4 +1,4 @@
-package org.example.configuration;
+package org.example.repository.impl.database;
 
 import org.example.console.ui.ConsoleUI;
 import org.example.model.Product;
