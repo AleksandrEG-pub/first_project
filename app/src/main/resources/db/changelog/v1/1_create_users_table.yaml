@@ -1,0 +1,34 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1
+      author: developer
+      comment: init users table
+      changes:
+        - createTable:
+            tableName: users
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: username
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: password_hash
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: role
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+        - addAutoIncrement:
+            tableName: users
+            columnName: id
+            columnDataType: bigint

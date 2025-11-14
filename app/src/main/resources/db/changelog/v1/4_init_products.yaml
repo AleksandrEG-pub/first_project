@@ -1,0 +1,10 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1
+      author: developer
+      comment: add users data
+      changes:
+        - loadData:
+            tableName: products
+            file: db/changelog/data/products.csv
+            separator: ","

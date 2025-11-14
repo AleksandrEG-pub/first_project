@@ -1,0 +1,39 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1
+      author: developer
+      comment: init audit_logs table
+      changes:
+        - createTable:
+            tableName: audit_logs
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  constraints:
+                    primaryKey: true4
+                    nullable: false
+              - column:
+                  name: username
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: action
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: details
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: price
+                  type: TIMESTAMP
+                  constraints:
+                    nullable: false
+        - addAutoIncrement:
+            tableName: audit_logs
+            columnName: id
+            columnDataType: bigint
