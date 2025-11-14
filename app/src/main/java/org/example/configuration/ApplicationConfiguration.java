@@ -20,15 +20,14 @@ public class ApplicationConfiguration {
 
   /**
    * Create a new application configuration.
-   *
-   * @param inMemory if true, configure services to run in-memory (no file persistence)
    */
-  public ApplicationConfiguration(boolean inMemory) {
+  public ApplicationConfiguration(RepositoryType repositoryType) {
     this.ui = new UIConfiguration();
-    if (inMemory) {
-      this.services = new InMemoryServiceConfiguration();
-    } else {
-      this.services = new FileServiceConfiguration(ui.getConsoleUI());
+    switch (repositoryType) {
+      case IN_MEMORY -> this.services = new InMemoryServiceConfiguration();
+      case FILE -> this.services = new FileServiceConfiguration(ui.getConsoleUI());
+      case DATABASE -> this.services = new DatabaseServiceConfiguration(ui.getConsoleUI());
+      default -> throw new IllegalArgumentException("Unsupported repository type: " + repositoryType);
     }
     this.handlers = new HandlerConfiguration(services, ui);
     this.menus = new MenuConfiguration(services, ui, handlers);
