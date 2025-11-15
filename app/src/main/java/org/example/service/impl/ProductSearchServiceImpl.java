@@ -2,7 +2,7 @@ package org.example.service.impl;
 
 import java.util.List;
 import java.util.Optional;
-import org.example.cache.ProductCache;
+import org.example.cache.Cache;
 import org.example.model.AuditAction;
 import org.example.model.Product;
 import org.example.repository.ProductRepository;
@@ -12,13 +12,13 @@ import org.example.service.SearchCriteria;
 
 public class ProductSearchServiceImpl implements ProductSearchService {
   private final ProductRepository productRepository;
-  private final ProductCache productCache;
+  private final Cache<Long, Product> productCache;
   private final AuditServiceImpl auditService;
   private final AuthService authService;
 
   public ProductSearchServiceImpl(
       ProductRepository productRepository,
-      ProductCache productCache,
+      Cache<Long, Product> productCache,
       AuditServiceImpl auditService,
       AuthService authService) {
     this.productRepository = productRepository;
@@ -125,11 +125,11 @@ public class ProductSearchServiceImpl implements ProductSearchService {
     if (id == null) {
       return Optional.empty();
     }
-    Product cached = productCache.get(id);
-    if (cached != null) {
+    Optional<Product> cached = productCache.get(id);
+    if (cached.isPresent()) {
       String username = authService.getCurrentUser();
       auditService.logAction(username, AuditAction.VIEW_PRODUCT, "Viewed product (cached): " + id);
-      return Optional.of(cached);
+      return cached;
     }
     Optional<Product> productOpt = productRepository.findById(id);
     if (productOpt.isPresent()) {

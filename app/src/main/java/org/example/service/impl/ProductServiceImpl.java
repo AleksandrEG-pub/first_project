@@ -2,7 +2,8 @@ package org.example.service.impl;
 
 import java.util.List;
 import java.util.Optional;
-import org.example.cache.ProductCache;
+
+import org.example.cache.Cache;
 import org.example.model.AuditAction;
 import org.example.model.Product;
 import org.example.repository.ProductRepository;
@@ -14,7 +15,7 @@ import org.example.service.SearchCriteria;
 
 public class ProductServiceImpl implements ProductService {
   private final ProductRepository productRepository;
-  private final ProductCache productCache;
+  private final Cache<Long, Product> productCache;
   private final AuditServiceImpl auditService;
   private final AuthService authService;
   private final ProductValidator productValidator;
@@ -22,7 +23,7 @@ public class ProductServiceImpl implements ProductService {
 
   public ProductServiceImpl(
       ProductRepository productRepository,
-      ProductCache productCache,
+      Cache<Long, Product> productCache,
       AuditServiceImpl auditService,
       AuthService authService,
       ProductValidator productValidator,
@@ -54,9 +55,9 @@ public class ProductServiceImpl implements ProductService {
     productCache.put(saved.getId(), saved);
     String adminUserName = authService.getAdminUserName();
     auditService.logAction(
-            adminUserName,
-            AuditAction.ADD_PRODUCT,
-            "Initialized product: " + saved.getId() + " - " + saved.getName());
+        adminUserName,
+        AuditAction.ADD_PRODUCT,
+        "Initialized product: " + saved.getId() + " - " + saved.getName());
 
     return saved;
   }

@@ -2,9 +2,9 @@ package org.example.cache;
 
 import org.example.model.Product;
 
-public class ProductCache extends BaseCache<Long, Product> {
+public class ProductBaseCache extends BaseCacheImpl<Long, Product> {
 
-  public ProductCache(int maxSize) {
+  public ProductBaseCache(int maxSize) {
     super(maxSize);
   }
 

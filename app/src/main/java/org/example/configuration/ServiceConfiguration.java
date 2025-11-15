@@ -1,6 +1,8 @@
 package org.example.configuration;
 
-import org.example.cache.ProductCache;
+import org.example.cache.Cache;
+import org.example.cache.ProductBaseCache;
+import org.example.model.Product;
 import org.example.repository.AuditRepository;
 import org.example.repository.ProductRepository;
 import org.example.repository.UserRepository;
@@ -32,7 +34,7 @@ public abstract class ServiceConfiguration {
     this.userRepository = userRepository;
     this.auditRepository = auditRepository;
 
-    ProductCache productCache = new ProductCache(PRODUCT_CACHE_SIZE);
+    Cache<Long, Product> productCache = new ProductBaseCache(PRODUCT_CACHE_SIZE);
     this.auditService = new AuditServiceImpl(auditRepository);
     this.authService = new AuthServiceImpl(userRepository, auditService);
     ProductValidator productValidator = new ProductValidatorImpl();
