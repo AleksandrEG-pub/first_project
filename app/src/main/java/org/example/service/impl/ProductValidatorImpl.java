@@ -1,7 +1,8 @@
-package org.example.service;
+package org.example.service.impl;
 
 import java.math.BigDecimal;
 import org.example.model.Product;
+import org.example.service.ProductValidator;
 
 public class ProductValidatorImpl implements ProductValidator {
   @Override

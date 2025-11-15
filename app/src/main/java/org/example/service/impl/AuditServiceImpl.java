@@ -1,9 +1,10 @@
-package org.example.service;
+package org.example.service.impl;
 
 import java.time.LocalDateTime;
 import org.example.model.AuditAction;
 import org.example.model.AuditLog;
 import org.example.repository.AuditRepository;
+import org.example.service.AuditService;
 
 public class AuditServiceImpl implements AuditService {
   private final AuditRepository auditRepository;

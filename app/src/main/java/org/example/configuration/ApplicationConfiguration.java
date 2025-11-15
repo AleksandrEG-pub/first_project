@@ -4,7 +4,7 @@ import java.util.List;
 import org.example.model.Product;
 import org.example.repository.impl.database.ConnectionManager;
 import org.example.repository.impl.file.FileProductRepository;
-import org.example.service.DataInitializerImpl;
+import org.example.service.impl.DataInitializerImpl;
 
 /**
  * Central application configuration and lifecycle coordinator.

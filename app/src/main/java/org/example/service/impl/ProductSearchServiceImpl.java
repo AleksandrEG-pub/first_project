@@ -1,4 +1,4 @@
-package org.example.service;
+package org.example.service.impl;
 
 import java.util.List;
 import java.util.Optional;
@@ -6,6 +6,9 @@ import org.example.cache.ProductCache;
 import org.example.model.AuditAction;
 import org.example.model.Product;
 import org.example.repository.ProductRepository;
+import org.example.service.AuthService;
+import org.example.service.ProductSearchService;
+import org.example.service.SearchCriteria;
 
 public class ProductSearchServiceImpl implements ProductSearchService {
   private final ProductRepository productRepository;

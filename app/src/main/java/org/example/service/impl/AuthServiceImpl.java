@@ -1,4 +1,4 @@
-package org.example.service;
+package org.example.service.impl;
 
 import java.time.LocalDateTime;
 import java.util.Map;
@@ -8,6 +8,7 @@ import org.example.model.AuditAction;
 import org.example.model.Role;
 import org.example.model.User;
 import org.example.repository.UserRepository;
+import org.example.service.AuthService;
 import org.example.util.Passwords;
 
 public class AuthServiceImpl implements AuthService {

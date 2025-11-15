@@ -1,10 +1,13 @@
-package org.example.service;
+package org.example.service.impl;
 
 import java.math.BigDecimal;
 import org.example.model.Product;
 import org.example.model.Role;
 import org.example.model.User;
 import org.example.repository.UserRepository;
+import org.example.service.AuthService;
+import org.example.service.DataInitializer;
+import org.example.service.ProductService;
 import org.example.util.Passwords;
 
 public class DataInitializerImpl implements DataInitializer {
