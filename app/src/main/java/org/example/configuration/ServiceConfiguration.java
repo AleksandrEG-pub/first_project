@@ -9,6 +9,7 @@ import org.example.service.AuditServiceImpl;
 import org.example.service.AuthService;
 import org.example.service.AuthServiceImpl;
 import org.example.service.ProductSearchService;
+import org.example.service.ProductSearchServiceImpl;
 import org.example.service.ProductService;
 import org.example.service.ProductServiceImpl;
 import org.example.service.ProductValidator;
@@ -37,7 +38,7 @@ public abstract class ServiceConfiguration {
     this.authService = new AuthServiceImpl(userRepository, auditService);
     ProductValidator productValidator = new ProductValidatorImpl();
     ProductSearchService productSearchService =
-        new ProductSearchService(productRepository, productCache, auditService, authService);
+        new ProductSearchServiceImpl(productRepository, productCache, auditService, authService);
     this.productService =
         new ProductServiceImpl(
             productRepository,
