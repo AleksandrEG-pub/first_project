@@ -5,7 +5,6 @@ import org.example.model.Product;
 import org.example.model.Role;
 import org.example.model.User;
 import org.example.repository.UserRepository;
-import org.example.service.AuthService;
 import org.example.service.ProductService;
 
 public class DataInitializer {
@@ -88,7 +87,7 @@ public class DataInitializer {
 
   private static void createUser(
       String password, String username, Role role, UserRepository userRepository) {
-    String passwordHash = AuthService.hashPassword(password);
+    String passwordHash = Passwords.hashPassword(password);
     User user = new User(username, passwordHash, role);
     userRepository.save(user);
   }

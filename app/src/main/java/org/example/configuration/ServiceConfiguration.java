@@ -7,6 +7,7 @@ import org.example.repository.UserRepository;
 import org.example.service.AuditService;
 import org.example.service.AuditServiceImpl;
 import org.example.service.AuthService;
+import org.example.service.AuthServiceImpl;
 import org.example.service.ProductSearchService;
 import org.example.service.ProductService;
 import org.example.service.ProductValidator;
@@ -31,7 +32,7 @@ public abstract class ServiceConfiguration {
 
     ProductCache productCache = new ProductCache(PRODUCT_CACHE_SIZE);
     this.auditService = new AuditServiceImpl(auditRepository);
-    this.authService = new AuthService(userRepository, auditService);
+    this.authService = new AuthServiceImpl(userRepository, auditService);
     ProductValidator productValidator = new ProductValidator();
     ProductSearchService productSearchService =
         new ProductSearchService(productRepository, productCache, auditService, authService);

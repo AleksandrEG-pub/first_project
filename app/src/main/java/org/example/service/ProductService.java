@@ -59,7 +59,6 @@ public class ProductService {
   }
 
   public boolean deleteProduct(Long id) {
-    // Require ADMIN role for product deletions
     authService.requireAdmin();
     if (id == null) {
       return false;
@@ -120,7 +119,6 @@ public class ProductService {
   }
 
   public void clearCache() {
-    // Require ADMIN role for cache operations
     authService.requireAdmin();
     productCache.clear();
   }
