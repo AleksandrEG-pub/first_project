@@ -30,12 +30,12 @@ public class AuthService {
   private static final String PBKDF2_ALGORITHM = "PBKDF2WithHmacSHA256";
 
   private final UserRepository userRepository;
-  private final AuditService auditService;
+  private final AuditServiceImpl auditService;
   // Rate limiting: track failed login attempts per username
   private final Map<String, LoginAttempt> loginAttempts = new ConcurrentHashMap<>();
   private User currentUser;
 
-  public AuthService(UserRepository userRepository, AuditService auditService) {
+  public AuthService(UserRepository userRepository, AuditServiceImpl auditService) {
     this.userRepository = userRepository;
     this.auditService = auditService;
   }

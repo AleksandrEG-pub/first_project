@@ -1,26 +1,18 @@
 package org.example.service;
 
-import java.time.LocalDateTime;
 import org.example.model.AuditAction;
-import org.example.model.AuditLog;
-import org.example.repository.AuditRepository;
 
-public class AuditService {
-  private final AuditRepository auditRepository;
+/**
+* Actions related to auditing user activities.
+*/
+public interface AuditService {
 
-  public AuditService(AuditRepository auditRepository) {
-    this.auditRepository = auditRepository;
-  }
-
-  public void logAction(String username, AuditAction action, String details) {
-    if (username == null || action == null) {
-      return;
-    }
-    AuditLog auditLog = new AuditLog();
-    auditLog.setTimestamp(LocalDateTime.now());
-    auditLog.setUsername(username);
-    auditLog.setAction(action);
-    auditLog.setDetails(details);
-    auditRepository.save(auditLog);
-  }
+  /**
+   * Stores an audit log of a user action.
+   *
+   * @param username who performed the action
+   * @param action the action performed
+   * @param details arbitrary information about the action
+   */
+  void logAction(String username, AuditAction action, String details);
 }

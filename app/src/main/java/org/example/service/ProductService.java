@@ -10,7 +10,7 @@ import org.example.repository.ProductRepository;
 public class ProductService {
   private final ProductRepository productRepository;
   private final ProductCache productCache;
-  private final AuditService auditService;
+  private final AuditServiceImpl auditService;
   private final AuthService authService;
   private final ProductValidator productValidator;
   private final ProductSearchService productSearchService;
@@ -18,7 +18,7 @@ public class ProductService {
   public ProductService(
       ProductRepository productRepository,
       ProductCache productCache,
-      AuditService auditService,
+      AuditServiceImpl auditService,
       AuthService authService,
       ProductValidator productValidator,
       ProductSearchService productSearchService) {

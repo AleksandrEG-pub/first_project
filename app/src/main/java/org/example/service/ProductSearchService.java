@@ -10,13 +10,13 @@ import org.example.repository.ProductRepository;
 public class ProductSearchService {
   private final ProductRepository productRepository;
   private final ProductCache productCache;
-  private final AuditService auditService;
+  private final AuditServiceImpl auditService;
   private final AuthService authService;
 
   public ProductSearchService(
       ProductRepository productRepository,
       ProductCache productCache,
-      AuditService auditService,
+      AuditServiceImpl auditService,
       AuthService authService) {
     this.productRepository = productRepository;
     this.productCache = productCache;
