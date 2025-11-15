@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import org.example.console.ui.ConsoleUI;
 import org.example.console.handler.ProductHandler;
+import org.example.console.ui.ConsoleUI;
 import org.example.service.AuthService;
 
 public class ProductManagementMenu {
@@ -17,7 +17,8 @@ public class ProductManagementMenu {
   private final ProductHandler productHandler;
   private final AuthService authService;
 
-  public ProductManagementMenu(ConsoleUI consoleUI, ProductHandler productHandler, AuthService authService) {
+  public ProductManagementMenu(
+      ConsoleUI consoleUI, ProductHandler productHandler, AuthService authService) {
     this.consoleUI = consoleUI;
     this.productHandler = productHandler;
     this.authService = authService;

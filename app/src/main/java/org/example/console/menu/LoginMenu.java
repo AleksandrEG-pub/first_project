@@ -23,10 +23,12 @@ public class LoginMenu {
   public void show() {
     LinkedHashMap<String, MenuHandler> options = new LinkedHashMap<>();
     options.put("Login", loginHandler::handleLogin);
-    options.put("Exit", () -> {
-      shouldExit = true;
-      consoleUI.printMessage("Goodbye!");
-    });
+    options.put(
+        "Exit",
+        () -> {
+          shouldExit = true;
+          consoleUI.printMessage("Goodbye!");
+        });
 
     consoleUI.printMenu("Product Catalog - Login", new ArrayList<>(options.keySet()));
     int choice = consoleUI.readInt(SELECT_OPTION_MESSAGE);

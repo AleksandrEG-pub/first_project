@@ -3,7 +3,6 @@ package org.example.console.ui;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
-
 import org.example.console.menu.MenuRenderer;
 import org.example.model.AuditLog;
 import org.example.model.Product;
@@ -37,6 +36,10 @@ public class ConsoleUI {
     String formattedProduct = displayFormatter.formatProduct(product);
     io.printMessage(formattedProduct);
     io.printSeparator();
+  }
+
+  public void printMessage(String message) {
+    io.printMessage(message);
   }
 
   public void printMenu(String title, List<String> options) {
@@ -81,10 +84,6 @@ public class ConsoleUI {
 
   public long readLong(String prompt) {
     return inputHandler.readLong(prompt);
-  }
-
-  public void printMessage(String message) {
-    io.printMessage(message);
   }
 
   public Optional<Product> readProductData() {

@@ -3,7 +3,6 @@ package org.example.console.ui;
 import java.math.BigDecimal;
 import java.util.NoSuchElementException;
 import java.util.Optional;
-
 import org.example.exception.UserExitException;
 
 public class InputHandler {

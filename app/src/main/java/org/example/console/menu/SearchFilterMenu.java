@@ -3,8 +3,8 @@ package org.example.console.menu;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
-import org.example.console.ui.ConsoleUI;
 import org.example.console.handler.SearchHandler;
+import org.example.console.ui.ConsoleUI;
 
 public class SearchFilterMenu {
   private static final String INVALID_OPTION_MESSAGE = "Invalid option. Please try again.";

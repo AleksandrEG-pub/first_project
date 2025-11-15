@@ -2,7 +2,6 @@ package org.example.service;
 
 import java.util.List;
 import java.util.Optional;
-
 import org.example.cache.ProductCache;
 import org.example.model.AuditAction;
 import org.example.model.Product;
@@ -116,19 +115,16 @@ public class ProductSearchService {
     return message.toString();
   }
 
-
   public Optional<Product> findById(Long id) {
     if (id == null) {
       return Optional.empty();
     }
-    // Check cache first
     Product cached = productCache.get(id);
     if (cached != null) {
       String username = authService.getCurrentUser();
       auditService.logAction(username, AuditAction.VIEW_PRODUCT, "Viewed product (cached): " + id);
       return Optional.of(cached);
     }
-    // If not in cache, get from repository and cache it
     Optional<Product> productOpt = productRepository.findById(id);
     if (productOpt.isPresent()) {
       productCache.put(id, productOpt.orElse(null));

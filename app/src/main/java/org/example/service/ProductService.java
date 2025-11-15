@@ -2,7 +2,6 @@ package org.example.service;
 
 import java.util.List;
 import java.util.Optional;
-
 import org.example.cache.ProductCache;
 import org.example.model.AuditAction;
 import org.example.model.Product;
@@ -78,7 +77,7 @@ public class ProductService {
       auditService.logAction(
           username,
           AuditAction.DELETE_PRODUCT,
-              "Deleted product: " + id + " - " + product.get().getName());
+          "Deleted product: " + id + " - " + product.get().getName());
     }
 
     return deleted;
@@ -95,7 +94,8 @@ public class ProductService {
     if (existingOpt.isEmpty()) {
       throw new IllegalArgumentException("Product not found with ID: " + id);
     }
-    Product forUpdate = Product.builder(existingOpt.get())
+    Product forUpdate =
+        Product.builder(existingOpt.get())
             .name(newProductData.getName())
             .description(newProductData.getDescription())
             .category(newProductData.getCategory())

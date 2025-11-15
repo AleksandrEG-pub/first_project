@@ -19,9 +19,6 @@ public class ApplicationConfiguration {
   private final HandlerConfiguration handlers;
   private final MenuConfiguration menus;
 
-  /**
-   * Create a new application configuration.
-   */
   public ApplicationConfiguration(RepositoryType repositoryType) {
     this.ui = new UIConfiguration();
     DatabaseProperties databaseProperties = new DatabaseProperties();
@@ -40,7 +37,6 @@ public class ApplicationConfiguration {
     return ui;
   }
 
-  /** Initialize default data when the persistent store is empty. */
   public void initializeData() {
     if (services instanceof FileServiceConfiguration) {
       List<Product> allProducts = services.getProductService().getAllProducts();

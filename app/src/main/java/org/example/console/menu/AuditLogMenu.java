@@ -3,8 +3,8 @@ package org.example.console.menu;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
-import org.example.console.ui.ConsoleUI;
 import org.example.console.handler.AuditHandler;
+import org.example.console.ui.ConsoleUI;
 import org.example.exception.AccessDeniedException;
 import org.example.service.AuthService;
 
@@ -24,7 +24,6 @@ public class AuditLogMenu {
   }
 
   public void show() {
-    // Require ADMIN role to view audit logs
     try {
       authService.requireAdmin();
     } catch (AccessDeniedException e) {

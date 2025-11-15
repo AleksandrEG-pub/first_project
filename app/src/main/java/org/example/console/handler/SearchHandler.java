@@ -3,7 +3,6 @@ package org.example.console.handler;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
-
 import org.example.console.ui.ConsoleUI;
 import org.example.model.Product;
 import org.example.service.ProductService;
@@ -32,6 +31,15 @@ public class SearchHandler {
     String name = consoleUI.readString("Enter product name to search): ");
     SearchCriteria criteria = new SearchCriteria.Builder().name(name).build();
     findByCriteria(criteria);
+  }
+
+  private void findByCriteria(SearchCriteria criteria) {
+    try {
+      List<Product> results = productService.search(criteria);
+      consoleUI.displayProducts(results);
+    } catch (Exception e) {
+      consoleUI.printError("Error during search: " + e.getMessage());
+    }
   }
 
   public void handleFilterByCategory() {
@@ -84,14 +92,5 @@ public class SearchHandler {
     builder.maxPrice(maxPrice);
 
     findByCriteria(builder.build());
-  }
-
-  private void findByCriteria(SearchCriteria criteria) {
-    try {
-      List<Product> results = productService.search(criteria);
-      consoleUI.displayProducts(results);
-    } catch (Exception e) {
-      consoleUI.printError("Error during search: " + e.getMessage());
-    }
   }
 }

@@ -10,7 +10,6 @@ public class SearchCriteria {
   private final BigDecimal minPrice;
   private final BigDecimal maxPrice;
 
-  // Builder pattern implementation
   private SearchCriteria(Builder builder) {
     this.name = builder.name;
     this.category = builder.category;
@@ -31,7 +30,8 @@ public class SearchCriteria {
     if (this.category == null || this.category.trim().isEmpty()) {
       return true;
     }
-    return product.getCategory() != null && product.getCategory().equalsIgnoreCase(this.category.trim());
+    return product.getCategory() != null
+        && product.getCategory().equalsIgnoreCase(this.category.trim());
   }
 
   public boolean matchesBrand(Product product) {

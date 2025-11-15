@@ -8,23 +8,14 @@ import org.example.repository.UserRepository;
 import org.example.service.AuthService;
 import org.example.service.ProductService;
 
-/**
- * Helper that populates initial users and sample products when the application starts with an
- * empty store.
- */
 public class DataInitializer {
   private DataInitializer() {}
 
-  /**
-   * Initialize a small set of default users and sample products.
-   * This method is not safe to call on every startup.
-   */
   public static void initializeDefaultData(
       UserRepository userRepository, ProductService productService) {
     createUser("Admin123!", "admin", Role.ADMIN, userRepository);
     createUser("User123!", "user", Role.USER, userRepository);
 
-    // Add sample products (using internal method that bypasses auth for initialization)
     try {
       productService.addProductInternal(
           Product.builder()
@@ -90,21 +81,11 @@ public class DataInitializer {
               .brand("BrewMaster")
               .price(new BigDecimal("129.99"))
               .build());
-
     } catch (Exception e) {
-      // Ignore errors during initialization - products may already exist
       System.err.println("Warning: Could not initialize all sample products: " + e.getMessage());
     }
   }
 
-  /**
-   * Create and persist a user with a hashed password.
-   *
-   * @param password plain text password to hash
-   * @param username username to create
-   * @param role role to assign
-   * @param userRepository repository where the user will be saved
-   */
   private static void createUser(
       String password, String username, Role role, UserRepository userRepository) {
     String passwordHash = AuthService.hashPassword(password);

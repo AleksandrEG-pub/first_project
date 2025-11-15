@@ -45,7 +45,6 @@ public class AuthService {
       return false;
     }
 
-    // Check rate limiting
     if (isAccountLocked(username)) {
       auditService.logAction(
           username, AuditAction.LOGIN, "Login failed: account locked due to too many attempts");
@@ -59,7 +58,6 @@ public class AuthService {
       return false;
     }
 
-    // Verify password using PBKDF2
     if (!verifyPassword(password, user.getPasswordHash())) {
       recordFailedAttempt(username);
       auditService.logAction(username, AuditAction.LOGIN, "Login failed: invalid password");
@@ -73,30 +71,24 @@ public class AuthService {
     return true;
   }
 
-  /** Rate limiting: check if account is locked */
   private boolean isAccountLocked(String username) {
     LoginAttempt attempt = loginAttempts.get(username);
     if (attempt == null) {
       return false;
     }
-
-    // Check if lockout period has expired
     if (attempt.isLockoutExpired()) {
       loginAttempts.remove(username);
       return false;
     }
-
     return attempt.getCount() >= MAX_LOGIN_ATTEMPTS;
   }
 
-  /** Rate limiting: record failed login attempt */
   private void recordFailedAttempt(String username) {
     LoginAttempt attempt = loginAttempts.getOrDefault(username, new LoginAttempt());
     attempt.increment();
     loginAttempts.put(username, attempt);
   }
 
-  /** Verify password against PBKDF2 hash */
   private boolean verifyPassword(String password, String storedHash) {
     try {
       // Parse stored hash: format is salt:hash
@@ -104,10 +96,8 @@ public class AuthService {
       if (parts.length != 2) {
         return false;
       }
-
       byte[] salt = Base64.getDecoder().decode(parts[0]);
       byte[] storedHashBytes = Base64.getDecoder().decode(parts[1]);
-
       // Hash the provided password with the same salt
       PBEKeySpec spec = new PBEKeySpec(password.toCharArray(), salt, PBKDF2_ITERATIONS, KEY_LENGTH);
       SecretKeyFactory factory = SecretKeyFactory.getInstance(PBKDF2_ALGORITHM);
@@ -120,8 +110,7 @@ public class AuthService {
   }
 
   /**
-   * Hash password using PBKDF2 with salt (Java built-in, no external dependencies) Format:
-   * base64(salt):base64(hash)
+   * Format: base64(salt):base64(hash)
    */
   public static String hashPassword(String password) {
     if (password == null) {
@@ -129,17 +118,14 @@ public class AuthService {
     }
     validatePasswordComplexity(password);
     try {
-      // Generate random salt
       SecureRandom random = new SecureRandom();
       byte[] salt = new byte[SALT_LENGTH];
       random.nextBytes(salt);
 
-      // Hash password with PBKDF2
       PBEKeySpec spec = new PBEKeySpec(password.toCharArray(), salt, PBKDF2_ITERATIONS, KEY_LENGTH);
       SecretKeyFactory factory = SecretKeyFactory.getInstance(PBKDF2_ALGORITHM);
       byte[] hash = factory.generateSecret(spec).getEncoded();
 
-      // Encode salt and hash in base64, store as salt:hash
       String saltBase64 = Base64.getEncoder().encodeToString(salt);
       String hashBase64 = Base64.getEncoder().encodeToString(hash);
       return saltBase64 + ":" + hashBase64;
@@ -148,7 +134,6 @@ public class AuthService {
     }
   }
 
-  /** Validate password complexity requirements */
   public static void validatePasswordComplexity(String password) {
     if (password == null || password.length() < MIN_PASSWORD_LENGTH) {
       throw new PasswordValidationException(
@@ -158,7 +143,6 @@ public class AuthService {
     boolean hasLowerCase = false;
     boolean hasDigit = false;
     boolean hasSpecialChar = false;
-
     for (char c : password.toCharArray()) {
       if (Character.isUpperCase(c)) {
         hasUpperCase = true;
@@ -170,7 +154,6 @@ public class AuthService {
         hasSpecialChar = true;
       }
     }
-
     if (!hasUpperCase) {
       throw new PasswordValidationException("Password must contain at least one uppercase letter");
     }
@@ -185,7 +168,6 @@ public class AuthService {
     }
   }
 
-  /** Require ADMIN role, throw exception if not */
   public void requireAdmin() {
     if (!isAdmin()) {
       String username = currentUser != null ? currentUser.getUsername() : "anonymous";
@@ -194,7 +176,6 @@ public class AuthService {
     }
   }
 
-  /** Check if user has ADMIN role */
   public boolean isAdmin() {
     return isAuthenticated() && currentUser.getRole() == Role.ADMIN;
   }
@@ -219,7 +200,6 @@ public class AuthService {
     return ADMIN;
   }
 
-  /** Inner class to track login attempts */
   private static class LoginAttempt {
     private int count;
     private LocalDateTime lastAttempt;
