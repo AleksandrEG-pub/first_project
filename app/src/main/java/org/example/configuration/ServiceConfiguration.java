@@ -4,15 +4,14 @@ import org.example.cache.ProductCache;
 import org.example.repository.AuditRepository;
 import org.example.repository.ProductRepository;
 import org.example.repository.UserRepository;
-import org.example.service.AuditService;
-import org.example.service.impl.AuditServiceImpl;
 import org.example.service.AuthService;
-import org.example.service.impl.AuthServiceImpl;
 import org.example.service.ProductSearchService;
-import org.example.service.impl.ProductSearchServiceImpl;
 import org.example.service.ProductService;
-import org.example.service.impl.ProductServiceImpl;
 import org.example.service.ProductValidator;
+import org.example.service.impl.AuditServiceImpl;
+import org.example.service.impl.AuthServiceImpl;
+import org.example.service.impl.ProductSearchServiceImpl;
+import org.example.service.impl.ProductServiceImpl;
 import org.example.service.impl.ProductValidatorImpl;
 
 public abstract class ServiceConfiguration {
@@ -57,19 +56,11 @@ public abstract class ServiceConfiguration {
     return authService;
   }
 
-  public AuditService getAuditService() {
-    return auditService;
-  }
-
   public UserRepository getUserRepository() {
     return userRepository;
   }
 
   public AuditRepository getAuditRepository() {
     return auditRepository;
-  }
-
-  public ProductRepository getProductRepository() {
-    return productRepository;
   }
 }

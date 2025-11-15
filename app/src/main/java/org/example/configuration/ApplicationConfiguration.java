@@ -16,7 +16,6 @@ import org.example.service.impl.DataInitializerImpl;
 public class ApplicationConfiguration {
   private final ServiceConfiguration services;
   private final UIConfiguration ui;
-  private final HandlerConfiguration handlers;
   private final MenuConfiguration menus;
 
   public ApplicationConfiguration(RepositoryType repositoryType) {
@@ -26,10 +25,12 @@ public class ApplicationConfiguration {
     switch (repositoryType) {
       case IN_MEMORY -> this.services = new InMemoryServiceConfiguration();
       case FILE -> this.services = new FileServiceConfiguration(ui.getConsoleUI());
-      case DATABASE -> this.services = new DatabaseServiceConfiguration(ui.getConsoleUI(), connectionManager);
-      default -> throw new IllegalArgumentException("Unsupported repository type: " + repositoryType);
+      case DATABASE ->
+          this.services = new DatabaseServiceConfiguration(ui.getConsoleUI(), connectionManager);
+      default ->
+          throw new IllegalArgumentException("Unsupported repository type: " + repositoryType);
     }
-    this.handlers = new HandlerConfiguration(services, ui);
+    HandlerConfiguration handlers = new HandlerConfiguration(services, ui);
     this.menus = new MenuConfiguration(services, ui, handlers);
   }
 
@@ -44,8 +45,8 @@ public class ApplicationConfiguration {
         new DataInitializerImpl(
                 services.getUserRepository(),
                 services.getProductService(),
-                services.getAuthService()
-        ).initializeDefaultData();
+                services.getAuthService())
+            .initializeDefaultData();
       } else {
         allProducts.stream()
             .mapToLong(Product::getId)
