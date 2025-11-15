@@ -1,5 +1,6 @@
 package org.example.exception;
 
+/** Thrown for any data access related exceptions */
 public class DataAccessException extends RuntimeException {
   public DataAccessException(String message) {
     super(message);
