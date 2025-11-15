@@ -10,6 +10,7 @@ import org.example.service.AuthService;
 import org.example.service.AuthServiceImpl;
 import org.example.service.ProductSearchService;
 import org.example.service.ProductService;
+import org.example.service.ProductServiceImpl;
 import org.example.service.ProductValidator;
 import org.example.service.ProductValidatorImpl;
 
@@ -38,7 +39,7 @@ public abstract class ServiceConfiguration {
     ProductSearchService productSearchService =
         new ProductSearchService(productRepository, productCache, auditService, authService);
     this.productService =
-        new ProductService(
+        new ProductServiceImpl(
             productRepository,
             productCache,
             auditService,

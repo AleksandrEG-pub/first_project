@@ -4,7 +4,7 @@ import java.util.List;
 import org.example.model.Product;
 import org.example.repository.impl.database.ConnectionManager;
 import org.example.repository.impl.file.FileProductRepository;
-import org.example.util.DataInitializer;
+import org.example.service.DataInitializerImpl;
 
 /**
  * Central application configuration and lifecycle coordinator.
@@ -41,8 +41,11 @@ public class ApplicationConfiguration {
     if (services instanceof FileServiceConfiguration) {
       List<Product> allProducts = services.getProductService().getAllProducts();
       if (allProducts.isEmpty()) {
-        DataInitializer.initializeDefaultData(
-            services.getUserRepository(), services.getProductService());
+        new DataInitializerImpl(
+                services.getUserRepository(),
+                services.getProductService(),
+                services.getAuthService()
+        ).initializeDefaultData();
       } else {
         allProducts.stream()
             .mapToLong(Product::getId)
