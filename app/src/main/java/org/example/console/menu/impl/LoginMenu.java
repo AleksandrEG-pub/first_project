@@ -1,12 +1,15 @@
-package org.example.console.menu;
+package org.example.console.menu.impl;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
-import org.example.console.ui.ConsoleUI;
-import org.example.console.handler.LoginHandler;
 
-public class LoginMenu {
+import org.example.console.menu.Menu;
+import org.example.console.handler.MenuHandler;
+import org.example.console.ui.ConsoleUI;
+import org.example.console.handler.impl.LoginHandler;
+
+public class LoginMenu implements Menu {
   private static final String INVALID_OPTION_MESSAGE = "Invalid option. Please try again.";
   private static final String SELECT_OPTION_MESSAGE = "Select an option: ";
 

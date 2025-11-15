@@ -1,7 +1,7 @@
 package org.example.console.ui;
 
-import org.example.console.menu.LoginMenu;
-import org.example.console.menu.MainMenu;
+import org.example.console.menu.impl.LoginMenu;
+import org.example.console.menu.impl.MainMenu;
 import org.example.exception.UserExitException;
 import org.example.service.AuthService;
 

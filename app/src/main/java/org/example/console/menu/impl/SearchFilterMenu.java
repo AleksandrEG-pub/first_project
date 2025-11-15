@@ -1,42 +1,37 @@
-package org.example.console.menu;
+package org.example.console.menu.impl;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
-import org.example.console.handler.AuditHandler;
+import org.example.console.handler.impl.SearchHandler;
+import org.example.console.menu.Menu;
+import org.example.console.handler.MenuHandler;
 import org.example.console.ui.ConsoleUI;
-import org.example.exception.AccessDeniedException;
-import org.example.service.AuthService;
 
-public class AuditLogMenu {
+public class SearchFilterMenu implements Menu {
   private static final String INVALID_OPTION_MESSAGE = "Invalid option. Please try again.";
   private static final String SELECT_OPTION_MESSAGE = "Select an option: ";
   private static final String BACK_TO_MAIN_MENU_MESSAGE = "Back to Main Menu";
 
   private final ConsoleUI consoleUI;
-  private final AuditHandler auditHandler;
-  private final AuthService authService;
+  private final SearchHandler searchHandler;
 
-  public AuditLogMenu(ConsoleUI consoleUI, AuditHandler auditHandler, AuthService authService) {
+  public SearchFilterMenu(ConsoleUI consoleUI, SearchHandler searchHandler) {
     this.consoleUI = consoleUI;
-    this.auditHandler = auditHandler;
-    this.authService = authService;
+    this.searchHandler = searchHandler;
   }
 
   public void show() {
-    try {
-      authService.requireAdmin();
-    } catch (AccessDeniedException e) {
-      consoleUI.printError(e.getMessage());
-      return;
-    }
-
     LinkedHashMap<String, MenuHandler> options = new LinkedHashMap<>();
-    options.put("View All Audit Logs", auditHandler::handleViewAllAuditLogs);
-    options.put("View Audit Logs by Username", auditHandler::handleViewAuditLogsByUsername);
+    options.put("Search by Id", searchHandler::handleSearchById);
+    options.put("Search by Name", searchHandler::handleSearchByName);
+    options.put("Filter by Category", searchHandler::handleFilterByCategory);
+    options.put("Filter by Brand", searchHandler::handleFilterByBrand);
+    options.put("Filter by Price Range", searchHandler::handleFilterByPriceRange);
+    options.put("Combined Filters", searchHandler::handleCombinedFilters);
     options.put(BACK_TO_MAIN_MENU_MESSAGE, () -> {}); // Back to main menu - no action
 
-    consoleUI.printMenu("Audit Log (Admin Only)", new ArrayList<>(options.keySet()));
+    consoleUI.printMenu("Search & Filter", new ArrayList<>(options.keySet()));
     int choice = consoleUI.readInt(SELECT_OPTION_MESSAGE);
 
     List<MenuHandler> handlers = new ArrayList<>(options.values());

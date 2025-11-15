@@ -3,7 +3,7 @@ package org.example.console.ui;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
-import org.example.console.menu.MenuRenderer;
+
 import org.example.model.AuditLog;
 import org.example.model.Product;
 

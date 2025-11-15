@@ -1,4 +1,4 @@
-package org.example.console.handler;
+package org.example.console.handler.impl;
 
 import java.util.List;
 import org.example.console.ui.ConsoleUI;

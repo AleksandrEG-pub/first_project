@@ -1,10 +1,10 @@
 package org.example.configuration;
 
-import org.example.console.menu.AuditLogMenu;
-import org.example.console.menu.LoginMenu;
-import org.example.console.menu.MainMenu;
-import org.example.console.menu.ProductManagementMenu;
-import org.example.console.menu.SearchFilterMenu;
+import org.example.console.menu.impl.AuditLogMenu;
+import org.example.console.menu.impl.LoginMenu;
+import org.example.console.menu.impl.MainMenu;
+import org.example.console.menu.impl.ProductManagementMenu;
+import org.example.console.menu.impl.SearchFilterMenu;
 import org.example.console.ui.MenuController;
 
 public class MenuConfiguration {

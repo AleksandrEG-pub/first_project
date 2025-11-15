@@ -1,8 +1,6 @@
-package org.example.console.menu;
+package org.example.console.ui;
 
 import java.util.List;
-import org.example.console.ui.ConsoleIO;
-import org.example.console.ui.DisplayFormatter;
 
 public class MenuRenderer {
   private final ConsoleIO io;

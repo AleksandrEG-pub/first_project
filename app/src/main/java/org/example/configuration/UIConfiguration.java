@@ -1,6 +1,6 @@
 package org.example.configuration;
 
-import org.example.console.menu.MenuRenderer;
+import org.example.console.ui.MenuRenderer;
 import org.example.console.ui.ConsoleIO;
 import org.example.console.ui.ConsoleUI;
 import org.example.console.ui.DisplayFormatter;

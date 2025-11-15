@@ -1,4 +1,4 @@
-package org.example.console.handler;
+package org.example.console.handler.impl;
 
 import org.example.console.ui.ConsoleUI;
 import org.example.service.AuthService;
