@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
 import org.example.console.ui.ConsoleUI;
-import org.example.exception.PersistenceException;
+import org.example.exception.DataAccessException;
 
 public abstract class BaseFileRepository {
   protected final File file;
@@ -54,7 +54,7 @@ public abstract class BaseFileRepository {
       CsvUtils.ensureParentDirectoryExists(file);
       return Files.readAllLines(file.toPath(), StandardCharsets.UTF_8);
     } catch (IOException e) {
-      throw new PersistenceException("Failed to read from file: " + file.getAbsolutePath(), e);
+      throw new DataAccessException("Failed to read from file: " + file.getAbsolutePath(), e);
     }
   }
 
@@ -68,7 +68,7 @@ public abstract class BaseFileRepository {
           StandardOpenOption.CREATE,
           StandardOpenOption.TRUNCATE_EXISTING);
     } catch (IOException e) {
-      throw new PersistenceException("Failed to write to file: " + file.getAbsolutePath(), e);
+      throw new DataAccessException("Failed to write to file: " + file.getAbsolutePath(), e);
     }
   }
 }
