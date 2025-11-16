@@ -10,6 +10,14 @@ repositories {
 dependencies {
     implementation("org.liquibase:liquibase-core:4.30.0")
     implementation("org.postgresql:postgresql:42.7.8")
+
+    testImplementation("org.testcontainers:testcontainers:2.0.2")
+    testImplementation("org.testcontainers:postgresql:1.21.3")
+    testImplementation(platform("org.junit:junit-bom:6.0.1"))
+    testImplementation("org.junit.jupiter:junit-jupiter")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter")
+    testImplementation("org.assertj:assertj-core:3.24.2")
+    testImplementation("org.assertj:assertj-core:4.0.0-M1")
 }
 
 java {
