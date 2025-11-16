@@ -442,12 +442,6 @@ class ProductServiceImplTest {
 
     // Then
     verify(productRepository)
-        .save(
-            argThat(
-                product ->
-                    product != inputProduct
-                        && // Should be a different instance
-                        product.getId() == null // Should not have ID before save
-                ));
+        .save(argThat(product -> product != inputProduct && product.getId() == null));
   }
 }

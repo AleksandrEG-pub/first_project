@@ -8,7 +8,7 @@ import org.example.repository.UserRepository;
 import org.example.service.AuthService;
 import org.example.service.DataInitializer;
 import org.example.service.ProductService;
-import org.example.util.Passwords;
+import org.example.util.PasswordsImpl;
 
 public class DataInitializerImpl implements DataInitializer {
   private final UserRepository userRepository;
@@ -42,7 +42,7 @@ public class DataInitializerImpl implements DataInitializer {
 
   private void createUser(
       String password, String username, Role role, UserRepository userRepository) {
-    String passwordHash = Passwords.hashPassword(password);
+    String passwordHash = new PasswordsImpl().hashPassword(password);
     User user = new User(username, passwordHash, role);
     userRepository.save(user);
   }
