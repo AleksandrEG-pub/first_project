@@ -8,7 +8,6 @@ import java.util.Optional;
 
 /**
  * Repository abstraction for managing Product entities.
- *
  * Implementations provide basic CRUD operations and queries for Product domain objects.
  * Implementations are expected to persist data to the configured storage (in-memory, file or
  * database) and to be used by service layer components.

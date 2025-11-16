@@ -17,7 +17,7 @@ public abstract class BaseCacheImpl<K, V> implements Cache<K, V> {
   }
 
   protected Map<K, V> createCacheMap() {
-    return new LinkedHashMap<K, V>(16, 0.75f, true) {
+    return new LinkedHashMap<>(16, 0.75f, true) {
       @Override
       protected boolean removeEldestEntry(Map.Entry<K, V> eldest) {
         return size() > maxSize;

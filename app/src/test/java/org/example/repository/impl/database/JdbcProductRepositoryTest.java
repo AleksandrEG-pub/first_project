@@ -10,7 +10,7 @@ import org.example.exception.DataAccessException;
 import org.example.model.Product;
 import org.junit.jupiter.api.Test;
 
-public class JdbcProductRepositoryTest extends BaseRepositoryTest {
+class JdbcProductRepositoryTest extends BaseRepositoryTest {
   private JdbcProductRepository productRepository;
 
   @Override

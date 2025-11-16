@@ -16,7 +16,7 @@ public abstract class BaseRepositoryTest {
   final ConsoleUI consoleUI = Mockito.mock(ConsoleUI.class);
 
   @Container
-  private final PostgreSQLContainer<?> postgreSQLContainer =
+  private final PostgreSQLContainer postgreSQLContainer =
       new PostgreSQLContainer("postgres:17.5");
 
   ConnectionManager connectionManager;

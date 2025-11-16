@@ -13,7 +13,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 
 class ProductValidatorImplTest {
 
-  private ProductValidator productValidator = new ProductValidatorImpl();
+  private final ProductValidator productValidator = new ProductValidatorImpl();
 
   @Test
   void validateProductData_ShouldNotThrowException_WhenProductIsValid() {

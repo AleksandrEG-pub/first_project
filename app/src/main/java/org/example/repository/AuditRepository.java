@@ -5,7 +5,6 @@ import org.example.model.AuditLog;
 
 /**
  * Repository abstraction for recording audit events and actions.
- *
  * This repository is append-oriented: implementations persist audit records that describe
  * significant application events (user actions, data changes, system events).
  */
