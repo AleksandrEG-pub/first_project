@@ -29,17 +29,21 @@ echo $JAVA_HOME
 - Run using start.sh or start-in-memory.sh scripts:
 
 ```bash
-# Run with file based repository
-start.sh
+# Run with database repository
+start-with-database.sh
 
 # Run with in-memory repository
 start-in-memory.sh
+
+# Run with in-memory repository
+start-with-file.sh
 ```
 
 ## Features
 - Console-based UI (CLI) with menu-driven interactions.
-- File-based persistence of users, products, and audit logs by default (stored in project working directory / `data/` files).
-- In-memory mode available for ephemeral runs (pass `--in-memory=true`).
+- File-based persistence of users, products, and audit logs by default (stored in project working directory / `data/` files) Option: --repository-type=file 
+- In-memory mode available for ephemeral runs (pass `--repository-type=in-memory`).
+- Database persistence available with option: `--repository-type=database`
 - Simple authentication and authorization (roles: ADMIN, USER).
 - Product management (add, list, search) and basic audit logging.
 
@@ -68,6 +72,7 @@ Not authenticated users can not perform any actions, except log in attempts
 - Main entry: `app/src/main/java/org/example/App.java`
 - App configuration and startup: `app/src/main/java/org/example/configuration/ApplicationConfiguration.java`
 - Data initializer: `app/src/main/java/org/example/util/DataInitializer.java`
+- Liquibase configuration: `app/src/main/java/org/example/configuration/LiquibaseConfiguration.java`
 - Service wiring: `app/src/main/java/org/example/configuration/ServiceConfiguration.java`
 - Repositories and services: `app/src/main/java/org/example/repository` and `.../service`
 
