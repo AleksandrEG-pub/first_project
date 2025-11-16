@@ -7,9 +7,7 @@ import java.util.List;
 import org.example.model.AuditAction;
 import org.example.model.AuditLog;
 import org.junit.jupiter.api.Test;
-import org.testcontainers.junit.jupiter.Testcontainers;
 
-@Testcontainers
 class JdbcAuditRepositoryTest extends BaseRepositoryTest {
 
   private JdbcAuditRepository auditRepository;

@@ -3,6 +3,7 @@ databaseChangeLog:
       id: 1
       author: developer
       comment: add users data
+      context: "!test"
       changes:
         - loadData:
             tableName: users

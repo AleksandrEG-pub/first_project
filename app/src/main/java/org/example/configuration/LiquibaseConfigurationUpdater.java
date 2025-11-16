@@ -24,7 +24,7 @@ public class LiquibaseConfigurationUpdater {
       this.liquibaseConfiguration = liquibaseConfiguration;
   }
 
-  public void runDatabaseUpdate() {
+  public void runDatabaseUpdate(String context) {
     try (Connection connection =
         DriverManager.getConnection(
             liquibaseConfiguration.getUrl(),
@@ -41,7 +41,7 @@ public class LiquibaseConfigurationUpdater {
               liquibaseConfiguration.getChangelogFile(),
               new ClassLoaderResourceAccessor(),
               database);
-      liquibase.update();
+      liquibase.update(context);
     } catch (LiquibaseException | SQLException e) {
       consoleUI.printError("Failed to update database: " + e.getMessage());
       throw new InitializationException(e);

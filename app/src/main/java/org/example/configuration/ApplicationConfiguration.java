@@ -59,7 +59,7 @@ public class ApplicationConfiguration {
       LiquibaseConfiguration liquibaseConfiguration =
           new LiquibaseConfiguration.Builder().fromEnvironment().build();
       new LiquibaseConfigurationUpdater(ui.getConsoleUI(), liquibaseConfiguration)
-          .runDatabaseUpdate();
+          .runDatabaseUpdate("production");
     }
   }
 
