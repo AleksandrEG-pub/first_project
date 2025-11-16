@@ -46,6 +46,7 @@ start-with-file.sh
 - Database persistence available with option: `--repository-type=database`
 - Simple authentication and authorization (roles: ADMIN, USER).
 - Product management (add, list, search) and basic audit logging.
+- configuration for database and migrations passed using file, which supplied to application as an argument --file=/path/to/file. By default it is a file application.env in project root. 
 
 ## Present initialization data
 On first run (or when storage is empty), the application initializes default data automatically. 

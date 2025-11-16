@@ -32,7 +32,6 @@ public class EnvDatabaseProperties implements DatabaseProperties {
     }
   }
 
-  // Getters
   public String getUrl() {
     return url;
   }

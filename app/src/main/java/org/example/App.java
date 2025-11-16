@@ -18,6 +18,8 @@ public class App {
    * persistence files to disk file - persistence is written to files to disk in directory ./data
    * database - persistence based on SQL database
    *
+   * Configuration file specified with --file=/path/to/file
+   *
    * @param args runtime arguments
    */
   public static void main(String[] args) {
