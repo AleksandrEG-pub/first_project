@@ -10,6 +10,7 @@ import java.util.List;
 import org.example.exception.DataAccessException;
 import org.example.model.AuditLog;
 import org.example.repository.AuditRepository;
+import org.example.repository.impl.database.mapper.AuditLogResultMapper;
 
 public class JdbcAuditRepository implements AuditRepository {
   private static final String INSERT_SQL =

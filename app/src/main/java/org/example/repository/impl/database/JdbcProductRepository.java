@@ -12,6 +12,7 @@ import java.util.Optional;
 import org.example.exception.DataAccessException;
 import org.example.model.Product;
 import org.example.repository.ProductRepository;
+import org.example.repository.impl.database.mapper.ProductResultMapper;
 
 public class JdbcProductRepository implements ProductRepository {
 

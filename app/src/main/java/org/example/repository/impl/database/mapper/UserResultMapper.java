@@ -1,4 +1,4 @@
-package org.example.repository.impl.database;
+package org.example.repository.impl.database.mapper;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;

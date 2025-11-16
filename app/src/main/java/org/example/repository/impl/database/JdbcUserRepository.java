@@ -8,6 +8,7 @@ import java.sql.Statement;
 import org.example.exception.DataAccessException;
 import org.example.model.User;
 import org.example.repository.UserRepository;
+import org.example.repository.impl.database.mapper.UserResultMapper;
 
 public class JdbcUserRepository implements UserRepository {
 
