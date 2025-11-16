@@ -1,5 +1,6 @@
 package org.example.configuration;
 
+import org.example.console.ui.ConsoleUIImpl;
 import org.example.console.ui.MenuRenderer;
 import org.example.console.ui.ConsoleIO;
 import org.example.console.ui.ConsoleUI;
@@ -17,7 +18,7 @@ public class UIConfiguration {
     InputHandler inputHandler = new InputHandler(consoleIO);
     ProductInputHandler productInputHandler = new ProductInputHandler(inputHandler, consoleIO);
     this.consoleUI =
-        new ConsoleUI(consoleIO, inputHandler, displayFormatter, menuRenderer, productInputHandler);
+        new ConsoleUIImpl(consoleIO, inputHandler, displayFormatter, menuRenderer, productInputHandler);
   }
 
   public ConsoleUI getConsoleUI() {
