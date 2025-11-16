@@ -5,24 +5,36 @@ import org.example.model.Product;
 import org.example.service.ProductValidator;
 
 public class ProductValidatorImpl implements ProductValidator {
+  private static final int MAX_NAME_LENGTH = 255;
+  private static final int MAX_DESCRIPTION_LENGTH = 10000;
+  private static final int MAX_CATEGORY_LENGTH = 255;
+  private static final int MAX_BRAND_LENGTH = 255;
+  private static final BigDecimal MIN_PRICE = new BigDecimal("0.01");
+
   @Override
   public void validateProductData(Product product) {
-    if (product.getName() == null || product.getName().trim().isEmpty()) {
-      throw new IllegalArgumentException("Product name cannot be null or empty");
+    validateField(product.getName(), "name", MAX_NAME_LENGTH);
+    validateField(product.getDescription(), "description", MAX_DESCRIPTION_LENGTH);
+    validateField(product.getCategory(), "category", MAX_CATEGORY_LENGTH);
+    validateField(product.getBrand(), "brand", MAX_BRAND_LENGTH);
+    validatePrice(product.getPrice());
+  }
+
+  private void validateField(String value, String fieldName, int maxLength) {
+    if (value == null || value.trim().isEmpty()) {
+      throw new IllegalArgumentException("Product " + fieldName + " cannot be null or empty");
     }
-    if (product.getDescription() == null || product.getDescription().trim().isEmpty()) {
-      throw new IllegalArgumentException("Product description cannot be null or empty");
+    if (value.length() >= maxLength) {
+      throw new IllegalArgumentException(
+          "Product " + fieldName + " cannot be longer than " + maxLength);
     }
-    if (product.getCategory() == null || product.getCategory().trim().isEmpty()) {
-      throw new IllegalArgumentException("Product category cannot be null or empty");
-    }
-    if (product.getBrand() == null || product.getBrand().trim().isEmpty()) {
-      throw new IllegalArgumentException("Product brand cannot be null or empty");
-    }
-    if (product.getPrice() == null) {
+  }
+
+  private void validatePrice(BigDecimal price) {
+    if (price == null) {
       throw new IllegalArgumentException("Product price cannot be null");
     }
-    if (product.getPrice().compareTo(BigDecimal.ZERO) <= 0) {
+    if (price.compareTo(MIN_PRICE) < 0) {
       throw new IllegalArgumentException("Product price must be greater than zero");
     }
   }
