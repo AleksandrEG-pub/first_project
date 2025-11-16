@@ -1,73 +1,22 @@
 package org.example.repository.impl.database;
 
-import org.example.configuration.DatabaseProperties;
-import org.example.configuration.LiquibaseConfiguration;
-import org.example.configuration.LiquibaseConfigurationUpdater;
-import org.example.console.ui.ConsoleUI;
-import org.example.model.AuditAction;
-import org.example.model.AuditLog;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
-import org.testcontainers.containers.PostgreSQLContainer;
-import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.junit.jupiter.Testcontainers;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.LocalDateTime;
 import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
+import org.example.model.AuditAction;
+import org.example.model.AuditLog;
+import org.junit.jupiter.api.Test;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
 @Testcontainers
-class JdbcAuditRepositoryTest {
+class JdbcAuditRepositoryTest extends BaseRepositoryTest {
 
-  @Container
-  private final PostgreSQLContainer<?> postgreSQLContainer =
-      new PostgreSQLContainer("postgres:17.5");
-
-  private final ConsoleUI consoleUI = Mockito.mock(ConsoleUI.class);
-  private ConnectionManager connectionManager;
   private JdbcAuditRepository auditRepository;
 
-  @BeforeEach
-  void setUp() {
-    String appScheme = "test_app";
-    String jdbcUrl = postgreSQLContainer.getJdbcUrl() + "&currentSchema=" + appScheme;
-    String username = postgreSQLContainer.getUsername();
-    String password = postgreSQLContainer.getPassword();
-    DatabaseProperties databaseProperties = getDatabaseProperties(jdbcUrl, username, password);
-    connectionManager = new ConnectionManager(databaseProperties);
+  @Override
+  void setupBeforeEach() {
     auditRepository = new JdbcAuditRepository(connectionManager);
-    LiquibaseConfiguration liquibaseConfiguration =
-        new LiquibaseConfiguration.Builder()
-            .withUrl(databaseProperties.getUrl())
-            .withUsername(databaseProperties.getUser())
-            .withPassword(databaseProperties.getPassword())
-            .withApplicationScheme(appScheme)
-            .withLiquibaseScheme("test_liquibase")
-            .withChangelogFile("db/changelog/db.changelog-master.yaml")
-            .build();
-    new LiquibaseConfigurationUpdater(consoleUI, liquibaseConfiguration).runDatabaseUpdate();
-  }
-
-  private DatabaseProperties getDatabaseProperties(
-      String jdbcUrl, String username, String password) {
-    return new DatabaseProperties() {
-      @Override
-      public String getUrl() {
-        return jdbcUrl;
-      }
-
-      @Override
-      public String getUser() {
-        return username;
-      }
-
-      @Override
-      public String getPassword() {
-        return password;
-      }
-    };
   }
 
   @Test
@@ -85,6 +34,15 @@ class JdbcAuditRepositoryTest {
     assertThat(savedAuditLog.getAction()).isEqualTo(AuditAction.LOGIN);
     assertThat(savedAuditLog.getDetails()).isEqualTo("User logged in from IP 192.168.1.1");
     assertThat(savedAuditLog.getTimestamp()).isEqualTo(auditLog.getTimestamp());
+  }
+
+  private AuditLog createTestAuditLog(String username, AuditAction action, String details) {
+    AuditLog auditLog = new AuditLog();
+    auditLog.setTimestamp(LocalDateTime.now());
+    auditLog.setUsername(username);
+    auditLog.setAction(action);
+    auditLog.setDetails(details);
+    return auditLog;
   }
 
   @Test
@@ -159,15 +117,6 @@ class JdbcAuditRepositoryTest {
 
     // Then
     assertThat(logs).isEmpty();
-  }
-
-  private AuditLog createTestAuditLog(String username, AuditAction action, String details) {
-    AuditLog auditLog = new AuditLog();
-    auditLog.setTimestamp(LocalDateTime.now());
-    auditLog.setUsername(username);
-    auditLog.setAction(action);
-    auditLog.setDetails(details);
-    return auditLog;
   }
 
 }
