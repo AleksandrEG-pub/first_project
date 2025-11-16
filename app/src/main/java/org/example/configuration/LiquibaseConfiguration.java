@@ -89,11 +89,12 @@ public class LiquibaseConfiguration {
     }
 
     public Builder fromEnvironment() {
-      this.url = System.getenv("YLAB_PROJECT_POSTGRES_URL");
-      this.username = System.getenv("YLAB_PROJECT_POSTGRES_USER");
-      this.password = System.getenv("YLAB_PROJECT_POSTGRES_PASSWORD");
-      this.liquibaseScheme = System.getenv("YLAB_PROJECT_LIQUIBASE_SCHEME");
-      this.applicationScheme = System.getenv("YLAB_PROJECT_APPLICATION_SCHEME");
+      this.url = System.getProperty("YLAB_PROJECT_POSTGRES_URL");
+      this.username = System.getProperty("YLAB_PROJECT_POSTGRES_USER");
+      this.password = System.getProperty("YLAB_PROJECT_POSTGRES_PASSWORD");
+      this.liquibaseScheme = System.getProperty("YLAB_PROJECT_LIQUIBASE_SCHEME");
+      this.applicationScheme = System.getProperty("YLAB_PROJECT_APPLICATION_SCHEME");
+
       return this;
     }
 

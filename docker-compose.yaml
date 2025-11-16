@@ -7,7 +7,6 @@ services:
     ports:
       - "10350:5432"
     env_file:
-      - path: "./application.env"
       - path: "./database.env"
     volumes:
       - database-data:/var/lib/postgresql/data

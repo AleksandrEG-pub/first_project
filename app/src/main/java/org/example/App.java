@@ -1,27 +1,28 @@
 package org.example;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Set;
 import java.util.stream.Collectors;
-
 import org.example.configuration.ApplicationConfiguration;
+import org.example.configuration.PropertiesFileReader;
 import org.example.configuration.RepositoryType;
+import org.example.exception.InitializationException;
 import org.example.exception.UserExitException;
 
 /** Application entry point. */
 public class App {
   /**
-   * Main entry.
-   * Accepts optional arguments; currently recognizes
-   * --repository-type=[in-memory|file|database]
-   * in-memory - will run the app without writing persistence files to disk
-   * file - persistence is written to files to disk in directory ./data
+   * Main entry. Accepts optional arguments; currently recognizes
+   * --repository-type=[in-memory|file|database] in-memory - will run the app without writing
+   * persistence files to disk file - persistence is written to files to disk in directory ./data
    * database - persistence based on SQL database
    *
    * @param args runtime arguments
    */
   public static void main(String[] args) {
     RepositoryType repositoryType = getRepositoryType(args);
+    setConfigurationLocation(args);
     ApplicationConfiguration appConfig = new ApplicationConfiguration(repositoryType);
     try {
       appConfig.initializeData();
@@ -49,6 +50,21 @@ public class App {
       repositoryType = RepositoryType.IN_MEMORY;
     }
     return repositoryType;
+  }
+
+  public static void setConfigurationLocation(String[] args) {
+    for (String arg : args) {
+      if (arg.startsWith("--file=")) {
+        String[] parts = arg.split("=", 2);
+        if (parts.length == 2 && !parts[1].trim().isEmpty()) {
+          try {
+            PropertiesFileReader.readEnvFile(parts[1].trim());
+          } catch (IOException e) {
+            throw new InitializationException("failed to read configuration file");
+          }
+        }
+      }
+    }
   }
 
   /**
