@@ -1,5 +1,6 @@
 package org.example.configuration;
 
+import java.util.stream.Stream;
 import org.example.exception.InitializationException;
 
 public class EnvDatabaseProperties implements DatabaseProperties {
@@ -12,11 +13,23 @@ public class EnvDatabaseProperties implements DatabaseProperties {
     String scheme = System.getenv("YLAB_PROJECT_APPLICATION_SCHEME");
     user = System.getenv("YLAB_PROJECT_POSTGRES_USER");
     password = System.getenv("YLAB_PROJECT_POSTGRES_PASSWORD");
-    if (baseUrl == null || scheme == null || user == null || password == null) {
-      throw new InitializationException(
-          "Incorrect database configurations in environment variables");
-    }
+    validateProperties(baseUrl, scheme);
     url = "%s?currentSchema=%s".formatted(baseUrl, scheme);
+  }
+
+  private void validateProperties(String baseUrl, String scheme) {
+    Stream.of(baseUrl, scheme, user, password)
+        .filter(this::isNullOfEmpty)
+        .findAny()
+        .ifPresent(
+            s -> {
+              throw new InitializationException(
+                  "Incorrect database configurations in environment variables");
+            });
+  }
+
+  private boolean isNullOfEmpty(String value) {
+    return value == null || value.isBlank();
   }
 
   @Override

@@ -4,8 +4,11 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
 
-public abstract class BaseCacheImpl<K, V> implements Cache<K,V> {
+public abstract class BaseCacheImpl<K, V> implements Cache<K, V> {
+  /** cache entries storage */
   protected final Map<K, V> cache;
+
+  /** maximum number of entries in cache after maximum is reached, eldest entries removed */
   protected final int maxSize;
 
   protected BaseCacheImpl(int maxSize) {
