@@ -7,11 +7,11 @@ import org.example.repository.impl.database.JdbcProductRepository;
 import org.example.repository.impl.database.JdbcUserRepository;
 
 public class DatabaseServiceConfiguration extends ServiceConfiguration {
-  public DatabaseServiceConfiguration(ConsoleUI consoleUI, ConnectionManager connectionManager) {
+  public DatabaseServiceConfiguration(ConsoleUI consoleUI, ConnectionManager connectionManager, LiquibaseConfiguration liquibaseConfiguration) {
     super(
         new JdbcProductRepository(connectionManager),
         new JdbcUserRepository(connectionManager),
         new JdbcAuditRepository(connectionManager));
-    new LiquibaseConfiguration(consoleUI).runDatabaseUpdate();
+    new LiquibaseConfigurationUpdater(consoleUI, liquibaseConfiguration).runDatabaseUpdate();
   }
 }

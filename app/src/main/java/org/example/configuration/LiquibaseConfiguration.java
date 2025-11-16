@@ -1,70 +1,117 @@
 package org.example.configuration;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-import java.sql.Statement;
-
-import liquibase.Liquibase;
-import liquibase.database.Database;
-import liquibase.database.DatabaseFactory;
-import liquibase.database.jvm.JdbcConnection;
-import liquibase.exception.LiquibaseException;
-import liquibase.resource.ClassLoaderResourceAccessor;
-import org.example.console.ui.ConsoleUI;
 import org.example.exception.InitializationException;
 
 public class LiquibaseConfiguration {
+    private final String changelogFile;
+    private final String url;
+    private final String username;
+    private final String password;
+    private final String liquibaseScheme;
+    private final String applicationScheme;
 
-  private static final String CHANGELOG_FILE = "db/changelog/db.changelog-master.yaml";
-  private static final String URL = System.getenv("YLAB_PROJECT_POSTGRES_URL");
-  private static final String USER = System.getenv("YLAB_PROJECT_POSTGRES_USER");
-  private static final String PASSWORD = System.getenv("YLAB_PROJECT_POSTGRES_PASSWORD");
-  private static final String LIQUIBASE_SCHEME = System.getenv("YLAB_PROJECT_LIQUIBASE_SCHEME");
-  private static final String APPLICATION_SCHEME = System.getenv("YLAB_PROJECT_APPLICATION_SCHEME");
-
-  private final ConsoleUI consoleUI;
-
-  public LiquibaseConfiguration(ConsoleUI consoleUI) {
-    this.consoleUI = consoleUI;
-  }
-
-  public void runDatabaseUpdate() {
-    if (URL == null || USER == null || PASSWORD == null) {
-      throw new IllegalStateException("Database configuration environment variables are not set");
+    private LiquibaseConfiguration(Builder builder) {
+        this.changelogFile = builder.changelogFile;
+        this.url = builder.url;
+        this.username = builder.username;
+        this.password = builder.password;
+        this.liquibaseScheme = builder.liquibaseScheme;
+        this.applicationScheme = builder.applicationScheme;
     }
-    validateScheme(LIQUIBASE_SCHEME);
-    validateScheme(APPLICATION_SCHEME);
-    consoleUI.printMessage("Connecting to database: " + URL);
-    try (Connection connection = DriverManager.getConnection(URL, USER, PASSWORD)) {
-      createSchemas(connection);
-      Database database =
-          DatabaseFactory.getInstance()
-              .findCorrectDatabaseImplementation(new JdbcConnection(connection));
-      database.setLiquibaseSchemaName(LIQUIBASE_SCHEME);
-      database.setDefaultSchemaName(APPLICATION_SCHEME);
-      Liquibase liquibase =
-          new Liquibase(CHANGELOG_FILE, new ClassLoaderResourceAccessor(), database);
-      liquibase.update();
-      consoleUI.printMessage("Database updated successfully");
-    } catch (LiquibaseException | SQLException e) {
-      consoleUI.printError("Failed to update database: " + e.getMessage());
-      throw new InitializationException(e);
-    }
-  }
 
-  private static void validateScheme(String scheme) {
-    if (!scheme.matches("[a-zA-Z_]{0,20}")) {
-      throw new IllegalArgumentException("Invalid schema name");
+    public String getUrl() {
+        return url;
     }
-  }
 
-  private void createSchemas(Connection connection) throws SQLException {
-    try (Statement stmt = connection.createStatement()) {
-      stmt.executeUpdate("CREATE SCHEMA IF NOT EXISTS " + LIQUIBASE_SCHEME);
+    public String getPassword() {
+        return password;
     }
-    try (Statement stmt = connection.createStatement()) {
-      stmt.executeUpdate("CREATE SCHEMA IF NOT EXISTS " + APPLICATION_SCHEME);
+
+    public String getUsername() {
+        return username;
     }
-  }
+
+    public String getApplicationScheme() {
+        return applicationScheme;
+    }
+
+    public String getChangelogFile() {
+        return changelogFile;
+    }
+
+    public String getLiquibaseScheme() {
+        return liquibaseScheme;
+    }
+
+    public static class Builder {
+        private String changelogFile = "db/changelog/db.changelog-master.yaml";
+        private String url;
+        private String username;
+        private String password;
+        private String liquibaseScheme = "public";
+        private String applicationScheme = "public";
+
+        public Builder withChangelogFile(String changelogFile) {
+            this.changelogFile = changelogFile;
+            return this;
+        }
+
+        public Builder withUrl(String url) {
+            this.url = url;
+            return this;
+        }
+
+        public Builder withUsername(String username) {
+            this.username = username;
+            return this;
+        }
+
+        public Builder withPassword(String password) {
+            this.password = password;
+            return this;
+        }
+
+        public Builder withLiquibaseScheme(String scheme) {
+            this.liquibaseScheme = scheme;
+            return this;
+        }
+
+        public Builder withApplicationScheme(String scheme) {
+            this.applicationScheme = scheme;
+            return this;
+        }
+
+        public Builder fromEnvironment() {
+            this.url = System.getenv("YLAB_PROJECT_POSTGRES_URL");
+            this.username = System.getenv("YLAB_PROJECT_POSTGRES_USER");
+            this.password = System.getenv("YLAB_PROJECT_POSTGRES_PASSWORD");
+            this.liquibaseScheme = System.getenv("YLAB_PROJECT_LIQUIBASE_SCHEME");
+            this.applicationScheme = System.getenv("YLAB_PROJECT_APPLICATION_SCHEME");
+            return this;
+        }
+
+        public LiquibaseConfiguration build() {
+            validateProperty(changelogFile, "changelogFile must be provided");
+            validateProperty(url, "url must be provided");
+            validateProperty(username, "username must be provided");
+            validateProperty(password, "password must be provided");
+            validateProperty(liquibaseScheme, "liquibaseScheme must be provided");
+            validateProperty(applicationScheme, "applicationScheme must be provided");
+            validateScheme(liquibaseScheme);
+            validateScheme(applicationScheme);
+            return new LiquibaseConfiguration(this);
+        }
+
+        private void validateProperty(String property, String message) {
+            if (property == null || property.isBlank()) {
+                throw new InitializationException(message);
+            }
+        }
+
+        private void validateScheme(String scheme) {
+            if (!scheme.matches("[a-zA-Z_]{0,20}")) {
+                throw new InitializationException("Invalid schema name");
+            }
+        }
+    }
 }
