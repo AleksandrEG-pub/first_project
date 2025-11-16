@@ -20,7 +20,7 @@ public class ApplicationConfiguration {
 
   public ApplicationConfiguration(RepositoryType repositoryType) {
     this.ui = new UIConfiguration();
-    DatabaseProperties databaseProperties = new DatabaseProperties();
+    DatabaseProperties databaseProperties = new EnvDatabaseProperties();
     ConnectionManager connectionManager = new ConnectionManager(databaseProperties);
     switch (repositoryType) {
       case IN_MEMORY -> this.services = new InMemoryServiceConfiguration();
