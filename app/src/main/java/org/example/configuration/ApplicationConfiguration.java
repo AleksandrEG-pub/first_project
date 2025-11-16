@@ -1,6 +1,8 @@
 package org.example.configuration;
 
 import java.util.List;
+
+import org.example.exception.InitializationException;
 import org.example.model.Product;
 import org.example.repository.impl.database.ConnectionManager;
 import org.example.repository.impl.file.FileProductRepository;
@@ -22,14 +24,12 @@ public class ApplicationConfiguration {
     this.ui = new UIConfiguration();
     DatabaseProperties databaseProperties = new EnvDatabaseProperties();
     ConnectionManager connectionManager = new ConnectionManager(databaseProperties);
-    LiquibaseConfiguration liquibaseConfiguration = new LiquibaseConfiguration.Builder().fromEnvironment().build();
     switch (repositoryType) {
       case IN_MEMORY -> this.services = new InMemoryServiceConfiguration();
       case FILE -> this.services = new FileServiceConfiguration(ui.getConsoleUI());
-      case DATABASE ->
-          this.services = new DatabaseServiceConfiguration(ui.getConsoleUI(), connectionManager, liquibaseConfiguration);
+      case DATABASE -> this.services = new DatabaseServiceConfiguration(connectionManager);
       default ->
-          throw new IllegalArgumentException("Unsupported repository type: " + repositoryType);
+          throw new InitializationException("Unsupported repository type: " + repositoryType);
     }
     HandlerConfiguration handlers = new HandlerConfiguration(services, ui);
     this.menus = new MenuConfiguration(services, ui, handlers);
@@ -54,6 +54,12 @@ public class ApplicationConfiguration {
             .max()
             .ifPresent(maxId -> FileProductRepository.updateCounter(maxId + 1));
       }
+    }
+    if (services instanceof DatabaseServiceConfiguration) {
+      LiquibaseConfiguration liquibaseConfiguration =
+          new LiquibaseConfiguration.Builder().fromEnvironment().build();
+      new LiquibaseConfigurationUpdater(ui.getConsoleUI(), liquibaseConfiguration)
+          .runDatabaseUpdate();
     }
   }
 
