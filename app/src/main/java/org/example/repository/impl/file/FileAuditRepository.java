@@ -38,6 +38,7 @@ public class FileAuditRepository extends BaseFileRepository implements AuditRepo
   private String toCsvLine(AuditLog log) {
     return String.join(
         ",",
+        CsvUtils.escapeCsv(log.getId().toString()),
         CsvUtils.escapeCsv(log.getTimestamp() != null ? log.getTimestamp().toString() : ""),
         CsvUtils.escapeCsv(log.getUsername()),
         CsvUtils.escapeCsv(log.getAction() != null ? log.getAction().name() : ""),

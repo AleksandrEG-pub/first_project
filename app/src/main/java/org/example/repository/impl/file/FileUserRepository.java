@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 import org.example.console.ui.ConsoleUI;
+import org.example.exception.InitializationException;
 import org.example.model.Role;
 import org.example.model.User;
 import org.example.repository.UserRepository;
@@ -33,7 +34,9 @@ public class FileUserRepository extends BaseFileRepository implements UserReposi
 
   private User parseCsvLine(String line) {
     String[] cols = CsvUtils.splitCsv(line);
-    if (cols.length < 3) return new User();
+    if (cols.length != 4) {
+      throw new InitializationException("incorrect format of data file, must be 4 columns");
+    }
 
     User user = new User();
     user.setId(Long.parseLong(cols[0]));
@@ -69,10 +72,12 @@ public class FileUserRepository extends BaseFileRepository implements UserReposi
           boolean updated = false;
 
           for (String line : lines) {
-            if (line.trim().isEmpty()) continue;
+            if (line.trim().isEmpty()) {
+              continue;
+            }
 
             User existing = parseCsvLine(line);
-            if (user.getUsername().equals(existing.getUsername())) {
+            if (user.getId().equals(existing.getId())) {
               newLines.add(toCsvLine(user));
               updated = true;
             } else {
@@ -92,6 +97,7 @@ public class FileUserRepository extends BaseFileRepository implements UserReposi
   private String toCsvLine(User user) {
     return String.join(
         ",",
+        CsvUtils.escapeCsv(user.getId().toString()),
         CsvUtils.escapeCsv(user.getUsername()),
         CsvUtils.escapeCsv(user.getPasswordHash()),
         CsvUtils.escapeCsv(user.getRole() == null ? "" : user.getRole().name()));

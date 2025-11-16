@@ -22,12 +22,14 @@ public class ApplicationConfiguration {
 
   public ApplicationConfiguration(RepositoryType repositoryType) {
     this.ui = new UIConfiguration();
-    DatabaseProperties databaseProperties = new EnvDatabaseProperties();
-    ConnectionManager connectionManager = new ConnectionManager(databaseProperties);
     switch (repositoryType) {
       case IN_MEMORY -> this.services = new InMemoryServiceConfiguration();
       case FILE -> this.services = new FileServiceConfiguration(ui.getConsoleUI());
-      case DATABASE -> this.services = new DatabaseServiceConfiguration(connectionManager);
+      case DATABASE -> {
+        DatabaseProperties databaseProperties = new EnvDatabaseProperties();
+        ConnectionManager connectionManager = new ConnectionManager(databaseProperties);
+        this.services = new DatabaseServiceConfiguration(connectionManager);
+      }
       default ->
           throw new InitializationException("Unsupported repository type: " + repositoryType);
     }
@@ -40,7 +42,7 @@ public class ApplicationConfiguration {
   }
 
   public void initializeData() {
-    if (services instanceof FileServiceConfiguration) {
+    if (services instanceof FileServiceConfiguration || services instanceof InMemoryServiceConfiguration) {
       List<Product> allProducts = services.getProductService().getAllProducts();
       if (allProducts.isEmpty()) {
         new DataInitializerImpl(
