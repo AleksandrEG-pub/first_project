@@ -15,8 +15,7 @@ dependencies {
     testImplementation("org.testcontainers:testcontainers-junit-jupiter:2.0.2")
     testImplementation("org.testcontainers:postgresql:1.21.3")
 
-    testImplementation(platform("org.junit:junit-bom:6.0.1"))
-    testImplementation("org.junit.jupiter:junit-jupiter")
+    testImplementation("org.junit.jupiter:junit-jupiter:5.8.1")
 
     testImplementation("org.assertj:assertj-core:4.0.0-M1")
     testImplementation("org.mockito:mockito-core:5.20.0")
