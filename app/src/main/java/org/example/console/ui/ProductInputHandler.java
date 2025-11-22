@@ -31,7 +31,8 @@ public class ProductInputHandler {
       consoleIO.printError("Price cannot be negative.");
       return Optional.empty();
     }
-    return Optional.ofNullable(Product.builder()
+    return Optional.ofNullable(
+        Product.builder()
             .name(name)
             .description(description)
             .category(category)

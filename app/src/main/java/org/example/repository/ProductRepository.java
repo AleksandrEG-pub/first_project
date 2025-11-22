@@ -6,14 +6,20 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Repository abstraction for managing Product entities.
+ * Implementations provide basic CRUD operations and queries for Product domain objects.
+ * Implementations are expected to persist data to the configured storage (in-memory, file or
+ * database) and to be used by service layer components.
+ */
 public interface ProductRepository {
   Product save(Product product);
 
-  Optional<Product> findById(String id);
+  Optional<Product> findById(Long id);
 
   List<Product> findAll();
 
-  boolean delete(String id);
+  boolean delete(Long id);
 
   List<Product> searchByName(String name);
 

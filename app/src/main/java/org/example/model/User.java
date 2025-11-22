@@ -3,6 +3,7 @@ package org.example.model;
 import java.util.Objects;
 
 public class User {
+  private Long id;
   private String username;
   private String passwordHash;
   private Role role;
@@ -10,9 +11,17 @@ public class User {
   public User() {}
 
   public User(String username, String passwordHash, Role role) {
-    this.username = username;
+      this.username = username;
     this.passwordHash = passwordHash;
     this.role = role;
+  }
+
+  public Long getId() {
+    return id;
+  }
+
+  public void setId(Long id) {
+    this.id = id;
   }
 
   public String getUsername() {

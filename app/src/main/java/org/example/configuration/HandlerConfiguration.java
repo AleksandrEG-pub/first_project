@@ -1,9 +1,9 @@
 package org.example.configuration;
 
-import org.example.console.handler.AuditHandler;
-import org.example.console.handler.LoginHandler;
-import org.example.console.handler.ProductHandler;
-import org.example.console.handler.SearchHandler;
+import org.example.console.handler.impl.AuditHandler;
+import org.example.console.handler.impl.LoginHandler;
+import org.example.console.handler.impl.ProductHandler;
+import org.example.console.handler.impl.SearchHandler;
 
 public class HandlerConfiguration {
   private final ProductHandler productHandler;

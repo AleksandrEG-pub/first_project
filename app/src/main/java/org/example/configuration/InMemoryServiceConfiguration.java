@@ -1,8 +1,8 @@
 package org.example.configuration;
 
-import org.example.repository.InMemoryAuditRepository;
-import org.example.repository.InMemoryProductRepository;
-import org.example.repository.InMemoryUserRepository;
+import org.example.repository.impl.in_memory.InMemoryAuditRepository;
+import org.example.repository.impl.in_memory.InMemoryProductRepository;
+import org.example.repository.impl.in_memory.InMemoryUserRepository;
 
 public class InMemoryServiceConfiguration extends ServiceConfiguration {
 

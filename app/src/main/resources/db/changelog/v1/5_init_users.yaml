@@ -1,0 +1,11 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1
+      author: developer
+      comment: add users data
+      context: "!test"
+      changes:
+        - loadData:
+            tableName: users
+            file: db/changelog/data/users.csv
+            separator: ","

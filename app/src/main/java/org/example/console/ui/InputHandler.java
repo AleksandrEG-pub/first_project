@@ -3,7 +3,6 @@ package org.example.console.ui;
 import java.math.BigDecimal;
 import java.util.NoSuchElementException;
 import java.util.Optional;
-
 import org.example.exception.UserExitException;
 
 public class InputHandler {
@@ -18,6 +17,19 @@ public class InputHandler {
       try {
         String input = io.readString(prompt);
         return Integer.parseInt(input);
+      } catch (NumberFormatException e) {
+        io.printError("Invalid input. Please enter a number.");
+      } catch (NoSuchElementException e) {
+        throw new UserExitException("Input closed", e);
+      }
+    }
+  }
+
+  public long readLong(String prompt) {
+    while (true) {
+      try {
+        String input = io.readString(prompt);
+        return Long.parseLong(input);
       } catch (NumberFormatException e) {
         io.printError("Invalid input. Please enter a number.");
       } catch (NoSuchElementException e) {

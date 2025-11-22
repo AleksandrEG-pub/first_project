@@ -1,0 +1,15 @@
+name: first-project
+
+services:
+  database:
+    image: postgres:17.5
+    restart: unless-stopped
+    ports:
+      - "10350:5432"
+    env_file:
+      - path: "./database.env"
+    volumes:
+      - database-data:/var/lib/postgresql/data
+
+volumes:
+  database-data:
