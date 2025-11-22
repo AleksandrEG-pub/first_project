@@ -4,6 +4,10 @@ import java.util.List;
 import java.util.Optional;
 
 import org.example.cache.Cache;
+import org.example.dto.ProductForm;
+import org.example.exception.ResourceNotFoundException;
+import org.example.exception.ValidationException;
+import org.example.mapper.ProductMapper;
 import org.example.model.AuditAction;
 import org.example.model.Product;
 import org.example.repository.ProductRepository;
@@ -14,6 +18,7 @@ import org.example.service.ProductValidator;
 import org.example.service.SearchCriteria;
 
 public class ProductServiceImpl implements ProductService {
+  private static final ProductMapper PRODUCT_MAPPER = ProductMapper.INSTANCE;
   private final ProductRepository productRepository;
   private final Cache<Long, Product> productCache;
   private final AuditServiceImpl auditService;
@@ -63,14 +68,14 @@ public class ProductServiceImpl implements ProductService {
   }
 
   @Override
-  public boolean deleteProduct(Long id) {
+  public void deleteProduct(Long id) {
     authService.requireAdmin();
     if (id == null) {
-      return false;
+      throw new ValidationException("id can not be null");
     }
     Optional<Product> product = productRepository.findById(id);
     if (product.isEmpty()) {
-      return false;
+      throw new ResourceNotFoundException("product", String.valueOf(id));
     }
 
     boolean deleted = productRepository.delete(id);
@@ -82,18 +87,19 @@ public class ProductServiceImpl implements ProductService {
           username,
           AuditAction.DELETE_PRODUCT,
           "Deleted product: " + id + " - " + product.get().getName());
+    } else {
+      throw new ResourceNotFoundException("product", String.valueOf(id));
     }
-
-    return deleted;
   }
 
   @Override
-  public Product updateProduct(Long id, Product newProductData) {
+  public Product updateProduct(Long id, ProductForm newProductData) {
     authService.requireAdmin();
     if (id == null) {
       throw new IllegalArgumentException("Product ID cannot be null");
     }
-    productValidator.validateProductData(newProductData);
+    Product product = PRODUCT_MAPPER.toProduct(newProductData);
+    productValidator.validateProductData(product);
 
     Optional<Product> existingOpt = findById(id);
     if (existingOpt.isEmpty()) {
@@ -129,5 +135,11 @@ public class ProductServiceImpl implements ProductService {
   public void clearCache() {
     authService.requireAdmin();
     productCache.clear();
+  }
+
+  @Override
+  public Product create(ProductForm productForm) {
+    Product product = PRODUCT_MAPPER.toProduct(productForm);
+    return addProduct(product);
   }
 }

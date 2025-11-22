@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import org.example.model.Product;
 
 public class SearchCriteria {
+  private final Long id;
   private final String name;
   private final String category;
   private final String brand;
@@ -11,11 +12,16 @@ public class SearchCriteria {
   private final BigDecimal maxPrice;
 
   private SearchCriteria(Builder builder) {
+    this.id = builder.id;
     this.name = builder.name;
     this.category = builder.category;
     this.brand = builder.brand;
     this.minPrice = builder.minPrice;
     this.maxPrice = builder.maxPrice;
+  }
+
+  public boolean matchesId(Product product) {
+    return product.getId() != null && product.getId().equals(this.id);
   }
 
   public boolean matchesName(Product product) {
@@ -73,7 +79,8 @@ public class SearchCriteria {
   }
 
   public boolean isEmpty() {
-    return name == null
+    return id == null
+        && name == null
         && category == null
         && brand == null
         && minPrice == null
@@ -81,11 +88,17 @@ public class SearchCriteria {
   }
 
   public static class Builder {
+    private Long id;
     private String name;
     private String category;
     private String brand;
     private BigDecimal minPrice;
     private BigDecimal maxPrice;
+
+    public Builder id(Long id) {
+      this.id = id;
+      return this;
+    }
 
     public Builder name(String name) {
       this.name = name;

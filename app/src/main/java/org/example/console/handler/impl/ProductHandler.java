@@ -2,9 +2,11 @@ package org.example.console.handler.impl;
 
 import java.util.List;
 import java.util.Optional;
-
 import org.example.console.ui.ConsoleUI;
+import org.example.dto.ProductForm;
 import org.example.exception.AccessDeniedException;
+import org.example.exception.ResourceNotFoundException;
+import org.example.exception.ValidationException;
 import org.example.model.Product;
 import org.example.service.ProductService;
 
@@ -46,7 +48,8 @@ public class ProductHandler {
       consoleUI.displayProduct(existing.orElse(null));
 
       Product updatedProduct = consoleUI.readProductDataForUpdate(existing.orElse(null));
-      Product updated = productService.updateProduct(id, updatedProduct);
+      ProductForm productForm = ProductForm.fromProduct(updatedProduct);
+      Product updated = productService.updateProduct(id, productForm);
       consoleUI.printMessage("Product updated successfully!");
       consoleUI.displayProduct(updated);
     } catch (AccessDeniedException | IllegalArgumentException e) {
@@ -69,11 +72,12 @@ public class ProductHandler {
 
     if ("yes".equalsIgnoreCase(confirm)) {
       try {
-        if (productService.deleteProduct(id)) {
-          consoleUI.printMessage("Product deleted successfully!");
-        } else {
-          consoleUI.printError("Failed to delete product.");
-        }
+        productService.deleteProduct(id);
+        consoleUI.printMessage("Product deleted successfully!");
+      } catch (ResourceNotFoundException e) {
+        consoleUI.printError("Failed to delete product. " + e.getMessage());
+      } catch (ValidationException e) {
+        consoleUI.printError("Failed to delete product." + e.getMessage());
       } catch (AccessDeniedException e) {
         consoleUI.printError(e.getMessage());
       }

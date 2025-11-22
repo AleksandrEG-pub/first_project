@@ -5,6 +5,8 @@ import org.example.exception.ApplicationException;
 import org.example.repository.impl.database.ConnectionManager;
 import org.example.web.configuration.EnvironmentServerConfigurationProperties;
 import org.example.web.configuration.ServerConfiguration;
+import org.example.web.configuration.ServletMapping;
+import org.example.web.configuration.ServletMappingImpl;
 
 /**
  * Central application configuration and lifecycle coordinator.
@@ -16,11 +18,12 @@ import org.example.web.configuration.ServerConfiguration;
 public class ApplicationConfiguration {
   private final UIConfiguration ui;
   private final MenuConfiguration menus;
+  private final ServiceConfiguration services;
 
   public ApplicationConfiguration() {
     DatabaseProperties databaseProperties = new EnvDatabaseProperties();
     ConnectionManager connectionManager = new ConnectionManager(databaseProperties);
-    ServiceConfiguration services = new DatabaseServiceConfiguration(connectionManager);
+    services = new DatabaseServiceConfiguration(connectionManager);
 
     this.ui = new UIConfiguration();
     HandlerConfiguration handlers = new HandlerConfiguration(services, ui);
@@ -31,6 +34,10 @@ public class ApplicationConfiguration {
     return ui;
   }
 
+  public ServiceConfiguration getServices() {
+    return services;
+  }
+
   public void initializeData() {
     LiquibaseConfiguration liquibaseConfiguration =
         new LiquibaseConfiguration.Builder().fromEnvironment().build();
@@ -38,9 +45,11 @@ public class ApplicationConfiguration {
         .runDatabaseUpdate("production");
   }
 
-  public void startServer() {
+  public void startServer(ServiceConfiguration services) {
     EnvironmentServerConfigurationProperties serverConfigurationProperties = new EnvironmentServerConfigurationProperties();
-    ServerConfiguration serverConfiguration = new ServerConfiguration(serverConfigurationProperties);
+    ServletMapping servletMapping = new ServletMappingImpl(services.getProductService());
+    ServerConfiguration serverConfiguration = new ServerConfiguration(serverConfigurationProperties,
+            servletMapping);
       try {
           serverConfiguration.startServer();
       } catch (LifecycleException e) {

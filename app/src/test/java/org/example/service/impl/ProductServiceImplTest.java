@@ -14,7 +14,12 @@ import static org.mockito.Mockito.when;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
+
+import org.assertj.core.api.Assertions;
 import org.example.cache.Cache;
+import org.example.dto.ProductForm;
+import org.example.exception.ResourceNotFoundException;
+import org.example.exception.ValidationException;
 import org.example.model.AuditAction;
 import org.example.model.Product;
 import org.example.repository.ProductRepository;
@@ -163,10 +168,10 @@ class ProductServiceImplTest {
     doNothing().when(authService).requireAdmin();
 
     // When
-    boolean result = productService.deleteProduct(null);
+    Assertions.assertThatThrownBy(() -> productService.deleteProduct(null))
+            .isInstanceOf(ValidationException.class);
 
     // Then
-    assertThat(result).isFalse();
     verify(productRepository, never()).findById(any());
     verify(productRepository, never()).delete(any());
   }
@@ -179,10 +184,10 @@ class ProductServiceImplTest {
     when(productRepository.findById(productId)).thenReturn(Optional.empty());
 
     // When
-    boolean result = productService.deleteProduct(productId);
+    Assertions.assertThatThrownBy(() -> productService.deleteProduct(productId))
+            .isInstanceOf(ResourceNotFoundException.class);
 
     // Then
-    assertThat(result).isFalse();
     verify(productRepository).findById(productId);
     verify(productRepository, never()).delete(productId);
     verify(productCache, never()).remove(any());
@@ -201,11 +206,9 @@ class ProductServiceImplTest {
     when(authService.getCurrentUser()).thenReturn(username);
 
     // When
-    boolean result = productService.deleteProduct(productId);
+    productService.deleteProduct(productId);
 
     // Then
-    assertThat(result).isTrue();
-
     verify(productRepository).findById(productId);
     verify(productRepository).delete(productId);
     verify(productCache).remove(productId);
@@ -224,10 +227,9 @@ class ProductServiceImplTest {
     when(productRepository.delete(productId)).thenReturn(false);
 
     // When
-    boolean result = productService.deleteProduct(productId);
-
+    Assertions.assertThatThrownBy(() -> productService.deleteProduct(productId))
+            .isInstanceOf(ResourceNotFoundException.class);
     // Then
-    assertThat(result).isFalse();
     verify(productCache, never()).remove(productId);
     verify(auditService, never()).logAction(any(), any(), any());
   }
@@ -248,7 +250,7 @@ class ProductServiceImplTest {
     when(authService.getCurrentUser()).thenReturn(username);
 
     // When
-    Product result = productService.updateProduct(productId, newProductData);
+    Product result = productService.updateProduct(productId, ProductForm.fromProduct(newProductData));
 
     // Then
     assertThat(result).isEqualTo(updatedProduct);
@@ -292,10 +294,11 @@ class ProductServiceImplTest {
   void updateProduct_ShouldThrowException_WhenIdIsNull() {
     // Given
     Product newProductData = createUpdatedTestProduct();
+    ProductForm productForm = ProductForm.fromProduct(newProductData);
     doNothing().when(authService).requireAdmin();
 
     // When & Then
-    assertThatThrownBy(() -> productService.updateProduct(null, newProductData))
+    assertThatThrownBy(() -> productService.updateProduct(null, productForm))
         .isInstanceOf(IllegalArgumentException.class)
         .hasMessage("Product ID cannot be null");
 
@@ -308,13 +311,14 @@ class ProductServiceImplTest {
     // Given
     Long productId = 999L;
     Product newProductData = createUpdatedTestProduct();
+    ProductForm productForm = ProductForm.fromProduct(newProductData);
 
     doNothing().when(authService).requireAdmin();
     doNothing().when(productValidator).validateProductData(newProductData);
     when(productSearchService.findById(productId)).thenReturn(Optional.empty());
 
     // When & Then
-    assertThatThrownBy(() -> productService.updateProduct(productId, newProductData))
+    assertThatThrownBy(() -> productService.updateProduct(productId, productForm))
         .isInstanceOf(IllegalArgumentException.class)
         .hasMessage("Product not found with ID: 999");
 
@@ -326,10 +330,11 @@ class ProductServiceImplTest {
     // Given
     Long productId = 1L;
     Product newProductData = createUpdatedTestProduct();
+    ProductForm productForm = ProductForm.fromProduct(newProductData);
     doThrow(new SecurityException("Admin access required")).when(authService).requireAdmin();
 
     // When & Then
-    assertThatThrownBy(() -> productService.updateProduct(productId, newProductData))
+    assertThatThrownBy(() -> productService.updateProduct(productId, productForm))
         .isInstanceOf(SecurityException.class)
         .hasMessage("Admin access required");
 
@@ -342,6 +347,7 @@ class ProductServiceImplTest {
     // Given
     Long productId = 1L;
     Product newProductData = createUpdatedTestProduct();
+    ProductForm productForm = ProductForm.fromProduct(newProductData);
     Product existingProduct = createTestProduct(productId);
 
     doNothing().when(authService).requireAdmin();
@@ -351,7 +357,7 @@ class ProductServiceImplTest {
     when(productSearchService.findById(productId)).thenReturn(Optional.of(existingProduct));
 
     // When & Then
-    assertThatThrownBy(() -> productService.updateProduct(productId, newProductData))
+    assertThatThrownBy(() -> productService.updateProduct(productId, productForm))
         .isInstanceOf(IllegalArgumentException.class)
         .hasMessage("Invalid product data");
 
@@ -414,7 +420,7 @@ class ProductServiceImplTest {
     when(authService.getCurrentUser()).thenReturn("admin");
 
     // When
-    Product result = productService.updateProduct(productId, newProductData);
+    Product result = productService.updateProduct(productId, ProductForm.fromProduct(newProductData));
 
     // Then
     assertThat(result.getId()).isEqualTo(productId);

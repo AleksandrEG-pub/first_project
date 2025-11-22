@@ -7,15 +7,15 @@ import org.apache.catalina.startup.Tomcat;
 import org.apache.tomcat.util.descriptor.web.FilterDef;
 import org.apache.tomcat.util.descriptor.web.FilterMap;
 import org.example.web.filter.AuthorizationFilter;
-import org.example.web.servlet.AuditServlet;
-import org.example.web.servlet.AuthenticationServlet;
-import org.example.web.servlet.ProductServlet;
 
 public class ServerConfiguration {
   private final ServerConfigurationProperties serverConfigurationProperties;
+  private final ServletMapping servletMapping;
 
-  public ServerConfiguration(ServerConfigurationProperties serverConfigurationProperties) {
+  public ServerConfiguration(
+      ServerConfigurationProperties serverConfigurationProperties, ServletMapping servletMapping) {
     this.serverConfigurationProperties = serverConfigurationProperties;
+    this.servletMapping = servletMapping;
   }
 
   public void startServer() throws LifecycleException {
@@ -27,9 +27,9 @@ public class ServerConfiguration {
     tomcat.setBaseDir(baseDir);
 
     Context ctx = tomcat.addContext("", null);
-    addServlet(ctx, "/products", new ProductServlet());
-    addServlet(ctx, "/audits", new AuditServlet());
-    addServlet(ctx, "/auth", new AuthenticationServlet());
+    servletMapping
+        .getServletMapping()
+        .forEach((path, httpServlet) -> addServlet(ctx, path, httpServlet));
 
     // Add filters
     addAuthFilter(ctx);
@@ -39,13 +39,13 @@ public class ServerConfiguration {
     tomcat.getServer().await();
   }
 
-  private static void addServlet(Context ctx, String pathPattern, HttpServlet servlet) {
+  private void addServlet(Context ctx, String pathPattern, HttpServlet servlet) {
     String servletName = servlet.getClass().getSimpleName();
     Tomcat.addServlet(ctx, servletName, servlet);
     ctx.addServletMappingDecoded(pathPattern, servletName);
   }
 
-  private static void addAuthFilter(Context ctx) {
+  private void addAuthFilter(Context ctx) {
     FilterDef filterDef = new FilterDef();
     filterDef.setFilterClass(AuthorizationFilter.class.getName());
     String authorizationFilter = "authorizationFilter";

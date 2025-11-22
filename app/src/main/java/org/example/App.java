@@ -22,7 +22,7 @@ public class App {
     ApplicationConfiguration appConfig = new ApplicationConfiguration();
     try {
       appConfig.initializeData();
-      appConfig.startServer();
+      appConfig.startServer(appConfig.getServices());
       appConfig.start();
     } catch (UserExitException e) {
       handleUserExit(appConfig);
