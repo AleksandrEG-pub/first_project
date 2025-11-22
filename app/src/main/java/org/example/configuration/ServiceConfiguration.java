@@ -6,6 +6,7 @@ import org.example.model.Product;
 import org.example.repository.AuditRepository;
 import org.example.repository.ProductRepository;
 import org.example.repository.UserRepository;
+import org.example.service.AuditService;
 import org.example.service.AuthLoginAttemptService;
 import org.example.service.AuthLoginAttemptServiceImpl;
 import org.example.service.AuthService;
@@ -24,7 +25,7 @@ public abstract class ServiceConfiguration {
   private static final int PRODUCT_CACHE_SIZE = 1000;
   protected final ProductService productService;
   protected final AuthService authService;
-  protected final AuditServiceImpl auditService;
+  protected final AuditService auditService;
   protected final UserRepository userRepository;
   protected final AuditRepository auditRepository;
   protected final ProductRepository productRepository;
@@ -42,7 +43,8 @@ public abstract class ServiceConfiguration {
     this.auditService = new AuditServiceImpl(auditRepository);
     AuthLoginAttemptService authLoginAttemptService = new AuthLoginAttemptServiceImpl();
     Passwords passwords = new PasswordsImpl();
-    this.authService = new AuthServiceImpl(userRepository, auditService, authLoginAttemptService, passwords);
+    this.authService =
+        new AuthServiceImpl(userRepository, auditService, authLoginAttemptService, passwords);
     ProductValidator productValidator = new ProductValidatorImpl();
     ProductSearchService productSearchService =
         new ProductSearchServiceImpl(productRepository, productCache, auditService, authService);
@@ -68,7 +70,7 @@ public abstract class ServiceConfiguration {
     return userRepository;
   }
 
-  public AuditRepository getAuditRepository() {
-    return auditRepository;
+  public AuditService getAuditService() {
+    return auditService;
   }
 }

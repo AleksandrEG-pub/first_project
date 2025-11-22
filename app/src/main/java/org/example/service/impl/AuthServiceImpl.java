@@ -24,7 +24,7 @@ public class AuthServiceImpl implements AuthService {
 
   public AuthServiceImpl(
       UserRepository userRepository,
-      AuditServiceImpl auditService,
+      AuditService auditService,
       AuthLoginAttemptService authLoginAttemptService,
       Passwords passwords) {
     this.userRepository = userRepository;

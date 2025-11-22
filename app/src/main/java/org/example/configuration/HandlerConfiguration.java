@@ -14,7 +14,7 @@ public class HandlerConfiguration {
   public HandlerConfiguration(ServiceConfiguration services, UIConfiguration ui) {
     this.productHandler = new ProductHandler(ui.getConsoleUI(), services.getProductService());
     this.searchHandler = new SearchHandler(ui.getConsoleUI(), services.getProductService());
-    this.auditHandler = new AuditHandler(ui.getConsoleUI(), services.getAuditRepository());
+    this.auditHandler = new AuditHandler(ui.getConsoleUI(), services.getAuditService());
     this.loginHandler = new LoginHandler(ui.getConsoleUI(), services.getAuthService());
   }
 

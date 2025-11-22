@@ -2,25 +2,26 @@ package org.example.console.handler.impl;
 
 import java.util.List;
 import org.example.console.ui.ConsoleUI;
-import org.example.repository.AuditRepository;
+import org.example.model.AuditLog;
+import org.example.service.AuditService;
 
 public class AuditHandler {
   private final ConsoleUI consoleUI;
-  private final AuditRepository auditRepository;
+  private final AuditService auditService;
 
-  public AuditHandler(ConsoleUI consoleUI, AuditRepository auditRepository) {
+  public AuditHandler(ConsoleUI consoleUI, AuditService auditService) {
     this.consoleUI = consoleUI;
-    this.auditRepository = auditRepository;
+    this.auditService = auditService;
   }
 
   public void handleViewAllAuditLogs() {
-    List<org.example.model.AuditLog> allLogs = auditRepository.findAll();
+    List<AuditLog> allLogs = auditService.findAll();
     consoleUI.displayAuditLogs(allLogs);
   }
 
   public void handleViewAuditLogsByUsername() {
     String username = consoleUI.readString("Enter username to filter audit logs: ");
-    List<org.example.model.AuditLog> logs = auditRepository.findByUsername(username);
+    List<AuditLog> logs = auditService.findByUsername(username);
     consoleUI.displayAuditLogs(logs);
   }
 }

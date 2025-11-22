@@ -48,7 +48,8 @@ public class ApplicationConfiguration {
   public void startServer(ServiceConfiguration services) {
     EnvironmentServerConfigurationProperties serverConfigurationProperties =
         new EnvironmentServerConfigurationProperties();
-    ServletMapping servletMapping = new ServletMappingImpl(services.getProductService());
+    ServletMapping servletMapping =
+        new ServletMappingImpl(services.getAuditService(), services.getProductService());
     ServerConfiguration serverConfiguration =
         new ServerConfiguration(
             services.getAuthService(), serverConfigurationProperties, servletMapping);

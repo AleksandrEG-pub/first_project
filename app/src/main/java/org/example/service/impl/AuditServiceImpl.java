@@ -1,6 +1,7 @@
 package org.example.service.impl;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import org.example.model.AuditAction;
 import org.example.model.AuditLog;
 import org.example.repository.AuditRepository;
@@ -24,5 +25,15 @@ public class AuditServiceImpl implements AuditService {
     auditLog.setAction(action);
     auditLog.setDetails(details);
     auditRepository.save(auditLog);
+  }
+
+  @Override
+  public List<AuditLog> findAll() {
+    return auditRepository.findAll();
+  }
+
+  @Override
+  public List<AuditLog> findByUsername(String username) {
+    return auditRepository.findByUsername(username);
   }
 }

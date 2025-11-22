@@ -2,7 +2,6 @@ package org.example.service.impl;
 
 import java.util.List;
 import java.util.Optional;
-
 import org.example.cache.Cache;
 import org.example.dto.ProductForm;
 import org.example.exception.ResourceNotFoundException;
@@ -11,6 +10,7 @@ import org.example.mapper.ProductMapper;
 import org.example.model.AuditAction;
 import org.example.model.Product;
 import org.example.repository.ProductRepository;
+import org.example.service.AuditService;
 import org.example.service.AuthService;
 import org.example.service.ProductSearchService;
 import org.example.service.ProductService;
@@ -21,7 +21,7 @@ public class ProductServiceImpl implements ProductService {
   private static final ProductMapper PRODUCT_MAPPER = ProductMapper.INSTANCE;
   private final ProductRepository productRepository;
   private final Cache<Long, Product> productCache;
-  private final AuditServiceImpl auditService;
+  private final AuditService auditService;
   private final AuthService authService;
   private final ProductValidator productValidator;
   private final ProductSearchService productSearchService;
@@ -29,7 +29,7 @@ public class ProductServiceImpl implements ProductService {
   public ProductServiceImpl(
       ProductRepository productRepository,
       Cache<Long, Product> productCache,
-      AuditServiceImpl auditService,
+      AuditService auditService,
       AuthService authService,
       ProductValidator productValidator,
       ProductSearchService productSearchService) {
@@ -49,22 +49,6 @@ public class ProductServiceImpl implements ProductService {
   @Override
   public List<Product> getAllProducts() {
     return productSearchService.getAllProducts();
-  }
-
-  @Override
-  public Product addProduct(Product product) {
-    authService.requireAdmin();
-    productValidator.validateProductData(product);
-    Product newProduct = Product.builder(product).build();
-    Product saved = productRepository.save(newProduct);
-    productCache.put(saved.getId(), saved);
-    String adminUserName = authService.getAdminUserName();
-    auditService.logAction(
-        adminUserName,
-        AuditAction.ADD_PRODUCT,
-        "Initialized product: " + saved.getId() + " - " + saved.getName());
-
-    return saved;
   }
 
   @Override
@@ -141,5 +125,21 @@ public class ProductServiceImpl implements ProductService {
   public Product create(ProductForm productForm) {
     Product product = PRODUCT_MAPPER.toProduct(productForm);
     return addProduct(product);
+  }
+
+  @Override
+  public Product addProduct(Product product) {
+    authService.requireAdmin();
+    productValidator.validateProductData(product);
+    Product newProduct = Product.builder(product).build();
+    Product saved = productRepository.save(newProduct);
+    productCache.put(saved.getId(), saved);
+    String adminUserName = authService.getAdminUserName();
+    auditService.logAction(
+        adminUserName,
+        AuditAction.ADD_PRODUCT,
+        "Initialized product: " + saved.getId() + " - " + saved.getName());
+
+    return saved;
   }
 }

@@ -7,7 +7,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.List;
-import java.util.regex.Pattern;
 import java.util.stream.Stream;
 import org.example.dto.ProductForm;
 import org.example.exception.ApplicationException;
@@ -16,11 +15,9 @@ import org.example.exception.ValidationException;
 import org.example.model.Product;
 import org.example.service.ProductService;
 import org.example.service.SearchCriteria;
+import org.example.web.RequestPathTools;
 
 public class ProductServlet extends HttpServlet {
-  /** Pattern: /123 (get by ID) */
-  private final Pattern idPathParamPattern = Pattern.compile("/\\d+");
-
   private final transient ProductService productService;
   private final transient CriteriaRequestParser criteriaRequestParser;
   private final transient ProductFormRequestParser productFormRequestParser;
@@ -38,17 +35,13 @@ public class ProductServlet extends HttpServlet {
   @Override
   protected void doGet(HttpServletRequest req, HttpServletResponse resp) {
     String pathInfo = req.getPathInfo();
-    if (isPathInfoHasId(pathInfo)) {
+    if (RequestPathTools.isPathInfoHasId(pathInfo)) {
       handleGetById(req, resp);
     } else if (hasSearchParameters(req)) {
       handleSearch(req, resp);
     } else {
       handleGetAll(resp);
     }
-  }
-
-  private boolean isPathInfoHasId(String pathInfo) {
-    return pathInfo != null && idPathParamPattern.matcher(pathInfo).matches();
   }
 
   private void handleGetById(HttpServletRequest req, HttpServletResponse resp) {
@@ -80,7 +73,7 @@ public class ProductServlet extends HttpServlet {
 
   private Long extractIdFromRequest(HttpServletRequest req) {
     String pathInfo = req.getPathInfo();
-    if (isPathInfoHasId(pathInfo)) {
+    if (RequestPathTools.isPathInfoHasId(pathInfo)) {
       return Long.valueOf(pathInfo.substring(1));
     }
     throw new ValidationException("Product ID is required");

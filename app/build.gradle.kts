@@ -10,6 +10,7 @@ repositories {
 dependencies {
     implementation("org.apache.tomcat.embed:tomcat-embed-core:11.0.14")
     implementation("com.fasterxml.jackson.core:jackson-databind:2.20.1")
+    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.18.2")
 
     compileOnly("org.projectlombok:lombok:1.18.36")
     annotationProcessor("org.projectlombok:lombok:1.18.36")

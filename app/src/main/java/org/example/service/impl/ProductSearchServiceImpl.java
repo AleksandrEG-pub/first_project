@@ -6,6 +6,7 @@ import org.example.cache.Cache;
 import org.example.model.AuditAction;
 import org.example.model.Product;
 import org.example.repository.ProductRepository;
+import org.example.service.AuditService;
 import org.example.service.AuthService;
 import org.example.service.ProductSearchService;
 import org.example.service.SearchCriteria;
@@ -13,13 +14,13 @@ import org.example.service.SearchCriteria;
 public class ProductSearchServiceImpl implements ProductSearchService {
   private final ProductRepository productRepository;
   private final Cache<Long, Product> productCache;
-  private final AuditServiceImpl auditService;
+  private final AuditService auditService;
   private final AuthService authService;
 
   public ProductSearchServiceImpl(
       ProductRepository productRepository,
       Cache<Long, Product> productCache,
-      AuditServiceImpl auditService,
+      AuditService auditService,
       AuthService authService) {
     this.productRepository = productRepository;
     this.productCache = productCache;

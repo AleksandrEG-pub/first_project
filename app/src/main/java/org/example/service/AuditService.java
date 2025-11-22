@@ -1,10 +1,10 @@
 package org.example.service;
 
+import java.util.List;
 import org.example.model.AuditAction;
+import org.example.model.AuditLog;
 
-/**
-* Actions related to auditing user activities.
-*/
+/** Actions related to auditing user activities. */
 public interface AuditService {
 
   /**
@@ -15,4 +15,8 @@ public interface AuditService {
    * @param details arbitrary information about the action
    */
   void logAction(String username, AuditAction action, String details);
+
+  List<AuditLog> findAll();
+
+  List<AuditLog> findByUsername(String username);
 }
