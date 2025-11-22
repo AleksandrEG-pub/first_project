@@ -9,6 +9,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.lang.reflect.Field;
+import org.example.dto.LoginResult;
 import org.example.exception.AccessDeniedException;
 import org.example.model.AuditAction;
 import org.example.model.Role;
@@ -36,26 +37,27 @@ class AuthServiceImplTest {
     auditService = Mockito.mock(AuditServiceImpl.class);
     passwords = Mockito.mock(PasswordsImpl.class);
     authLoginAttemptService = Mockito.mock(AuthLoginAttemptService.class);
-    authService = new AuthServiceImpl(userRepository, auditService, authLoginAttemptService, passwords);
+    authService =
+        new AuthServiceImpl(userRepository, auditService, authLoginAttemptService, passwords);
   }
 
   @Test
   void login_ShouldReturnFalse_WhenUsernameIsNull() {
     // When
-    boolean result = authService.login(null, "password");
+    LoginResult result = authService.login(null, "password");
 
     // Then
-    assertThat(result).isFalse();
+    assertThat(result.isSuccess()).isFalse();
     verify(auditService, never()).logAction(any(), any(), any());
   }
 
   @Test
   void login_ShouldReturnFalse_WhenPasswordIsNull() {
     // When
-    boolean result = authService.login("username", null);
+    LoginResult result = authService.login("username", null);
 
     // Then
-    assertThat(result).isFalse();
+    assertThat(result.isSuccess()).isFalse();
     verify(auditService, never()).logAction(any(), any(), any());
   }
 
@@ -67,10 +69,10 @@ class AuthServiceImplTest {
     when(userRepository.findByUsername(username)).thenReturn(null);
 
     // When
-    boolean result = authService.login(username, password);
+    LoginResult result = authService.login(username, password);
 
     // Then
-    assertThat(result).isFalse();
+    assertThat(result.isSuccess()).isFalse();
     verify(userRepository).findByUsername(username);
     verify(auditService).logAction(username, AuditAction.LOGIN, "Login failed: user not found");
   }
@@ -86,10 +88,10 @@ class AuthServiceImplTest {
     when(passwords.verifyPassword(password, user.getPasswordHash())).thenReturn(false);
 
     // When
-    boolean result = authService.login(username, password);
+    LoginResult result = authService.login(username, password);
 
     // Then
-    assertThat(result).isFalse();
+    assertThat(result.isSuccess()).isFalse();
     verify(userRepository).findByUsername(username);
     verify(auditService).logAction(username, AuditAction.LOGIN, "Login failed: invalid password");
   }
@@ -114,10 +116,10 @@ class AuthServiceImplTest {
     when(authLoginAttemptService.isAccountLocked(username)).thenReturn(false);
 
     // When
-    boolean result = authService.login(username, password);
+    LoginResult result = authService.login(username, password);
 
     // Then
-    assertThat(result).isTrue();
+    assertThat(result.isSuccess()).isTrue();
     assertThat(authService.isAuthenticated()).isTrue();
     assertThat(authService.getCurrentUser()).isEqualTo(username);
     verify(userRepository).findByUsername(username);
@@ -155,10 +157,10 @@ class AuthServiceImplTest {
     when(authLoginAttemptService.isAccountLocked(username)).thenReturn(false);
 
     // When
-    boolean result = authService.login(username, password);
+    LoginResult result = authService.login(username, password);
 
     // Then
-    assertThat(result).isTrue();
+    assertThat(result.isSuccess()).isTrue();
     assertThat(authService.isAuthenticated()).isTrue();
     assertThat(authService.isAdmin()).isTrue();
     assertThat(authService.getCurrentUser()).isEqualTo(username);

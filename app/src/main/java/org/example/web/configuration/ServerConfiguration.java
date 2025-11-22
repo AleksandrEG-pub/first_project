@@ -6,14 +6,19 @@ import org.apache.catalina.LifecycleException;
 import org.apache.catalina.startup.Tomcat;
 import org.apache.tomcat.util.descriptor.web.FilterDef;
 import org.apache.tomcat.util.descriptor.web.FilterMap;
+import org.example.service.AuthService;
 import org.example.web.filter.AuthorizationFilter;
 
 public class ServerConfiguration {
+  private final AuthService authService;
   private final ServerConfigurationProperties serverConfigurationProperties;
   private final ServletMapping servletMapping;
 
   public ServerConfiguration(
-      ServerConfigurationProperties serverConfigurationProperties, ServletMapping servletMapping) {
+      AuthService authService,
+      ServerConfigurationProperties serverConfigurationProperties,
+      ServletMapping servletMapping) {
+    this.authService = authService;
     this.serverConfigurationProperties = serverConfigurationProperties;
     this.servletMapping = servletMapping;
   }
@@ -47,12 +52,13 @@ public class ServerConfiguration {
 
   private void addAuthFilter(Context ctx) {
     FilterDef filterDef = new FilterDef();
-    filterDef.setFilterClass(AuthorizationFilter.class.getName());
-    String authorizationFilter = "authorizationFilter";
-    filterDef.setFilterName(authorizationFilter);
+    AuthorizationFilter authorizationFilter = new AuthorizationFilter(authService);
+    filterDef.setFilter(authorizationFilter);
+    String filterName = AuthorizationFilter.class.getSimpleName();
+    filterDef.setFilterName(filterName);
     ctx.addFilterDef(filterDef);
     FilterMap filterMap = new FilterMap();
-    filterMap.setFilterName(authorizationFilter);
+    filterMap.setFilterName(filterName);
     filterMap.addURLPattern("/*");
     ctx.addFilterMap(filterMap);
   }

@@ -46,15 +46,17 @@ public class ApplicationConfiguration {
   }
 
   public void startServer(ServiceConfiguration services) {
-    EnvironmentServerConfigurationProperties serverConfigurationProperties = new EnvironmentServerConfigurationProperties();
+    EnvironmentServerConfigurationProperties serverConfigurationProperties =
+        new EnvironmentServerConfigurationProperties();
     ServletMapping servletMapping = new ServletMappingImpl(services.getProductService());
-    ServerConfiguration serverConfiguration = new ServerConfiguration(serverConfigurationProperties,
-            servletMapping);
-      try {
-          serverConfiguration.startServer();
-      } catch (LifecycleException e) {
-          throw new ApplicationException(e);
-      }
+    ServerConfiguration serverConfiguration =
+        new ServerConfiguration(
+            services.getAuthService(), serverConfigurationProperties, servletMapping);
+    try {
+      serverConfiguration.startServer();
+    } catch (LifecycleException e) {
+      throw new ApplicationException(e);
+    }
   }
 
   /**

@@ -1,6 +1,7 @@
 package org.example.console.handler.impl;
 
 import org.example.console.ui.ConsoleUI;
+import org.example.dto.LoginResult;
 import org.example.service.AuthService;
 
 public class LoginHandler {
@@ -16,11 +17,12 @@ public class LoginHandler {
     String username = consoleUI.readString("Enter username: ");
     String password = consoleUI.readString("Enter password: ");
 
-    if (authService.login(username, password)) {
+    LoginResult loginResult = authService.login(username, password);
+    if (loginResult.isSuccess()) {
       String roleInfo = authService.isAdmin() ? " (Admin)" : "";
       consoleUI.printMessage("Login successful! Welcome, " + username + roleInfo + ".");
     } else {
-      consoleUI.printError("Login failed. Invalid username or password, or account may be locked.");
+      consoleUI.printError(loginResult.getMessage());
     }
   }
 }

@@ -1,6 +1,8 @@
 package org.example.service.impl;
 
 import java.math.BigDecimal;
+
+import org.example.dto.LoginResult;
 import org.example.model.Product;
 import org.example.model.Role;
 import org.example.model.User;
@@ -30,8 +32,8 @@ public class DataInitializerImpl implements DataInitializer {
     createUser("User123!", "user", Role.USER, userRepository);
 
     try {
-      boolean isLoginSuccess = authService.login(adminName, adminPass);
-      if (isLoginSuccess) {
+      LoginResult loginResult = authService.login(adminName, adminPass);
+      if (loginResult.isSuccess()) {
         addProducts(productService);
         authService.logout();
       }

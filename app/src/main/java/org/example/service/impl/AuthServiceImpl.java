@@ -1,5 +1,6 @@
 package org.example.service.impl;
 
+import org.example.dto.LoginResult;
 import org.example.exception.AccessDeniedException;
 import org.example.model.AuditAction;
 import org.example.model.Role;
@@ -33,34 +34,36 @@ public class AuthServiceImpl implements AuthService {
   }
 
   @Override
-  public boolean login(String username, String password) {
+  public LoginResult login(String username, String password) {
     if (username == null || password == null) {
-      return false;
+      return new LoginResult("login requires username and password");
     }
 
     if (authLoginAttemptService.isAccountLocked(username)) {
-      auditService.logAction(
-          username, AuditAction.LOGIN, "Login failed: account locked due to too many attempts");
-      return false;
+      String details = "Login failed: account locked due to too many attempts";
+      auditService.logAction(username, AuditAction.LOGIN, details);
+      return new LoginResult(details);
     }
 
     User user = userRepository.findByUsername(username);
     if (user == null) {
       authLoginAttemptService.recordFailedAttempt(username);
-      auditService.logAction(username, AuditAction.LOGIN, "Login failed: user not found");
-      return false;
+      String details = "Login failed: user not found";
+      auditService.logAction(username, AuditAction.LOGIN, details);
+      return new LoginResult(details);
     }
 
     if (!passwords.verifyPassword(password, user.getPasswordHash())) {
       authLoginAttemptService.recordFailedAttempt(username);
-      auditService.logAction(username, AuditAction.LOGIN, "Login failed: invalid password");
-      return false;
+      String details = "Login failed: invalid password";
+      auditService.logAction(username, AuditAction.LOGIN, details);
+      return new LoginResult(details);
     }
 
     authLoginAttemptService.remove(username);
     currentUser = user;
     auditService.logAction(username, AuditAction.LOGIN, "Login successful");
-    return true;
+    return new LoginResult(true);
   }
 
   @Override
