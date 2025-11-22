@@ -1,12 +1,6 @@
 package org.example.configuration;
 
-import java.util.List;
-
-import org.example.exception.InitializationException;
-import org.example.model.Product;
 import org.example.repository.impl.database.ConnectionManager;
-import org.example.repository.impl.file.FileProductRepository;
-import org.example.service.impl.DataInitializerImpl;
 
 /**
  * Central application configuration and lifecycle coordinator.
@@ -16,23 +10,15 @@ import org.example.service.impl.DataInitializerImpl;
  * registers a JVM shutdown hook.
  */
 public class ApplicationConfiguration {
-  private final ServiceConfiguration services;
   private final UIConfiguration ui;
   private final MenuConfiguration menus;
 
-  public ApplicationConfiguration(RepositoryType repositoryType) {
+  public ApplicationConfiguration() {
+    DatabaseProperties databaseProperties = new EnvDatabaseProperties();
+    ConnectionManager connectionManager = new ConnectionManager(databaseProperties);
+    ServiceConfiguration services = new DatabaseServiceConfiguration(connectionManager);
+
     this.ui = new UIConfiguration();
-    switch (repositoryType) {
-      case IN_MEMORY -> this.services = new InMemoryServiceConfiguration();
-      case FILE -> this.services = new FileServiceConfiguration(ui.getConsoleUI());
-      case DATABASE -> {
-        DatabaseProperties databaseProperties = new EnvDatabaseProperties();
-        ConnectionManager connectionManager = new ConnectionManager(databaseProperties);
-        this.services = new DatabaseServiceConfiguration(connectionManager);
-      }
-      default ->
-          throw new InitializationException("Unsupported repository type: " + repositoryType);
-    }
     HandlerConfiguration handlers = new HandlerConfiguration(services, ui);
     this.menus = new MenuConfiguration(services, ui, handlers);
   }
@@ -42,27 +28,10 @@ public class ApplicationConfiguration {
   }
 
   public void initializeData() {
-    if (services instanceof FileServiceConfiguration || services instanceof InMemoryServiceConfiguration) {
-      List<Product> allProducts = services.getProductService().getAllProducts();
-      if (allProducts.isEmpty()) {
-        new DataInitializerImpl(
-                services.getUserRepository(),
-                services.getProductService(),
-                services.getAuthService())
-            .initializeDefaultData();
-      } else {
-        allProducts.stream()
-            .mapToLong(Product::getId)
-            .max()
-            .ifPresent(maxId -> FileProductRepository.updateCounter(maxId + 1));
-      }
-    }
-    if (services instanceof DatabaseServiceConfiguration) {
-      LiquibaseConfiguration liquibaseConfiguration =
-          new LiquibaseConfiguration.Builder().fromEnvironment().build();
-      new LiquibaseConfigurationUpdater(ui.getConsoleUI(), liquibaseConfiguration)
-          .runDatabaseUpdate("production");
-    }
+    LiquibaseConfiguration liquibaseConfiguration =
+        new LiquibaseConfiguration.Builder().fromEnvironment().build();
+    new LiquibaseConfigurationUpdater(ui.getConsoleUI(), liquibaseConfiguration)
+        .runDatabaseUpdate("production");
   }
 
   /**

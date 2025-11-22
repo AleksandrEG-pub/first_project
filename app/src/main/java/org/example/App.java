@@ -1,12 +1,8 @@
 package org.example;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.Set;
-import java.util.stream.Collectors;
 import org.example.configuration.ApplicationConfiguration;
 import org.example.configuration.PropertiesFileReader;
-import org.example.configuration.RepositoryType;
 import org.example.exception.InitializationException;
 import org.example.exception.UserExitException;
 
@@ -23,9 +19,8 @@ public class App {
    * @param args runtime arguments
    */
   public static void main(String[] args) {
-    RepositoryType repositoryType = getRepositoryType(args);
     setConfigurationLocation(args);
-    ApplicationConfiguration appConfig = new ApplicationConfiguration(repositoryType);
+    ApplicationConfiguration appConfig = new ApplicationConfiguration();
     try {
       appConfig.initializeData();
       appConfig.start();
@@ -34,24 +29,6 @@ public class App {
     } finally {
       appConfig.shutdown();
     }
-  }
-
-  private static RepositoryType getRepositoryType(String[] args) {
-    if (args == null || args.length == 0) {
-      return RepositoryType.IN_MEMORY;
-    }
-    Set<String> argumentSet = Arrays.stream(args).collect(Collectors.toSet());
-    RepositoryType repositoryType;
-    if (argumentSet.contains("--repository-type=database")) {
-      repositoryType = RepositoryType.DATABASE;
-    } else if (argumentSet.contains("--repository-type=file")) {
-      repositoryType = RepositoryType.FILE;
-    } else if (argumentSet.contains("--repository-type=in-memory")) {
-      repositoryType = RepositoryType.IN_MEMORY;
-    } else {
-      repositoryType = RepositoryType.IN_MEMORY;
-    }
-    return repositoryType;
   }
 
   public static void setConfigurationLocation(String[] args) {
