@@ -7,14 +7,14 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.List;
 import org.example.exception.ApplicationException;
-import org.example.model.AuditLog;
+import org.example.mapper.AuditLogMapper;
 import org.example.service.AuditService;
 
 public class AuditServlet extends HttpServlet {
 
   private static final String USERNAME_PARAMETER = "username";
+  private static final AuditLogMapper AUDIT_LOG_MAPPER = AuditLogMapper.INSTANCE;
   private final transient AuditService auditService;
   private final ObjectMapper objectMapper = new ObjectMapper();
 
@@ -38,12 +38,13 @@ public class AuditServlet extends HttpServlet {
 
   private void handleSearch(HttpServletRequest req, HttpServletResponse resp) {
     String username = req.getParameter(USERNAME_PARAMETER);
-    List<AuditLog> auditLogs = auditService.findByUsername(username);
+    var auditLogs =
+        auditService.findByUsername(username).stream().map(AUDIT_LOG_MAPPER::toDto).toList();
     writeResponseJson(resp, auditLogs);
   }
 
   private void handleGetAll(HttpServletResponse resp) {
-    List<AuditLog> auditLogs = auditService.findAll();
+    var auditLogs = auditService.findAll().stream().map(AUDIT_LOG_MAPPER::toDto).toList();
     writeResponseJson(resp, auditLogs);
   }
 

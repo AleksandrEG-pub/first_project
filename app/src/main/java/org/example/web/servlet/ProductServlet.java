@@ -6,18 +6,19 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.List;
 import java.util.stream.Stream;
 import org.example.dto.ProductForm;
 import org.example.exception.ApplicationException;
 import org.example.exception.ResourceNotFoundException;
 import org.example.exception.ValidationException;
+import org.example.mapper.ProductMapper;
 import org.example.model.Product;
 import org.example.service.ProductService;
 import org.example.service.SearchCriteria;
 import org.example.web.RequestPathTools;
 
 public class ProductServlet extends HttpServlet {
+  private static final ProductMapper PRODUCT_MAPPER = ProductMapper.INSTANCE;
   private final transient ProductService productService;
   private final transient CriteriaRequestParser criteriaRequestParser;
   private final transient ProductFormRequestParser productFormRequestParser;
@@ -48,6 +49,7 @@ public class ProductServlet extends HttpServlet {
     Long productId = extractIdFromRequest(req);
     productService
         .findById(productId)
+        .map(PRODUCT_MAPPER::toDto)
         .ifPresentOrElse(
             product -> writeResponseJson(resp, product, HttpServletResponse.SC_OK),
             () -> {
@@ -62,12 +64,12 @@ public class ProductServlet extends HttpServlet {
 
   private void handleSearch(HttpServletRequest req, HttpServletResponse resp) {
     SearchCriteria criteria = criteriaRequestParser.buildSearchCriteria(req);
-    List<Product> products = productService.search(criteria);
+    var products = productService.search(criteria).stream().map(PRODUCT_MAPPER::toDto).toList();
     writeResponseJson(resp, products, HttpServletResponse.SC_OK);
   }
 
   private void handleGetAll(HttpServletResponse resp) {
-    List<Product> products = productService.getAllProducts();
+    var products = productService.getAllProducts().stream().map(PRODUCT_MAPPER::toDto).toList();
     writeResponseJson(resp, products, HttpServletResponse.SC_OK);
   }
 
