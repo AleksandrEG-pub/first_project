@@ -8,6 +8,8 @@ repositories {
 }
 
 dependencies {
+    implementation("org.apache.tomcat.embed:tomcat-embed-core:11.0.14")
+
     implementation("org.liquibase:liquibase-core:4.30.0")
     implementation("org.postgresql:postgresql:42.7.8")
 

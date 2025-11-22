@@ -1,6 +1,10 @@
 package org.example.configuration;
 
+import org.apache.catalina.LifecycleException;
+import org.example.exception.ApplicationException;
 import org.example.repository.impl.database.ConnectionManager;
+import org.example.web.configuration.EnvironmentServerConfigurationProperties;
+import org.example.web.configuration.ServerConfiguration;
 
 /**
  * Central application configuration and lifecycle coordinator.
@@ -32,6 +36,16 @@ public class ApplicationConfiguration {
         new LiquibaseConfiguration.Builder().fromEnvironment().build();
     new LiquibaseConfigurationUpdater(ui.getConsoleUI(), liquibaseConfiguration)
         .runDatabaseUpdate("production");
+  }
+
+  public void startServer() {
+    EnvironmentServerConfigurationProperties serverConfigurationProperties = new EnvironmentServerConfigurationProperties();
+    ServerConfiguration serverConfiguration = new ServerConfiguration(serverConfigurationProperties);
+      try {
+          serverConfiguration.startServer();
+      } catch (LifecycleException e) {
+          throw new ApplicationException(e);
+      }
   }
 
   /**
