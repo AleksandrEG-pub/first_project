@@ -67,15 +67,14 @@ Not authenticated users can not perform any actions, except log in attempts
 - Repositories and services: `app/src/main/java/org/example/repository` and `.../service`
 
 ## API
-GET /products    
-GET /products?id=1&name=name&category=category&brand=brand&minPrice=0.05&maxPrice=19.99
-GET /products/1
-POST /products/1, body ProductForm
-PUT /products/1,  body ProductForm
-DELETE /products/1  
-
-GET /audits    
-GET /audits?username=user  
+- GET /products    
+- GET /products?id=1&name={name}&category={category}&brand={brand}&minPrice={0.05}&maxPrice={19.99}
+- GET /products/{id}
+- POST /products/{id}, body ProductForm
+- PUT /products/{id},  body ProductForm
+- DELETE /products/{id}  
+- GET /audits    
+- GET /audits?username={user}  
 
 ## API objects examples:
 ProductForm:
@@ -88,3 +87,9 @@ ProductForm:
   "price": 129.99
 }
 ```
+
+## API security
+user 'user' authorized only for:
+- GET /products
+
+user 'admin' authorized for all APIs
