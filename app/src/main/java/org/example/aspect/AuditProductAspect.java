@@ -13,13 +13,19 @@ import org.example.service.impl.AuditEvents;
 
 @Aspect
 public class AuditProductAspect {
+  private static final boolean DISABLED = "true".equals(System.getProperty("aspectj.disable"));
+
   @Around("execution(* org.example.service.impl.ProductServiceImpl.search(..))")
   public Object auditSearch(ProceedingJoinPoint jp) throws Throwable {
-    SearchCriteria criteria = (SearchCriteria) jp.getArgs()[0];
+    if (DISABLED) {
+      return jp.proceed();
+    }
     Object result = jp.proceed();
-    if (result instanceof List resultList) {
-      String message = buildSearchAuditMessage(criteria, resultList.size());
-      AuditEvents.publish(new AuditEvent(AuditAction.SEARCH, message));
+    if (jp.getArgs().length > 0 && jp.getArgs()[0] instanceof SearchCriteria criteria) {
+      if (result instanceof List resultList) {
+        String message = buildSearchAuditMessage(criteria, resultList.size());
+        AuditEvents.publish(new AuditEvent(AuditAction.SEARCH, message));
+      }
     } else {
       AuditEvents.publish(new AuditEvent(AuditAction.SEARCH, "Product search"));
     }
@@ -68,11 +74,11 @@ public class AuditProductAspect {
       productId = id;
     }
     Object result = jp.proceed();
-    if (result instanceof Optional resultOpt) {
-      if (resultOpt.isPresent() && resultOpt.get() instanceof Product product) {
-        String message = "Viewed product (found): [%d]".formatted(product.getId());
-        AuditEvents.publish(new AuditEvent(AuditAction.VIEW_PRODUCT, message));
-      }
+    if (result instanceof Optional resultOpt
+        && resultOpt.isPresent()
+        && resultOpt.get() instanceof Product product) {
+      String message = "Viewed product (found): [%d]".formatted(product.getId());
+      AuditEvents.publish(new AuditEvent(AuditAction.VIEW_PRODUCT, message));
     }
     if (productId != null) {
       AuditEvents.publish(
@@ -128,8 +134,8 @@ public class AuditProductAspect {
     Object result = jp.proceed();
     if (result instanceof Product product) {
       AuditEvents.publish(
-              new AuditEvent(
-                      AuditAction.ADD_PRODUCT, "Created product: [%d]".formatted(product.getId())));
+          new AuditEvent(
+              AuditAction.ADD_PRODUCT, "Created product: [%d]".formatted(product.getId())));
     } else {
       AuditEvents.publish(new AuditEvent(AuditAction.ADD_PRODUCT, "Created product"));
     }

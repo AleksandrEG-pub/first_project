@@ -1,4 +1,4 @@
-package org.example.web.servlet;
+package org.example.service;
 
 import jakarta.servlet.http.HttpServletRequest;
 import org.example.dto.SearchCriteria;

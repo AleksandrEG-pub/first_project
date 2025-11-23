@@ -12,9 +12,13 @@ import org.example.service.impl.UserContext;
 
 @Aspect
 public class AuditAuthAspect {
+  private static final boolean DISABLED = "true".equals(System.getProperty("aspectj.disable"));
 
   @Around("execution(* org.example.service.impl.AuthServiceImpl.*(..))")
   public Object auditAuthService(ProceedingJoinPoint jp) throws Throwable {
+    if (DISABLED) {
+      return jp.proceed();
+    }
     Object result = jp.proceed();
     User currentUser = UserContext.getValidatedCurrentUser();
     if (result instanceof LoginResult loginResult) {

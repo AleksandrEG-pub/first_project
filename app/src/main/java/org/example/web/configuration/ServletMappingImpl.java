@@ -7,9 +7,9 @@ import org.example.service.AuditService;
 import org.example.service.DtoValidator;
 import org.example.service.ProductService;
 import org.example.web.servlet.AuditServlet;
-import org.example.web.servlet.CriteriaRequestParserImpl;
-import org.example.web.servlet.ProductFormRequestParser;
-import org.example.web.servlet.ProductFormRequestParserImpl;
+import org.example.service.CriteriaRequestParserImpl;
+import org.example.service.ProductFormRequestParser;
+import org.example.service.ProductFormRequestParserImpl;
 import org.example.web.servlet.ProductServlet;
 
 public class ServletMappingImpl implements ServletMapping {
@@ -38,7 +38,11 @@ public class ServletMappingImpl implements ServletMapping {
     return Map.of(
         "/products/*",
             new ProductServlet(
-                productService, criteriaRequestParser, productFormRequestParser, dtoValidator),
+                productService,
+                criteriaRequestParser,
+                productFormRequestParser,
+                dtoValidator,
+                objectMapper),
         "/audits/*", new AuditServlet(auditService, objectMapper));
   }
 }

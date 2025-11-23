@@ -1,4 +1,4 @@
-package org.example.web.servlet;
+package org.example.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;

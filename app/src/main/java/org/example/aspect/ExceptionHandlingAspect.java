@@ -20,11 +20,15 @@ import org.example.exception.ResourceNotFoundException;
 
 @Aspect
 public class ExceptionHandlingAspect {
-
+  private static final boolean DISABLED =
+          "true".equals(System.getProperty("aspectj.disable"));
   private final ObjectMapper objectMapper = new ObjectMapper();
 
   @Around("execution(* org.example.web.servlet.*.do*(..))")
   public Object validateServlet(ProceedingJoinPoint jp) throws Throwable {
+    if (DISABLED) {
+      return jp.proceed();
+    }
     try {
       return jp.proceed();
     } catch (ResourceNotFoundException e) {

@@ -50,6 +50,7 @@ application {
 
 tasks.named<Test>("test") {
     useJUnitPlatform()
+    systemProperty("aspectj.disable", "true")
 }
 
 tasks.shadowJar {

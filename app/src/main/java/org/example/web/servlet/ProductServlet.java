@@ -15,10 +15,13 @@ import org.example.exception.ParameterTypeMismatchException;
 import org.example.exception.ResourceNotFoundException;
 import org.example.mapper.ProductMapper;
 import org.example.model.Product;
+import org.example.service.CriteriaRequestParser;
 import org.example.service.DtoValidator;
+import org.example.service.ProductFormRequestParser;
 import org.example.service.ProductService;
 import org.example.dto.SearchCriteria;
 import org.example.web.RequestPathTools;
+
 
 public class ProductServlet extends HttpServlet {
   private static final ProductMapper PRODUCT_MAPPER = ProductMapper.INSTANCE;
@@ -26,17 +29,19 @@ public class ProductServlet extends HttpServlet {
   private final transient CriteriaRequestParser criteriaRequestParser;
   private final transient ProductFormRequestParser productFormRequestParser;
   private final transient DtoValidator dtoValidator;
-  private final ObjectMapper objectMapper = new ObjectMapper();
+  private final ObjectMapper objectMapper;
 
   public ProductServlet(
       ProductService productService,
       CriteriaRequestParser criteriaRequestParser,
       ProductFormRequestParser productFormRequestParser,
-      DtoValidator dtoValidator) {
+      DtoValidator dtoValidator,
+      ObjectMapper objectMapper) {
     this.productService = productService;
     this.criteriaRequestParser = criteriaRequestParser;
     this.productFormRequestParser = productFormRequestParser;
     this.dtoValidator = dtoValidator;
+    this.objectMapper = objectMapper;
   }
 
   @Override
