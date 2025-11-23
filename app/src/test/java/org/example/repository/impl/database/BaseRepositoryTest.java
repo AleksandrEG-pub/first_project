@@ -3,9 +3,7 @@ package org.example.repository.impl.database;
 import org.example.configuration.DatabaseProperties;
 import org.example.configuration.LiquibaseConfiguration;
 import org.example.configuration.LiquibaseConfigurationUpdater;
-import org.example.console.ui.ConsoleUI;
 import org.junit.jupiter.api.BeforeEach;
-import org.mockito.Mockito;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
@@ -13,11 +11,8 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 @Testcontainers
 public abstract class BaseRepositoryTest {
 
-  final ConsoleUI consoleUI = Mockito.mock(ConsoleUI.class);
-
   @Container
-  private final PostgreSQLContainer postgreSQLContainer =
-      new PostgreSQLContainer("postgres:17.5");
+  private final PostgreSQLContainer postgreSQLContainer = new PostgreSQLContainer("postgres:17.5");
 
   ConnectionManager connectionManager;
 
@@ -38,7 +33,7 @@ public abstract class BaseRepositoryTest {
             .withLiquibaseScheme("test_liquibase")
             .withChangelogFile("db/changelog/db.changelog-master.yaml")
             .build();
-    new LiquibaseConfigurationUpdater(consoleUI, liquibaseConfiguration).runDatabaseUpdate("test");
+    new LiquibaseConfigurationUpdater(liquibaseConfiguration).runDatabaseUpdate("test");
     setupBeforeEach();
   }
 

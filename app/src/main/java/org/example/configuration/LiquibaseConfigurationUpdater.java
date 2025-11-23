@@ -10,18 +10,14 @@ import liquibase.database.DatabaseFactory;
 import liquibase.database.jvm.JdbcConnection;
 import liquibase.exception.LiquibaseException;
 import liquibase.resource.ClassLoaderResourceAccessor;
-import org.example.console.ui.ConsoleUI;
 import org.example.exception.InitializationException;
 
 public class LiquibaseConfigurationUpdater {
 
-  private final ConsoleUI consoleUI;
   private final LiquibaseConfiguration liquibaseConfiguration;
 
-  public LiquibaseConfigurationUpdater(
-      ConsoleUI consoleUI, LiquibaseConfiguration liquibaseConfiguration) {
-      this.consoleUI = consoleUI;
-      this.liquibaseConfiguration = liquibaseConfiguration;
+  public LiquibaseConfigurationUpdater(LiquibaseConfiguration liquibaseConfiguration) {
+    this.liquibaseConfiguration = liquibaseConfiguration;
   }
 
   public void runDatabaseUpdate(String context) {
@@ -43,17 +39,19 @@ public class LiquibaseConfigurationUpdater {
               database);
       liquibase.update(context);
     } catch (LiquibaseException | SQLException e) {
-      consoleUI.printError("Failed to update database: " + e.getMessage());
+      System.err.println("Failed to update database: " + e.getMessage());
       throw new InitializationException(e);
     }
   }
 
   private void createSchemas(Connection connection) throws SQLException {
     try (Statement stmt = connection.createStatement()) {
-      stmt.executeUpdate("CREATE SCHEMA IF NOT EXISTS " + liquibaseConfiguration.getLiquibaseScheme());
+      stmt.executeUpdate(
+          "CREATE SCHEMA IF NOT EXISTS " + liquibaseConfiguration.getLiquibaseScheme());
     }
     try (Statement stmt = connection.createStatement()) {
-      stmt.executeUpdate("CREATE SCHEMA IF NOT EXISTS " + liquibaseConfiguration.getApplicationScheme());
+      stmt.executeUpdate(
+          "CREATE SCHEMA IF NOT EXISTS " + liquibaseConfiguration.getApplicationScheme());
     }
   }
 }

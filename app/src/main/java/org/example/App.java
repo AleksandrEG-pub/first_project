@@ -1,9 +1,7 @@
 package org.example;
 
-
 import org.example.configuration.AppArgumentConfiguration;
 import org.example.configuration.ApplicationConfiguration;
-import org.example.exception.UserExitException;
 
 /** Application entry point. */
 public class App {
@@ -20,29 +18,7 @@ public class App {
   public static void main(String[] args) {
     AppArgumentConfiguration.setConfigurationLocation(args);
     ApplicationConfiguration appConfig = new ApplicationConfiguration();
-    try {
-      appConfig.initializeData();
-      appConfig.startServer(appConfig.getServices());
-      appConfig.start();
-    } catch (UserExitException e) {
-      handleUserExit(appConfig);
-    } finally {
-      appConfig.shutdown();
-    }
-  }
-
-  /**
-   * Attempt to print a friendly exit message to the console UI. This method intentionally swallows
-   * exceptions because the application is exiting and there is nothing useful to recover.
-   */
-  private static void handleUserExit(ApplicationConfiguration appConfig) {
-    try {
-      appConfig
-          .getUi()
-          .getConsoleUI()
-          .printMessage("Exiting application (input closed or user requested exit). Goodbye.");
-    } catch (Exception ignored) {
-      // Application is exiting anyway
-    }
+    appConfig.initializeData();
+    appConfig.startServer(appConfig.getServices());
   }
 }
