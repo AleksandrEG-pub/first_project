@@ -26,7 +26,7 @@ import org.example.repository.ProductRepository;
 import org.example.service.AuthService;
 import org.example.service.ProductSearchService;
 import org.example.service.DtoValidator;
-import org.example.service.SearchCriteria;
+import org.example.dto.SearchCriteria;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;

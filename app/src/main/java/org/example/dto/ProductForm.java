@@ -14,28 +14,28 @@ import org.hibernate.validator.constraints.Length;
 @Getter
 @Setter
 public class ProductForm {
-  @NotNull
-  @NotBlank
-  @Length(max = 255)
+  @NotNull(message = "name can not be null")
+  @NotBlank(message = "name can not be empty")
+  @Length(max = 255, message = "name can not be longer than 255")
   private String name;
 
-  @NotNull
-  @NotBlank
-  @Length(max = 10000)
+  @NotNull(message = "description can not be null")
+  @NotBlank(message = "description can not be empty")
+  @Length(max = 10000, message = "description can not be longer than 10000")
   private String description;
 
-  @NotNull
-  @NotBlank
-  @Length(max = 255)
+  @NotNull(message = "category can not be null")
+  @NotBlank(message = "category can not be empty")
+  @Length(max = 255, message = "category can not be longer than 255")
   private String category;
 
-  @NotNull
-  @NotBlank
-  @Length(max = 255)
+  @NotNull(message = "brand can not be null")
+  @NotBlank(message = "brand can not be empty")
+  @Length(max = 255, message = "brand can not be longer than 255")
   private String brand;
 
-  @NotNull
-  @DecimalMin(value = "0.01")
+  @NotNull(message = "price can not be null")
+  @DecimalMin(value = "0.01", message = "minimal price is 0,01")
   private BigDecimal price;
 
   public static ProductForm fromProduct(Product product) {

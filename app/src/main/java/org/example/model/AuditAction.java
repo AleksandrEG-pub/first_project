@@ -7,5 +7,6 @@ public enum AuditAction {
   EDIT_PRODUCT,
   DELETE_PRODUCT,
   VIEW_PRODUCT,
-  SEARCH
+  SEARCH,
+  CACHE_CLEAN_PRODUCT
 }

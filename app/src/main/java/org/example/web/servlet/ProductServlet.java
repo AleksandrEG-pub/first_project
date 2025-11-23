@@ -17,7 +17,7 @@ import org.example.mapper.ProductMapper;
 import org.example.model.Product;
 import org.example.service.DtoValidator;
 import org.example.service.ProductService;
-import org.example.service.SearchCriteria;
+import org.example.dto.SearchCriteria;
 import org.example.web.RequestPathTools;
 
 public class ProductServlet extends HttpServlet {

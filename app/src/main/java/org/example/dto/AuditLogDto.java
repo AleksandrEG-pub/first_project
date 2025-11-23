@@ -17,22 +17,19 @@ import org.hibernate.validator.constraints.Length;
 @Getter
 public class AuditLogDto {
 
-  @NotNull
-  @NotBlank
-  @Length(max = 255)
   private Long id;
   private LocalDateTime timestamp;
 
-  @NotNull
-  @NotBlank
-  @Length(max = 255)
+  @NotNull(message = "username can not be null")
+  @NotBlank(message = "username can not be empty")
+  @Length(max = 255, message = "username can not be longer than 255")
   private String username;
 
-  @NotNull
+  @NotNull(message = "action can not be null")
   private AuditAction action;
 
-  @NotNull
-  @NotBlank
-  @Length(max = 255)
+  @NotNull(message = "details can not be null")
+  @NotBlank(message = "details can not be empty")
+  @Length(max = 255, message = "details can not be longer than 255")
   private String details;
 }

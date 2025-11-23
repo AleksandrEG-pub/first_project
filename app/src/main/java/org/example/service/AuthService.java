@@ -1,6 +1,7 @@
 package org.example.service;
 
 import org.example.dto.LoginResult;
+import org.example.model.User;
 
 /** Provides authentication and authorization methods */
 public interface AuthService {
@@ -27,8 +28,8 @@ public interface AuthService {
    */
   void logout();
 
-  /** return username of current user, authenticated or not */
-  String getCurrentUser();
+  /** current user, authenticated or not */
+  User getCurrentUser();
 
   String getAdminUserName();
 }

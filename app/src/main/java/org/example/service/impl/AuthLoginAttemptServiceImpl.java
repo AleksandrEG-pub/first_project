@@ -1,4 +1,6 @@
-package org.example.service;
+package org.example.service.impl;
+
+import org.example.service.AuthLoginAttemptService;
 
 import java.time.LocalDateTime;
 import java.util.Map;

@@ -6,7 +6,7 @@ import java.util.Optional;
 import org.example.console.ui.ConsoleUI;
 import org.example.model.Product;
 import org.example.service.ProductService;
-import org.example.service.SearchCriteria;
+import org.example.dto.SearchCriteria;
 
 public class SearchHandler {
   private final ConsoleUI consoleUI;

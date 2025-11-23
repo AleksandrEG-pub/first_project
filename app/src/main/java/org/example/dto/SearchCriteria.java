@@ -1,4 +1,4 @@
-package org.example.service;
+package org.example.dto;
 
 import java.math.BigDecimal;
 import org.example.model.Product;

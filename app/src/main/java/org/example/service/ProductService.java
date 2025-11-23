@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.example.dto.ProductForm;
+import org.example.dto.SearchCriteria;
 import org.example.model.Product;
 
 /** Main interface for product related operations */

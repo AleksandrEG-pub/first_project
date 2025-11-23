@@ -7,6 +7,7 @@ import org.apache.catalina.startup.Tomcat;
 import org.apache.tomcat.util.descriptor.web.FilterDef;
 import org.apache.tomcat.util.descriptor.web.FilterMap;
 import org.example.service.AuthService;
+import org.example.web.filter.AnonymousFilter;
 import org.example.web.filter.AuthorizationFilter;
 
 public class ServerConfiguration {
@@ -36,8 +37,8 @@ public class ServerConfiguration {
         .getServletMapping()
         .forEach((path, httpServlet) -> addServlet(ctx, path, httpServlet));
 
-    // Add filters
     addAuthFilter(ctx);
+    addAnonymousFilter(ctx);
     tomcat.getConnector();
     tomcat.start();
     System.out.println("Server available at: http://localhost:" + port);
@@ -57,6 +58,20 @@ public class ServerConfiguration {
     String filterName = AuthorizationFilter.class.getSimpleName();
     filterDef.setFilterName(filterName);
     ctx.addFilterDef(filterDef);
+    FilterMap filterMap = new FilterMap();
+    filterMap.setFilterName(filterName);
+    filterMap.addURLPattern("/*");
+    ctx.addFilterMap(filterMap);
+  }
+
+  private void addAnonymousFilter(Context ctx) {
+    FilterDef filterDef = new FilterDef();
+    AnonymousFilter anonymousFilter = new AnonymousFilter();
+    filterDef.setFilter(anonymousFilter);
+    String filterName = AnonymousFilter.class.getSimpleName();
+    filterDef.setFilterName(filterName);
+    ctx.addFilterDef(filterDef);
+
     FilterMap filterMap = new FilterMap();
     filterMap.setFilterName(filterName);
     filterMap.addURLPattern("/*");

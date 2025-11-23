@@ -1,28 +1,25 @@
 package org.example.service.impl;
 
+import jakarta.validation.ValidationException;
 import java.util.List;
 import java.util.Optional;
-
-import jakarta.validation.ValidationException;
 import org.example.cache.Cache;
 import org.example.dto.ProductForm;
+import org.example.dto.SearchCriteria;
 import org.example.exception.ResourceNotFoundException;
 import org.example.mapper.ProductMapper;
-import org.example.model.AuditAction;
 import org.example.model.Product;
 import org.example.repository.ProductRepository;
 import org.example.service.AuditService;
 import org.example.service.AuthService;
+import org.example.service.DtoValidator;
 import org.example.service.ProductSearchService;
 import org.example.service.ProductService;
-import org.example.service.DtoValidator;
-import org.example.service.SearchCriteria;
 
 public class ProductServiceImpl implements ProductService {
   private static final ProductMapper PRODUCT_MAPPER = ProductMapper.INSTANCE;
   private final ProductRepository productRepository;
   private final Cache<Long, Product> productCache;
-  private final AuditService auditService;
   private final AuthService authService;
   private final DtoValidator dtoValidator;
   private final ProductSearchService productSearchService;
@@ -30,13 +27,11 @@ public class ProductServiceImpl implements ProductService {
   public ProductServiceImpl(
       ProductRepository productRepository,
       Cache<Long, Product> productCache,
-      AuditService auditService,
       AuthService authService,
       DtoValidator dtoValidator,
       ProductSearchService productSearchService) {
     this.productRepository = productRepository;
     this.productCache = productCache;
-    this.auditService = auditService;
     this.authService = authService;
     this.dtoValidator = dtoValidator;
     this.productSearchService = productSearchService;
@@ -66,12 +61,7 @@ public class ProductServiceImpl implements ProductService {
     boolean deleted = productRepository.delete(id);
     if (deleted) {
       productCache.remove(id);
-
-      String username = authService.getCurrentUser();
-      auditService.logAction(
-          username,
-          AuditAction.DELETE_PRODUCT,
-          "Deleted product: " + id + " - " + product.get().getName());
+      ;
     } else {
       throw new ResourceNotFoundException("product", String.valueOf(id));
     }
@@ -84,9 +74,7 @@ public class ProductServiceImpl implements ProductService {
       throw new ValidationException("Product ID cannot be null");
     }
     Product product = PRODUCT_MAPPER.toProduct(newProductData);
-
     dtoValidator.validate(product);
-
     Optional<Product> existingOpt = findById(id);
     if (existingOpt.isEmpty()) {
       throw new ResourceNotFoundException("product", String.valueOf(id));
@@ -99,16 +87,8 @@ public class ProductServiceImpl implements ProductService {
             .brand(newProductData.getBrand())
             .price(newProductData.getPrice())
             .build();
-
     Product updated = productRepository.save(forUpdate);
     productCache.put(updated.getId(), updated);
-
-    String username = authService.getCurrentUser();
-    auditService.logAction(
-        username,
-        AuditAction.EDIT_PRODUCT,
-        "Edited product: " + updated.getId() + " - " + updated.getName());
-
     return updated;
   }
 
@@ -136,12 +116,6 @@ public class ProductServiceImpl implements ProductService {
     Product newProduct = Product.builder(product).build();
     Product saved = productRepository.save(newProduct);
     productCache.put(saved.getId(), saved);
-    String adminUserName = authService.getAdminUserName();
-    auditService.logAction(
-        adminUserName,
-        AuditAction.ADD_PRODUCT,
-        "Initialized product: " + saved.getId() + " - " + saved.getName());
-
     return saved;
   }
 }

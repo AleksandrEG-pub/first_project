@@ -35,7 +35,7 @@ start-with-database.sh
 # Run with in-memory repository
 start-in-memory.sh
 
-# Run with in-memory repository
+# Run with in-file repository
 start-with-file.sh
 ```
 
