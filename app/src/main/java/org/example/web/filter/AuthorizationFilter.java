@@ -39,6 +39,7 @@ public class AuthorizationFilter implements Filter {
       return;
     }
     chain.doFilter(request, response);
+    UserContext.remove();
   }
 
   private void sendUnauthorizedResponse(
