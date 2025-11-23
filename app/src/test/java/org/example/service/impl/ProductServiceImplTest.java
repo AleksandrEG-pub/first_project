@@ -11,6 +11,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import jakarta.validation.ValidationException;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
@@ -18,15 +19,13 @@ import java.util.Optional;
 import org.assertj.core.api.Assertions;
 import org.example.cache.Cache;
 import org.example.dto.ProductForm;
+import org.example.dto.SearchCriteria;
 import org.example.exception.ResourceNotFoundException;
-import org.example.exception.ValidationException;
-import org.example.model.AuditAction;
 import org.example.model.Product;
 import org.example.repository.ProductRepository;
 import org.example.service.AuthService;
-import org.example.service.ProductSearchService;
 import org.example.service.DtoValidator;
-import org.example.dto.SearchCriteria;
+import org.example.service.ProductSearchService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
@@ -36,7 +35,6 @@ class ProductServiceImplTest {
 
   @Mock private ProductRepository productRepository;
   @Mock private Cache<Long, Product> productCache;
-  @Mock private AuditServiceImpl auditService;
   @Mock private AuthService authService;
   @Mock private DtoValidator dtoValidator;
   @Mock private ProductSearchService productSearchService;
@@ -48,12 +46,7 @@ class ProductServiceImplTest {
     MockitoAnnotations.openMocks(this);
     productService =
         new ProductServiceImpl(
-            productRepository,
-            productCache,
-            auditService,
-            authService,
-                dtoValidator,
-            productSearchService);
+            productRepository, productCache, authService, dtoValidator, productSearchService);
   }
 
   @Test
@@ -125,8 +118,6 @@ class ProductServiceImplTest {
     verify(dtoValidator).validate(product);
     verify(productRepository).save(any(Product.class));
     verify(productCache).put(1L, savedProduct);
-    verify(auditService)
-        .logAction(adminUsername, AuditAction.ADD_PRODUCT, "Initialized product: 1 - Test Product");
   }
 
   @Test
@@ -169,7 +160,7 @@ class ProductServiceImplTest {
 
     // When
     Assertions.assertThatThrownBy(() -> productService.deleteProduct(null))
-            .isInstanceOf(ValidationException.class);
+        .isInstanceOf(ValidationException.class);
 
     // Then
     verify(productRepository, never()).findById(any());
@@ -185,7 +176,7 @@ class ProductServiceImplTest {
 
     // When
     Assertions.assertThatThrownBy(() -> productService.deleteProduct(productId))
-            .isInstanceOf(ResourceNotFoundException.class);
+        .isInstanceOf(ResourceNotFoundException.class);
 
     // Then
     verify(productRepository).findById(productId);
@@ -198,12 +189,10 @@ class ProductServiceImplTest {
     // Given
     Long productId = 1L;
     Product product = createTestProduct(productId);
-    String username = "admin";
 
     doNothing().when(authService).requireAdmin();
     when(productRepository.findById(productId)).thenReturn(Optional.of(product));
     when(productRepository.delete(productId)).thenReturn(true);
-    when(authService.getCurrentUser()).thenReturn(username);
 
     // When
     productService.deleteProduct(productId);
@@ -212,8 +201,6 @@ class ProductServiceImplTest {
     verify(productRepository).findById(productId);
     verify(productRepository).delete(productId);
     verify(productCache).remove(productId);
-    verify(auditService)
-        .logAction(username, AuditAction.DELETE_PRODUCT, "Deleted product: 1 - Test Product");
   }
 
   @Test
@@ -228,10 +215,9 @@ class ProductServiceImplTest {
 
     // When
     Assertions.assertThatThrownBy(() -> productService.deleteProduct(productId))
-            .isInstanceOf(ResourceNotFoundException.class);
+        .isInstanceOf(ResourceNotFoundException.class);
     // Then
     verify(productCache, never()).remove(productId);
-    verify(auditService, never()).logAction(any(), any(), any());
   }
 
   @Test
@@ -241,16 +227,15 @@ class ProductServiceImplTest {
     Product existingProduct = createTestProduct(productId);
     Product newProductData = createUpdatedTestProduct();
     Product updatedProduct = createUpdatedTestProduct(productId);
-    String username = "admin";
 
     doNothing().when(authService).requireAdmin();
     doNothing().when(dtoValidator).validate(newProductData);
     when(productSearchService.findById(productId)).thenReturn(Optional.of(existingProduct));
     when(productRepository.save(any(Product.class))).thenReturn(updatedProduct);
-    when(authService.getCurrentUser()).thenReturn(username);
 
     // When
-    Product result = productService.updateProduct(productId, ProductForm.fromProduct(newProductData));
+    Product result =
+        productService.updateProduct(productId, ProductForm.fromProduct(newProductData));
 
     // Then
     assertThat(result).isEqualTo(updatedProduct);
@@ -265,8 +250,6 @@ class ProductServiceImplTest {
                     product.getName().equals("Updated Product")
                         && product.getDescription().equals("Updated Description")));
     verify(productCache).put(productId, updatedProduct);
-    verify(auditService)
-        .logAction(username, AuditAction.EDIT_PRODUCT, "Edited product: 1 - Updated Product");
   }
 
   private Product createUpdatedTestProduct() {
@@ -299,7 +282,7 @@ class ProductServiceImplTest {
 
     // When & Then
     assertThatThrownBy(() -> productService.updateProduct(null, productForm))
-        .isInstanceOf(IllegalArgumentException.class)
+        .isInstanceOf(ValidationException.class)
         .hasMessage("Product ID cannot be null");
 
     verify(dtoValidator, never()).validate(any());
@@ -318,9 +301,12 @@ class ProductServiceImplTest {
     when(productSearchService.findById(productId)).thenReturn(Optional.empty());
 
     // When & Then
-    assertThatThrownBy(() -> productService.updateProduct(productId, productForm))
-        .isInstanceOf(IllegalArgumentException.class)
-        .hasMessage("Product not found with ID: 999");
+    var asserted = assertThatThrownBy(() -> productService.updateProduct(productId, productForm));
+    asserted.isInstanceOf(ResourceNotFoundException.class);
+    asserted.extracting(e -> Long.parseLong(((ResourceNotFoundException) e).getId()))
+                    .isEqualTo(productId);
+    asserted.extracting(e -> ((ResourceNotFoundException) e).getResource())
+                    .isEqualTo("product");
 
     verify(productRepository, never()).save(any());
   }
@@ -417,10 +403,10 @@ class ProductServiceImplTest {
     when(productSearchService.findById(productId)).thenReturn(Optional.of(existingProduct));
     when(productRepository.save(any(Product.class)))
         .thenAnswer(invocation -> invocation.getArgument(0));
-    when(authService.getCurrentUser()).thenReturn("admin");
 
     // When
-    Product result = productService.updateProduct(productId, ProductForm.fromProduct(newProductData));
+    Product result =
+        productService.updateProduct(productId, ProductForm.fromProduct(newProductData));
 
     // Then
     assertThat(result.getId()).isEqualTo(productId);

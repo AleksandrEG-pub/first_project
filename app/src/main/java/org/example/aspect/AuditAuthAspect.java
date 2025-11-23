@@ -17,7 +17,6 @@ public class AuditAuthAspect {
   public Object auditAuthService(ProceedingJoinPoint jp) throws Throwable {
     Object result = jp.proceed();
     User currentUser = UserContext.getValidatedCurrentUser();
-    System.out.println("aspect user: " + Thread.currentThread() + " " + currentUser.getUsername());
     if (result instanceof LoginResult loginResult) {
       AuditEvents.publish(new AuditEvent(AuditAction.LOGIN, loginResult.getMessage()));
     }

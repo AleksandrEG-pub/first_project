@@ -13,12 +13,12 @@ public class Product {
 
   @NotNull(message = "name can not be null")
   @NotBlank(message = "name can not be empty")
-  @Length(max = 255, message = "category can not be longer 255")
+  @Length(max = 255, message = "name can not be longer 255")
   private String name;
 
   @NotNull(message = "description can not be null")
   @NotBlank(message = "description can not be empty")
-  @Length(max = 10000, message = "category can not be longer 10000")
+  @Length(max = 10000, message = "description can not be longer 10000")
   private String description;
 
   @NotNull(message = "category can not be null")
@@ -28,7 +28,7 @@ public class Product {
 
   @NotNull(message = "brand can not be null")
   @NotBlank(message = "brand can not be empty")
-  @Length(max = 255, message = "category can not be longer 255")
+  @Length(max = 255, message = "brand can not be longer 255")
   private String brand;
 
   @NotNull(message = "price can not be null")

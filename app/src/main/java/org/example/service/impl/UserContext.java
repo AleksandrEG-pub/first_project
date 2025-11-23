@@ -6,6 +6,8 @@ import org.example.model.User;
 
 public class UserContext {
 
+  private UserContext() {}
+
   private static final ThreadLocal<User> currentUser = new ThreadLocal<>();
 
   public static Optional<User> getCurrentUser() {
@@ -13,7 +15,6 @@ public class UserContext {
   }
 
   public static void setCurrentUser(User user) {
-    System.out.println("set user: " + Thread.currentThread() + " " + user.getUsername());
     currentUser.set(user);
   }
 
@@ -22,7 +23,10 @@ public class UserContext {
     if (user == null) {
       throw new ApplicationException("current user can not be null");
     }
-    System.out.println("get user: " + Thread.currentThread() + " " + user.getUsername());
     return user;
+  }
+
+  public static void remove() {
+    currentUser.remove();
   }
 }

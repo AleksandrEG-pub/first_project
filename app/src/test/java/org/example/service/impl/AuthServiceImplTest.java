@@ -11,7 +11,6 @@ import static org.mockito.Mockito.when;
 import java.lang.reflect.Field;
 import org.example.dto.LoginResult;
 import org.example.exception.AccessDeniedException;
-import org.example.model.AuditAction;
 import org.example.model.Role;
 import org.example.model.User;
 import org.example.repository.UserRepository;
@@ -37,8 +36,7 @@ class AuthServiceImplTest {
     auditService = Mockito.mock(AuditServiceImpl.class);
     passwords = Mockito.mock(PasswordsImpl.class);
     authLoginAttemptService = Mockito.mock(AuthLoginAttemptService.class);
-    authService =
-        new AuthServiceImpl(userRepository, auditService, authLoginAttemptService, passwords);
+    authService = new AuthServiceImpl(userRepository, authLoginAttemptService, passwords);
   }
 
   @Test
@@ -58,7 +56,6 @@ class AuthServiceImplTest {
 
     // Then
     assertThat(result.isSuccess()).isFalse();
-    verify(auditService, never()).logAction(any(), any(), any());
   }
 
   @Test
@@ -74,7 +71,6 @@ class AuthServiceImplTest {
     // Then
     assertThat(result.isSuccess()).isFalse();
     verify(userRepository).findByUsername(username);
-    verify(auditService).logAction(username, AuditAction.LOGIN, "Login failed: user not found");
   }
 
   @Test
@@ -93,7 +89,6 @@ class AuthServiceImplTest {
     // Then
     assertThat(result.isSuccess()).isFalse();
     verify(userRepository).findByUsername(username);
-    verify(auditService).logAction(username, AuditAction.LOGIN, "Login failed: invalid password");
   }
 
   private User createTestUser(String username, Role role, String passwordHash) {
@@ -121,9 +116,8 @@ class AuthServiceImplTest {
     // Then
     assertThat(result.isSuccess()).isTrue();
     assertThat(authService.isAuthenticated()).isTrue();
-    assertThat(authService.getCurrentUser()).isEqualTo(username);
+    assertThat(authService.getCurrentUser().getUsername()).isEqualTo(username);
     verify(userRepository).findByUsername(username);
-    verify(auditService).logAction(username, AuditAction.LOGIN, "Login successful");
   }
 
   @Test
@@ -142,7 +136,7 @@ class AuthServiceImplTest {
 
     // Then
     assertThat(authService.isAuthenticated()).isTrue();
-    assertThat(authService.getCurrentUser()).isEqualTo(username);
+    assertThat(authService.getCurrentUser().getUsername()).isEqualTo(username);
   }
 
   @Test
@@ -163,42 +157,29 @@ class AuthServiceImplTest {
     assertThat(result.isSuccess()).isTrue();
     assertThat(authService.isAuthenticated()).isTrue();
     assertThat(authService.isAdmin()).isTrue();
-    assertThat(authService.getCurrentUser()).isEqualTo(username);
+    assertThat(authService.getCurrentUser().getUsername()).isEqualTo(username);
   }
 
   @Test
   void requireAdmin_ShouldNotThrow_WhenUserIsAdmin() {
     // Given
     User adminUser = createTestUser("admin", Role.ADMIN, "hash");
-    setCurrentUser(adminUser);
+    UserContext.setCurrentUser(adminUser);
 
     // When & Then
     assertThatNoException().isThrownBy(() -> authService.requireAdmin());
-  }
-
-  // Helper method to set current user (using reflection for testing)
-  private void setCurrentUser(User user) {
-    try {
-      Field currentUserField = AuthServiceImpl.class.getDeclaredField("currentUser");
-      currentUserField.setAccessible(true);
-      currentUserField.set(authService, user);
-    } catch (Exception e) {
-      throw new RuntimeException("Failed to set current user for testing", e);
-    }
   }
 
   @Test
   void requireAdmin_ShouldThrowAccessDenied_WhenUserIsNotAdmin() {
     // Given
     User regularUser = createTestUser("user", Role.USER, "hash");
-    setCurrentUser(regularUser);
+    UserContext.setCurrentUser(regularUser);
 
     // When & Then
     assertThatThrownBy(() -> authService.requireAdmin())
         .isInstanceOf(AccessDeniedException.class)
         .hasMessage("Admin role required for this operation");
-
-    verify(auditService).logAction("user", AuditAction.LOGIN, "Access denied: admin role required");
   }
 
   @Test
@@ -210,9 +191,6 @@ class AuthServiceImplTest {
     assertThatThrownBy(() -> authService.requireAdmin())
         .isInstanceOf(AccessDeniedException.class)
         .hasMessage("Admin role required for this operation");
-
-    verify(auditService)
-        .logAction("anonymous", AuditAction.LOGIN, "Access denied: admin role required");
   }
 
   @Test
@@ -231,7 +209,7 @@ class AuthServiceImplTest {
   void isAdmin_ShouldReturnFalse_WhenUserIsNotAdmin() {
     // Given
     User regularUser = createTestUser("user", Role.USER, "hash");
-    setCurrentUser(regularUser);
+    UserContext.setCurrentUser(regularUser);
 
     // When
     boolean result = authService.isAdmin();
@@ -244,7 +222,7 @@ class AuthServiceImplTest {
   void isAdmin_ShouldReturnTrue_WhenUserIsAdmin() {
     // Given
     User adminUser = createTestUser("admin", Role.ADMIN, "hash");
-    setCurrentUser(adminUser);
+    UserContext.setCurrentUser(adminUser);
 
     // When
     boolean result = authService.isAdmin();
@@ -269,7 +247,7 @@ class AuthServiceImplTest {
   void isAuthenticated_ShouldReturnTrue_WhenUserExists() {
     // Given
     User user = createTestUser("user", Role.USER, "hash");
-    setCurrentUser(user);
+    UserContext.setCurrentUser(user);
 
     // When
     boolean result = authService.isAuthenticated();
@@ -282,15 +260,14 @@ class AuthServiceImplTest {
   void logout_ShouldClearCurrentUser_WhenUserIsAuthenticated() {
     // Given
     User user = createTestUser("user", Role.USER, "hash");
-    setCurrentUser(user);
+    UserContext.setCurrentUser(user);
 
     // When
     authService.logout();
 
     // Then
     assertThat(authService.isAuthenticated()).isFalse();
-    assertThat(authService.getCurrentUser()).isEqualTo("unknown");
-    verify(auditService).logAction("user", AuditAction.LOGOUT, "Logout successful");
+    assertThat(authService.getCurrentUser()).isEqualTo(User.anonymous());
   }
 
   @Test
@@ -299,10 +276,10 @@ class AuthServiceImplTest {
     authService.logout();
 
     // When
-    String result = authService.getCurrentUser();
+    User result = authService.getCurrentUser();
 
     // Then
-    assertThat(result).isEqualTo("unknown");
+    assertThat(result.getRole()).isEqualTo(Role.ANONYMOUS);
   }
 
   @Test
@@ -310,13 +287,13 @@ class AuthServiceImplTest {
     // Given
     String username = "testuser";
     User user = createTestUser(username, Role.USER, "hash");
-    setCurrentUser(user);
+    UserContext.setCurrentUser(user);
 
     // When
-    String result = authService.getCurrentUser();
+    User result = authService.getCurrentUser();
 
     // Then
-    assertThat(result).isEqualTo(username);
+    assertThat(result.getUsername()).isEqualTo(username);
   }
 
   @Test
