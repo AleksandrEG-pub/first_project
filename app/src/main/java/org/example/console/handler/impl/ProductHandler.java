@@ -2,11 +2,12 @@ package org.example.console.handler.impl;
 
 import java.util.List;
 import java.util.Optional;
+
+import jakarta.validation.ValidationException;
 import org.example.console.ui.ConsoleUI;
 import org.example.dto.ProductForm;
 import org.example.exception.AccessDeniedException;
 import org.example.exception.ResourceNotFoundException;
-import org.example.exception.ValidationException;
 import org.example.model.Product;
 import org.example.service.ProductService;
 

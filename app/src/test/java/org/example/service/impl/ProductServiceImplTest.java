@@ -25,7 +25,7 @@ import org.example.model.Product;
 import org.example.repository.ProductRepository;
 import org.example.service.AuthService;
 import org.example.service.ProductSearchService;
-import org.example.service.ProductValidator;
+import org.example.service.DtoValidator;
 import org.example.service.SearchCriteria;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -38,7 +38,7 @@ class ProductServiceImplTest {
   @Mock private Cache<Long, Product> productCache;
   @Mock private AuditServiceImpl auditService;
   @Mock private AuthService authService;
-  @Mock private ProductValidator productValidator;
+  @Mock private DtoValidator dtoValidator;
   @Mock private ProductSearchService productSearchService;
 
   private ProductServiceImpl productService;
@@ -52,7 +52,7 @@ class ProductServiceImplTest {
             productCache,
             auditService,
             authService,
-            productValidator,
+                dtoValidator,
             productSearchService);
   }
 
@@ -111,7 +111,7 @@ class ProductServiceImplTest {
     String adminUsername = "admin";
 
     doNothing().when(authService).requireAdmin();
-    doNothing().when(productValidator).validateProductData(product);
+    doNothing().when(dtoValidator).validate(product);
     when(productRepository.save(any(Product.class))).thenReturn(savedProduct);
     when(authService.getAdminUserName()).thenReturn(adminUsername);
 
@@ -122,7 +122,7 @@ class ProductServiceImplTest {
     assertThat(result).isEqualTo(savedProduct);
 
     verify(authService).requireAdmin();
-    verify(productValidator).validateProductData(product);
+    verify(dtoValidator).validate(product);
     verify(productRepository).save(any(Product.class));
     verify(productCache).put(1L, savedProduct);
     verify(auditService)
@@ -140,7 +140,7 @@ class ProductServiceImplTest {
         .isInstanceOf(SecurityException.class)
         .hasMessage("Admin access required");
 
-    verify(productValidator, never()).validateProductData(any());
+    verify(dtoValidator, never()).validate(any());
     verify(productRepository, never()).save(any());
   }
 
@@ -150,8 +150,8 @@ class ProductServiceImplTest {
     Product product = createTestProduct(null);
     doNothing().when(authService).requireAdmin();
     doThrow(new IllegalArgumentException("Invalid product data"))
-        .when(productValidator)
-        .validateProductData(product);
+        .when(dtoValidator)
+        .validate(product);
 
     // When & Then
     assertThatThrownBy(() -> productService.addProduct(product))
@@ -244,7 +244,7 @@ class ProductServiceImplTest {
     String username = "admin";
 
     doNothing().when(authService).requireAdmin();
-    doNothing().when(productValidator).validateProductData(newProductData);
+    doNothing().when(dtoValidator).validate(newProductData);
     when(productSearchService.findById(productId)).thenReturn(Optional.of(existingProduct));
     when(productRepository.save(any(Product.class))).thenReturn(updatedProduct);
     when(authService.getCurrentUser()).thenReturn(username);
@@ -256,7 +256,7 @@ class ProductServiceImplTest {
     assertThat(result).isEqualTo(updatedProduct);
     assertThat(result.getName()).isEqualTo("Updated Product");
 
-    verify(productValidator).validateProductData(newProductData);
+    verify(dtoValidator).validate(newProductData);
     verify(productSearchService).findById(productId);
     verify(productRepository)
         .save(
@@ -302,7 +302,7 @@ class ProductServiceImplTest {
         .isInstanceOf(IllegalArgumentException.class)
         .hasMessage("Product ID cannot be null");
 
-    verify(productValidator, never()).validateProductData(any());
+    verify(dtoValidator, never()).validate(any());
     verify(productRepository, never()).save(any());
   }
 
@@ -314,7 +314,7 @@ class ProductServiceImplTest {
     ProductForm productForm = ProductForm.fromProduct(newProductData);
 
     doNothing().when(authService).requireAdmin();
-    doNothing().when(productValidator).validateProductData(newProductData);
+    doNothing().when(dtoValidator).validate(newProductData);
     when(productSearchService.findById(productId)).thenReturn(Optional.empty());
 
     // When & Then
@@ -338,7 +338,7 @@ class ProductServiceImplTest {
         .isInstanceOf(SecurityException.class)
         .hasMessage("Admin access required");
 
-    verify(productValidator, never()).validateProductData(any());
+    verify(dtoValidator, never()).validate(any());
     verify(productRepository, never()).save(any());
   }
 
@@ -352,8 +352,8 @@ class ProductServiceImplTest {
 
     doNothing().when(authService).requireAdmin();
     doThrow(new IllegalArgumentException("Invalid product data"))
-        .when(productValidator)
-        .validateProductData(newProductData);
+        .when(dtoValidator)
+        .validate(newProductData);
     when(productSearchService.findById(productId)).thenReturn(Optional.of(existingProduct));
 
     // When & Then
@@ -413,7 +413,7 @@ class ProductServiceImplTest {
     Product newProductData = createUpdatedTestProduct();
 
     doNothing().when(authService).requireAdmin();
-    doNothing().when(productValidator).validateProductData(newProductData);
+    doNothing().when(dtoValidator).validate(newProductData);
     when(productSearchService.findById(productId)).thenReturn(Optional.of(existingProduct));
     when(productRepository.save(any(Product.class)))
         .thenAnswer(invocation -> invocation.getArgument(0));
@@ -439,7 +439,7 @@ class ProductServiceImplTest {
     Product savedProduct = createTestProduct(1L);
 
     doNothing().when(authService).requireAdmin();
-    doNothing().when(productValidator).validateProductData(inputProduct);
+    doNothing().when(dtoValidator).validate(inputProduct);
     when(productRepository.save(any(Product.class))).thenReturn(savedProduct);
     when(authService.getAdminUserName()).thenReturn("admin");
 

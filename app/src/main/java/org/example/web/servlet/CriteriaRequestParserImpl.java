@@ -2,36 +2,26 @@ package org.example.web.servlet;
 
 import jakarta.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
+import java.util.Optional;
 import org.example.service.SearchCriteria;
 
 public class CriteriaRequestParserImpl implements CriteriaRequestParser {
   @Override
   public SearchCriteria buildSearchCriteria(HttpServletRequest req) {
     var builder = new SearchCriteria.Builder();
-    String id = req.getParameter("id");
-    if (id != null && !id.trim().isEmpty()) {
-      builder.id(Long.valueOf(id));
-    }
-    String name = req.getParameter("name");
-    if (name != null && !name.trim().isEmpty()) {
-      builder.name(name);
-    }
-    String category = req.getParameter("category");
-    if (category != null && !category.trim().isEmpty()) {
-      builder.category(category);
-    }
-    String brand = req.getParameter("brand");
-    if (brand != null && !brand.trim().isEmpty()) {
-      builder.brand(brand);
-    }
-    String minPrice = req.getParameter("minPrice");
-    if (minPrice != null && !minPrice.trim().isEmpty()) {
-      builder.minPrice(new BigDecimal(minPrice));
-    }
-    String maxPrice = req.getParameter("maxPrice");
-    if (maxPrice != null && !maxPrice.trim().isEmpty()) {
-      builder.minPrice(new BigDecimal(maxPrice));
-    }
+    getParameter(req, "id").ifPresent(id -> builder.id(Long.valueOf(id)));
+    getParameter(req, "name").ifPresent(builder::name);
+    getParameter(req, "category").ifPresent(builder::category);
+    getParameter(req, "brand").ifPresent(builder::brand);
+    getParameter(req, "minPrice").ifPresent(price -> builder.minPrice(new BigDecimal(price)));
+    getParameter(req, "maxPrice").ifPresent(price -> builder.maxPrice(new BigDecimal(price)));
     return builder.build();
+  }
+
+  /** Extracts and trims parameter value, returns empty if null or blank */
+  private Optional<String> getParameter(HttpServletRequest req, String paramName) {
+    return Optional.ofNullable(req.getParameter(paramName))
+        .map(String::trim)
+        .filter(s -> !s.isEmpty());
   }
 }

@@ -49,7 +49,8 @@ public class ApplicationConfiguration {
     EnvironmentServerConfigurationProperties serverConfigurationProperties =
         new EnvironmentServerConfigurationProperties();
     ServletMapping servletMapping =
-        new ServletMappingImpl(services.getAuditService(), services.getProductService());
+        new ServletMappingImpl(
+            services.getAuditService(), services.getProductService(), services.getDtoValidator());
     ServerConfiguration serverConfiguration =
         new ServerConfiguration(
             services.getAuthService(), serverConfigurationProperties, servletMapping);

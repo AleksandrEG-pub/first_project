@@ -4,15 +4,18 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.ValidationException;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.stream.Stream;
 import org.example.dto.ProductForm;
 import org.example.exception.ApplicationException;
+import org.example.exception.MissingRequestParameterException;
+import org.example.exception.ParameterTypeMismatchException;
 import org.example.exception.ResourceNotFoundException;
-import org.example.exception.ValidationException;
 import org.example.mapper.ProductMapper;
 import org.example.model.Product;
+import org.example.service.DtoValidator;
 import org.example.service.ProductService;
 import org.example.service.SearchCriteria;
 import org.example.web.RequestPathTools;
@@ -22,15 +25,18 @@ public class ProductServlet extends HttpServlet {
   private final transient ProductService productService;
   private final transient CriteriaRequestParser criteriaRequestParser;
   private final transient ProductFormRequestParser productFormRequestParser;
+  private final transient DtoValidator dtoValidator;
   private final ObjectMapper objectMapper = new ObjectMapper();
 
   public ProductServlet(
       ProductService productService,
       CriteriaRequestParser criteriaRequestParser,
-      ProductFormRequestParser productFormRequestParser) {
+      ProductFormRequestParser productFormRequestParser,
+      DtoValidator dtoValidator) {
     this.productService = productService;
     this.criteriaRequestParser = criteriaRequestParser;
     this.productFormRequestParser = productFormRequestParser;
+    this.dtoValidator = dtoValidator;
   }
 
   @Override
@@ -76,9 +82,18 @@ public class ProductServlet extends HttpServlet {
   private Long extractIdFromRequest(HttpServletRequest req) {
     String pathInfo = req.getPathInfo();
     if (RequestPathTools.isPathInfoHasId(pathInfo)) {
-      return Long.valueOf(pathInfo.substring(1));
+      String idStr = pathInfo.substring(1);
+      try {
+        long id = Long.parseLong(idStr);
+        if (id < 0) {
+          throw new ValidationException("id can not be negative");
+        }
+        return id;
+      } catch (NumberFormatException e) {
+        throw new ParameterTypeMismatchException("Can not convert to integer: " + idStr, e);
+      }
     }
-    throw new ValidationException("Product ID is required");
+    throw new MissingRequestParameterException("Product ID is required");
   }
 
   private void writeResponseJson(HttpServletResponse resp, Object object, int status) {
@@ -95,6 +110,7 @@ public class ProductServlet extends HttpServlet {
   @Override
   protected void doPost(HttpServletRequest req, HttpServletResponse resp) {
     ProductForm productForm = productFormRequestParser.parse(req);
+    dtoValidator.validate(productForm);
     Product createdProduct = productService.create(productForm);
     writeResponseJson(resp, createdProduct, HttpServletResponse.SC_CREATED);
   }
@@ -103,6 +119,7 @@ public class ProductServlet extends HttpServlet {
   protected void doPut(HttpServletRequest req, HttpServletResponse resp) {
     Long productId = extractIdFromRequest(req);
     ProductForm updatedData = productFormRequestParser.parse(req);
+    dtoValidator.validate(updatedData);
     Product updatedProduct = productService.updateProduct(productId, updatedData);
     writeResponseJson(resp, updatedProduct, HttpServletResponse.SC_OK);
   }

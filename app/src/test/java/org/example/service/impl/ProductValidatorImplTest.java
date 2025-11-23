@@ -3,9 +3,11 @@ package org.example.service.impl;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.assertj.core.api.Assertions.assertThatNoException;
 
+import jakarta.validation.Validation;
+import jakarta.validation.ValidatorFactory;
 import java.math.BigDecimal;
 import org.example.model.Product;
-import org.example.service.ProductValidator;
+import org.example.service.DtoValidator;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
@@ -13,7 +15,13 @@ import org.junit.jupiter.params.provider.ValueSource;
 
 class ProductValidatorImplTest {
 
-  private final ProductValidator productValidator = new ProductValidatorImpl();
+  private final DtoValidator dtoValidator;
+
+  {
+    try (ValidatorFactory factory = Validation.buildDefaultValidatorFactory()) {
+      dtoValidator = new DtoValidatorImpl(factory.getValidator());
+    }
+  }
 
   @Test
   void validateProductData_ShouldNotThrowException_WhenProductIsValid() {
@@ -21,7 +29,7 @@ class ProductValidatorImplTest {
     Product validProduct = createValidProduct();
 
     // When & Then
-    assertThatNoException().isThrownBy(() -> productValidator.validateProductData(validProduct));
+    assertThatNoException().isThrownBy(() -> dtoValidator.validate(validProduct));
   }
 
   private Product createValidProduct() {
@@ -42,7 +50,7 @@ class ProductValidatorImplTest {
 
     // When & Then
     assertThatIllegalArgumentException()
-        .isThrownBy(() -> productValidator.validateProductData(product))
+        .isThrownBy(() -> dtoValidator.validate(product))
         .withMessage("Product name cannot be null or empty");
   }
 
@@ -54,7 +62,7 @@ class ProductValidatorImplTest {
 
     // When & Then
     assertThatIllegalArgumentException()
-        .isThrownBy(() -> productValidator.validateProductData(product))
+        .isThrownBy(() -> dtoValidator.validate(product))
         .withMessage("Product name cannot be null or empty");
   }
 
@@ -66,7 +74,7 @@ class ProductValidatorImplTest {
 
     // When & Then
     assertThatIllegalArgumentException()
-        .isThrownBy(() -> productValidator.validateProductData(product))
+        .isThrownBy(() -> dtoValidator.validate(product))
         .withMessage("Product name cannot be null or empty");
   }
 
@@ -78,7 +86,7 @@ class ProductValidatorImplTest {
 
     // When & Then
     assertThatIllegalArgumentException()
-        .isThrownBy(() -> productValidator.validateProductData(product))
+        .isThrownBy(() -> dtoValidator.validate(product))
         .withMessage("Product description cannot be null or empty");
   }
 
@@ -90,7 +98,7 @@ class ProductValidatorImplTest {
 
     // When & Then
     assertThatIllegalArgumentException()
-        .isThrownBy(() -> productValidator.validateProductData(product))
+        .isThrownBy(() -> dtoValidator.validate(product))
         .withMessage("Product description cannot be null or empty");
   }
 
@@ -102,7 +110,7 @@ class ProductValidatorImplTest {
 
     // When & Then
     assertThatIllegalArgumentException()
-        .isThrownBy(() -> productValidator.validateProductData(product))
+        .isThrownBy(() -> dtoValidator.validate(product))
         .withMessage("Product description cannot be null or empty");
   }
 
@@ -114,7 +122,7 @@ class ProductValidatorImplTest {
 
     // When & Then
     assertThatIllegalArgumentException()
-        .isThrownBy(() -> productValidator.validateProductData(product))
+        .isThrownBy(() -> dtoValidator.validate(product))
         .withMessage("Product category cannot be null or empty");
   }
 
@@ -126,7 +134,7 @@ class ProductValidatorImplTest {
 
     // When & Then
     assertThatIllegalArgumentException()
-        .isThrownBy(() -> productValidator.validateProductData(product))
+        .isThrownBy(() -> dtoValidator.validate(product))
         .withMessage("Product category cannot be null or empty");
   }
 
@@ -138,7 +146,7 @@ class ProductValidatorImplTest {
 
     // When & Then
     assertThatIllegalArgumentException()
-        .isThrownBy(() -> productValidator.validateProductData(product))
+        .isThrownBy(() -> dtoValidator.validate(product))
         .withMessage("Product category cannot be null or empty");
   }
 
@@ -150,7 +158,7 @@ class ProductValidatorImplTest {
 
     // When & Then
     assertThatIllegalArgumentException()
-        .isThrownBy(() -> productValidator.validateProductData(product))
+        .isThrownBy(() -> dtoValidator.validate(product))
         .withMessage("Product brand cannot be null or empty");
   }
 
@@ -162,7 +170,7 @@ class ProductValidatorImplTest {
 
     // When & Then
     assertThatIllegalArgumentException()
-        .isThrownBy(() -> productValidator.validateProductData(product))
+        .isThrownBy(() -> dtoValidator.validate(product))
         .withMessage("Product brand cannot be null or empty");
   }
 
@@ -174,7 +182,7 @@ class ProductValidatorImplTest {
 
     // When & Then
     assertThatIllegalArgumentException()
-        .isThrownBy(() -> productValidator.validateProductData(product))
+        .isThrownBy(() -> dtoValidator.validate(product))
         .withMessage("Product brand cannot be null or empty");
   }
 
@@ -186,7 +194,7 @@ class ProductValidatorImplTest {
 
     // When & Then
     assertThatIllegalArgumentException()
-        .isThrownBy(() -> productValidator.validateProductData(product))
+        .isThrownBy(() -> dtoValidator.validate(product))
         .withMessage("Product price cannot be null");
   }
 
@@ -198,7 +206,7 @@ class ProductValidatorImplTest {
 
     // When & Then
     assertThatIllegalArgumentException()
-        .isThrownBy(() -> productValidator.validateProductData(product))
+        .isThrownBy(() -> dtoValidator.validate(product))
         .withMessage("Product price must be greater than zero");
   }
 
@@ -210,7 +218,7 @@ class ProductValidatorImplTest {
 
     // When & Then
     assertThatIllegalArgumentException()
-        .isThrownBy(() -> productValidator.validateProductData(product))
+        .isThrownBy(() -> dtoValidator.validate(product))
         .withMessage("Product price must be greater than zero");
   }
 
@@ -227,9 +235,9 @@ class ProductValidatorImplTest {
     product3.setPrice(new BigDecimal("100"));
 
     // When & Then - All should not throw exceptions
-    assertThatNoException().isThrownBy(() -> productValidator.validateProductData(product1));
-    assertThatNoException().isThrownBy(() -> productValidator.validateProductData(product2));
-    assertThatNoException().isThrownBy(() -> productValidator.validateProductData(product3));
+    assertThatNoException().isThrownBy(() -> dtoValidator.validate(product1));
+    assertThatNoException().isThrownBy(() -> dtoValidator.validate(product2));
+    assertThatNoException().isThrownBy(() -> dtoValidator.validate(product3));
   }
 
   @Test
@@ -242,7 +250,7 @@ class ProductValidatorImplTest {
 
     // When & Then - Should throw for the first invalid field (name)
     assertThatIllegalArgumentException()
-        .isThrownBy(() -> productValidator.validateProductData(product))
+        .isThrownBy(() -> dtoValidator.validate(product))
         .withMessage("Product name cannot be null or empty");
   }
 
@@ -263,10 +271,10 @@ class ProductValidatorImplTest {
     // When & Then
     if (shouldThrow) {
       assertThatIllegalArgumentException()
-          .isThrownBy(() -> productValidator.validateProductData(product))
+          .isThrownBy(() -> dtoValidator.validate(product))
           .withMessage(expectedMessage);
     } else {
-      assertThatNoException().isThrownBy(() -> productValidator.validateProductData(product));
+      assertThatNoException().isThrownBy(() -> dtoValidator.validate(product));
     }
   }
 
@@ -287,10 +295,10 @@ class ProductValidatorImplTest {
     // When & Then
     if (shouldThrow) {
       assertThatIllegalArgumentException()
-          .isThrownBy(() -> productValidator.validateProductData(product))
+          .isThrownBy(() -> dtoValidator.validate(product))
           .withMessage(expectedMessage);
     } else {
-      assertThatNoException().isThrownBy(() -> productValidator.validateProductData(product));
+      assertThatNoException().isThrownBy(() -> dtoValidator.validate(product));
     }
   }
 
@@ -311,10 +319,10 @@ class ProductValidatorImplTest {
     // When & Then
     if (shouldThrow) {
       assertThatIllegalArgumentException()
-          .isThrownBy(() -> productValidator.validateProductData(product))
+          .isThrownBy(() -> dtoValidator.validate(product))
           .withMessage(expectedMessage);
     } else {
-      assertThatNoException().isThrownBy(() -> productValidator.validateProductData(product));
+      assertThatNoException().isThrownBy(() -> dtoValidator.validate(product));
     }
   }
 
@@ -335,10 +343,10 @@ class ProductValidatorImplTest {
     // When & Then
     if (shouldThrow) {
       assertThatIllegalArgumentException()
-          .isThrownBy(() -> productValidator.validateProductData(product))
+          .isThrownBy(() -> dtoValidator.validate(product))
           .withMessage(expectedMessage);
     } else {
-      assertThatNoException().isThrownBy(() -> productValidator.validateProductData(product));
+      assertThatNoException().isThrownBy(() -> dtoValidator.validate(product));
     }
   }
 
@@ -350,7 +358,7 @@ class ProductValidatorImplTest {
     product.setPrice(new BigDecimal(validPrice));
 
     // When & Then
-    assertThatNoException().isThrownBy(() -> productValidator.validateProductData(product));
+    assertThatNoException().isThrownBy(() -> dtoValidator.validate(product));
   }
 
   @ParameterizedTest
@@ -367,7 +375,7 @@ class ProductValidatorImplTest {
 
     // When & Then
     assertThatIllegalArgumentException()
-        .isThrownBy(() -> productValidator.validateProductData(product))
+        .isThrownBy(() -> dtoValidator.validate(product))
         .withMessage(expectedMessage);
   }
 }

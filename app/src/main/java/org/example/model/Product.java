@@ -1,20 +1,45 @@
 package org.example.model;
 
+import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.PositiveOrZero;
 import java.math.BigDecimal;
 import java.util.Objects;
+import org.hibernate.validator.constraints.Length;
 
 public class Product {
-  private Long id;
+
+  @NotNull @PositiveOrZero private Long id;
+
+  @NotNull
+  @NotBlank
+  @Length(max = 255)
   private String name;
+
+  @NotNull
+  @NotBlank
+  @Length(max = 10000)
   private String description;
+
+  @NotNull
+  @NotBlank
+  @Length(max = 255)
   private String category;
+
+  @NotNull
+  @NotBlank
+  @Length(max = 255)
   private String brand;
+
+  @NotNull
+  @DecimalMin(value = "0.01")
   private BigDecimal price;
 
   public Product() {}
 
   public Product(
-          Long id, String name, String description, String category, String brand, BigDecimal price) {
+      Long id, String name, String description, String category, String brand, BigDecimal price) {
     this.id = id;
     this.name = name;
     this.description = description;

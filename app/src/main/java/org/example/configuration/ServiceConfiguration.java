@@ -1,5 +1,8 @@
 package org.example.configuration;
 
+import jakarta.validation.Validation;
+import jakarta.validation.Validator;
+import jakarta.validation.ValidatorFactory;
 import org.example.cache.Cache;
 import org.example.cache.ProductBaseCache;
 import org.example.model.Product;
@@ -10,14 +13,14 @@ import org.example.service.AuditService;
 import org.example.service.AuthLoginAttemptService;
 import org.example.service.AuthLoginAttemptServiceImpl;
 import org.example.service.AuthService;
+import org.example.service.DtoValidator;
 import org.example.service.ProductSearchService;
 import org.example.service.ProductService;
-import org.example.service.ProductValidator;
 import org.example.service.impl.AuditServiceImpl;
 import org.example.service.impl.AuthServiceImpl;
+import org.example.service.impl.DtoValidatorImpl;
 import org.example.service.impl.ProductSearchServiceImpl;
 import org.example.service.impl.ProductServiceImpl;
-import org.example.service.impl.ProductValidatorImpl;
 import org.example.util.Passwords;
 import org.example.util.PasswordsImpl;
 
@@ -29,6 +32,7 @@ public abstract class ServiceConfiguration {
   protected final UserRepository userRepository;
   protected final AuditRepository auditRepository;
   protected final ProductRepository productRepository;
+  protected final DtoValidator dtoValidator;
 
   protected ServiceConfiguration(
       ProductRepository productRepository,
@@ -45,7 +49,11 @@ public abstract class ServiceConfiguration {
     Passwords passwords = new PasswordsImpl();
     this.authService =
         new AuthServiceImpl(userRepository, auditService, authLoginAttemptService, passwords);
-    ProductValidator productValidator = new ProductValidatorImpl();
+    Validator validator;
+    try (ValidatorFactory factory = Validation.buildDefaultValidatorFactory()) {
+      validator = factory.getValidator();
+    }
+    this.dtoValidator = new DtoValidatorImpl(validator);
     ProductSearchService productSearchService =
         new ProductSearchServiceImpl(productRepository, productCache, auditService, authService);
     this.productService =
@@ -54,7 +62,7 @@ public abstract class ServiceConfiguration {
             productCache,
             auditService,
             authService,
-            productValidator,
+            dtoValidator,
             productSearchService);
   }
 
@@ -72,5 +80,9 @@ public abstract class ServiceConfiguration {
 
   public AuditService getAuditService() {
     return auditService;
+  }
+
+  public DtoValidator getDtoValidator() {
+    return dtoValidator;
   }
 }

@@ -5,8 +5,9 @@ import jakarta.servlet.http.HttpServletRequest;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+
+import jakarta.validation.ValidationException;
 import org.example.dto.ProductForm;
-import org.example.exception.ValidationException;
 
 public class ProductFormRequestParserImpl implements ProductFormRequestParser {
   private final ObjectMapper objectMapper = new ObjectMapper();

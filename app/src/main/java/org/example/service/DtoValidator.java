@@ -1,9 +1,8 @@
 package org.example.service;
 
-import org.example.model.Product;
 
 /** Validation for products according to business rules */
-public interface ProductValidator {
+public interface DtoValidator {
   /** Full validation for all business rules related to product */
-  void validateProductData(Product product);
+  void validate(Object object);
 }

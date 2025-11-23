@@ -1,6 +1,7 @@
 plugins {
     application
     id("com.gradleup.shadow") version "9.1.0"
+    id("io.freefair.aspectj.post-compile-weaving") version "9.1.0"
 }
 
 repositories {
@@ -17,6 +18,12 @@ dependencies {
     annotationProcessor("org.mapstruct:mapstruct-processor:1.6.3")
     implementation("org.mapstruct:mapstruct:1.6.3")
     testAnnotationProcessor("org.mapstruct:mapstruct-processor:1.6.3")
+    implementation("org.aspectj:aspectjrt:1.9.25")
+    implementation("org.aspectj:aspectjweaver:1.9.25")
+    implementation("org.glassfish:jakarta.el:4.0.2")
+
+    implementation("jakarta.validation:jakarta.validation-api:4.0.0-M1")
+    implementation("org.hibernate.validator:hibernate-validator:9.1.0.Final")
 
     implementation("org.liquibase:liquibase-core:4.30.0")
     implementation("org.postgresql:postgresql:42.7.8")

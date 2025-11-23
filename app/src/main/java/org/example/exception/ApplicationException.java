@@ -5,6 +5,10 @@ public class ApplicationException extends RuntimeException {
     super(message, cause);
   }
 
+  public ApplicationException(String message) {
+    super(message);
+  }
+
   public ApplicationException(Throwable cause) {
     super(cause);
   }

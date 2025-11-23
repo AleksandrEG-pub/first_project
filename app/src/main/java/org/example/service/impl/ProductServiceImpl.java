@@ -2,10 +2,11 @@ package org.example.service.impl;
 
 import java.util.List;
 import java.util.Optional;
+
+import jakarta.validation.ValidationException;
 import org.example.cache.Cache;
 import org.example.dto.ProductForm;
 import org.example.exception.ResourceNotFoundException;
-import org.example.exception.ValidationException;
 import org.example.mapper.ProductMapper;
 import org.example.model.AuditAction;
 import org.example.model.Product;
@@ -14,7 +15,7 @@ import org.example.service.AuditService;
 import org.example.service.AuthService;
 import org.example.service.ProductSearchService;
 import org.example.service.ProductService;
-import org.example.service.ProductValidator;
+import org.example.service.DtoValidator;
 import org.example.service.SearchCriteria;
 
 public class ProductServiceImpl implements ProductService {
@@ -23,7 +24,7 @@ public class ProductServiceImpl implements ProductService {
   private final Cache<Long, Product> productCache;
   private final AuditService auditService;
   private final AuthService authService;
-  private final ProductValidator productValidator;
+  private final DtoValidator dtoValidator;
   private final ProductSearchService productSearchService;
 
   public ProductServiceImpl(
@@ -31,13 +32,13 @@ public class ProductServiceImpl implements ProductService {
       Cache<Long, Product> productCache,
       AuditService auditService,
       AuthService authService,
-      ProductValidator productValidator,
+      DtoValidator dtoValidator,
       ProductSearchService productSearchService) {
     this.productRepository = productRepository;
     this.productCache = productCache;
     this.auditService = auditService;
     this.authService = authService;
-    this.productValidator = productValidator;
+    this.dtoValidator = dtoValidator;
     this.productSearchService = productSearchService;
   }
 
@@ -80,14 +81,15 @@ public class ProductServiceImpl implements ProductService {
   public Product updateProduct(Long id, ProductForm newProductData) {
     authService.requireAdmin();
     if (id == null) {
-      throw new IllegalArgumentException("Product ID cannot be null");
+      throw new ValidationException("Product ID cannot be null");
     }
     Product product = PRODUCT_MAPPER.toProduct(newProductData);
-    productValidator.validateProductData(product);
+
+    dtoValidator.validate(product);
 
     Optional<Product> existingOpt = findById(id);
     if (existingOpt.isEmpty()) {
-      throw new IllegalArgumentException("Product not found with ID: " + id);
+      throw new ResourceNotFoundException("product", String.valueOf(id));
     }
     Product forUpdate =
         Product.builder(existingOpt.get())
@@ -130,7 +132,7 @@ public class ProductServiceImpl implements ProductService {
   @Override
   public Product addProduct(Product product) {
     authService.requireAdmin();
-    productValidator.validateProductData(product);
+    dtoValidator.validate(product);
     Product newProduct = Product.builder(product).build();
     Product saved = productRepository.save(newProduct);
     productCache.put(saved.getId(), saved);
