@@ -1,7 +1,6 @@
 package org.example.web.servlet;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -16,11 +15,11 @@ public class AuditServlet extends HttpServlet {
   private static final String USERNAME_PARAMETER = "username";
   private static final AuditLogMapper AUDIT_LOG_MAPPER = AuditLogMapper.INSTANCE;
   private final transient AuditService auditService;
-  private final ObjectMapper objectMapper = new ObjectMapper();
+  private final ObjectMapper objectMapper;
 
-  public AuditServlet(AuditService auditService) {
+  public AuditServlet(AuditService auditService, ObjectMapper objectMapper) {
     this.auditService = auditService;
-    objectMapper.registerModule(new JavaTimeModule());
+    this.objectMapper = objectMapper;
   }
 
   @Override

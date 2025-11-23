@@ -1,5 +1,6 @@
 package org.example.configuration;
 
+import lombok.Getter;
 import org.apache.catalina.LifecycleException;
 import org.example.exception.ApplicationException;
 import org.example.repository.impl.database.ConnectionManager;
@@ -15,6 +16,7 @@ import org.example.web.configuration.ServletMappingImpl;
  * in-memory), provides lifecycle operations such as data initialization, startup and shutdown, and
  * registers a JVM shutdown hook.
  */
+@Getter
 public class ApplicationConfiguration {
   private final UIConfiguration ui;
   private final MenuConfiguration menus;
@@ -30,14 +32,6 @@ public class ApplicationConfiguration {
     this.menus = new MenuConfiguration(services, ui, handlers);
   }
 
-  public UIConfiguration getUi() {
-    return ui;
-  }
-
-  public ServiceConfiguration getServices() {
-    return services;
-  }
-
   public void initializeData() {
     LiquibaseConfiguration liquibaseConfiguration =
         new LiquibaseConfiguration.Builder().fromEnvironment().build();
@@ -50,10 +44,16 @@ public class ApplicationConfiguration {
         new EnvironmentServerConfigurationProperties();
     ServletMapping servletMapping =
         new ServletMappingImpl(
-            services.getAuditService(), services.getProductService(), services.getDtoValidator());
+            services.getAuditService(),
+            services.getProductService(),
+            services.getDtoValidator(),
+            services.getObjectMapper());
     ServerConfiguration serverConfiguration =
         new ServerConfiguration(
-            services.getAuthService(), serverConfigurationProperties, servletMapping);
+            services.getAuthService(),
+            serverConfigurationProperties,
+            servletMapping,
+            services.getObjectMapper());
     try {
       serverConfiguration.startServer();
     } catch (LifecycleException e) {

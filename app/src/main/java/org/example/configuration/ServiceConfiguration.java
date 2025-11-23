@@ -1,8 +1,11 @@
 package org.example.configuration;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
 import jakarta.validation.ValidatorFactory;
+import lombok.Getter;
 import org.example.cache.Cache;
 import org.example.cache.ProductBaseCache;
 import org.example.model.Product;
@@ -24,6 +27,7 @@ import org.example.service.impl.ProductServiceImpl;
 import org.example.util.Passwords;
 import org.example.util.PasswordsImpl;
 
+@Getter
 public abstract class ServiceConfiguration {
   private static final int PRODUCT_CACHE_SIZE = 1000;
   protected final ProductService productService;
@@ -33,6 +37,7 @@ public abstract class ServiceConfiguration {
   protected final AuditRepository auditRepository;
   protected final ProductRepository productRepository;
   protected final DtoValidator dtoValidator;
+  protected final ObjectMapper objectMapper;
 
   protected ServiceConfiguration(
       ProductRepository productRepository,
@@ -58,25 +63,7 @@ public abstract class ServiceConfiguration {
     this.productService =
         new ProductServiceImpl(
             productRepository, productCache, authService, dtoValidator, productSearchService);
-  }
-
-  public ProductService getProductService() {
-    return productService;
-  }
-
-  public AuthService getAuthService() {
-    return authService;
-  }
-
-  public UserRepository getUserRepository() {
-    return userRepository;
-  }
-
-  public AuditService getAuditService() {
-    return auditService;
-  }
-
-  public DtoValidator getDtoValidator() {
-    return dtoValidator;
+    this.objectMapper = new ObjectMapper();
+    objectMapper.registerModule(new JavaTimeModule());
   }
 }

@@ -6,9 +6,8 @@ import lombok.Getter;
 @Getter
 @Builder
 public class ErrorResponse {
-  String type;
-  @Builder.Default
-  String title = "about:blank";
+  @Builder.Default String type = "about:blank";
+  String title;
   int status;
   String instance;
 }

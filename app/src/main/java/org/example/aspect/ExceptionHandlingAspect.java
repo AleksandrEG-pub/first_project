@@ -135,7 +135,7 @@ public class ExceptionHandlingAspect {
   }
 
   private String toInstance(HttpServletRequest request) {
-    return request.getRequestURI() + request.getContextPath();
+    return request.getContextPath() + request.getRequestURI();
   }
 
   private void sendErrorResponse(HttpServletResponse response, ErrorResponse errorResponse) {

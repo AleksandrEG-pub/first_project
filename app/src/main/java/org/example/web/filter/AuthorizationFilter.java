@@ -1,5 +1,7 @@
 package org.example.web.filter;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.Filter;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -8,20 +10,16 @@ import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.util.Base64;
-import org.example.dto.LoginResult;
-import org.example.service.AuthService;
+import org.example.dto.ErrorResponse;
+import org.example.model.Role;
+import org.example.model.User;
+import org.example.service.impl.UserContext;
 
 public class AuthorizationFilter implements Filter {
+  private ObjectMapper objectMapper;
 
-  private static final String AUTH_HEADER = "Authorization";
-  private static final String BASIC_PREFIX = "Basic ";
-  private static final String LOGIN_PATH = "/auth/login";
-  private AuthService authService;
-
-  public AuthorizationFilter(AuthService authService) {
-    this.authService = authService;
+  public AuthorizationFilter(ObjectMapper objectMapper) {
+    this.objectMapper = objectMapper;
   }
 
   public AuthorizationFilter() {}
@@ -31,62 +29,48 @@ public class AuthorizationFilter implements Filter {
       throws IOException, ServletException {
     HttpServletRequest httpRequest = (HttpServletRequest) request;
     HttpServletResponse httpResponse = (HttpServletResponse) response;
-
-    if (isLoginRequest(httpRequest)) {
-      chain.doFilter(request, response);
+    User currentUser = UserContext.getValidatedCurrentUser();
+    if (User.anonymous().equals(currentUser)) {
+      sendUnauthorizedResponse(httpRequest, httpResponse, "unauthorized");
+    }
+    boolean notAdmin = !currentUser.getRole().equals(Role.ADMIN);
+    if (!isProductSearchRequest(httpRequest) && notAdmin) {
+      sendUnauthorizedResponse(httpRequest, httpResponse, "unauthorized");
       return;
     }
-
-    tryAuthenticate(chain, httpRequest, httpResponse);
+    chain.doFilter(request, response);
   }
 
-  private boolean isLoginRequest(HttpServletRequest request) {
-    return LOGIN_PATH.equals(request.getRequestURI())
-        || LOGIN_PATH.equals(request.getServletPath());
-  }
-
-  private void tryAuthenticate(
-      FilterChain chain, HttpServletRequest httpRequest, HttpServletResponse httpResponse)
-      throws IOException, ServletException {
-
-    String authHeader = httpRequest.getHeader(AUTH_HEADER);
-    if (authHeader == null || !authHeader.startsWith(BASIC_PREFIX)) {
-      sendUnauthorizedResponse(httpResponse, "Missing or invalid Authorization header");
-      return;
-    }
-
-    String[] credentials;
-    try {
-      credentials = extractCredentials(authHeader);
-    } catch (IllegalArgumentException e) {
-      sendUnauthorizedResponse(httpResponse, "Invalid Base64 encoding in credentials");
-      return;
-    }
-    if (credentials.length != 2) {
-      sendUnauthorizedResponse(httpResponse, "Invalid credential format");
-      return;
-    }
-
-    String username = credentials[0];
-    String password = credentials[1];
-    LoginResult loginResult = authService.login(username, password);
-    if (loginResult.isFailure()) {
-      sendUnauthorizedResponse(httpResponse, loginResult.getMessage());
-      return;
-    }
-    chain.doFilter(httpRequest, httpResponse);
-  }
-
-  private void sendUnauthorizedResponse(HttpServletResponse response, String message)
+  private void sendUnauthorizedResponse(
+      HttpServletRequest httpRequest, HttpServletResponse response, String message)
       throws IOException {
     response.setHeader("WWW-Authenticate", "Basic realm=\"User Visible Realm\"");
-    response.sendError(HttpServletResponse.SC_UNAUTHORIZED, message);
+    response.setContentType("application/json");
+    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+    ErrorResponse errorResponse =
+        getResponse(message, HttpServletResponse.SC_UNAUTHORIZED, httpRequest);
+    String json = toJson(errorResponse);
+    response.getWriter().write(json);
   }
 
-  private String[] extractCredentials(String authHeader) {
-    String base64Credentials = authHeader.substring(BASIC_PREFIX.length());
-    byte[] credDecoded = Base64.getDecoder().decode(base64Credentials);
-    String credentials = new String(credDecoded, StandardCharsets.UTF_8);
-    return credentials.split(":", 2);
+  private static boolean isProductSearchRequest(HttpServletRequest httpRequest) {
+    return httpRequest.getRequestURI().startsWith("/products")
+        && "GET".equals(httpRequest.getMethod());
+  }
+
+  private ErrorResponse getResponse(String message, int status, HttpServletRequest httpRequest) {
+    return ErrorResponse.builder()
+        .status(status)
+        .title("basic_authentication_error " + message)
+        .instance(toInstance(httpRequest))
+        .build();
+  }
+
+  private String toJson(Object object) throws JsonProcessingException {
+    return objectMapper.writeValueAsString(object);
+  }
+
+  private String toInstance(HttpServletRequest request) {
+    return request.getContextPath() + request.getRequestURI();
   }
 }
