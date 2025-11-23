@@ -3,6 +3,10 @@ package org.example.dto;
 import java.math.BigDecimal;
 import org.example.model.Product;
 
+/**
+ * Parameter for product search. Minimal sensible validation, so search can be as flexible as
+ * possible, excluding most unrealistic values, like negative price.
+ */
 public class SearchCriteria {
   private final Long id;
   private final String name;

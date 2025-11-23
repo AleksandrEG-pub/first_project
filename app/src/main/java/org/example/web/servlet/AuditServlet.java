@@ -10,6 +10,7 @@ import org.example.exception.ApplicationException;
 import org.example.mapper.AuditLogMapper;
 import org.example.service.AuditService;
 
+/** Servlet for handling audit log retrieval requests. */
 public class AuditServlet extends HttpServlet {
 
   private static final String USERNAME_PARAMETER = "username";
@@ -31,10 +32,12 @@ public class AuditServlet extends HttpServlet {
     }
   }
 
+  /** Checks if request has username search parameter. */
   private boolean hasSearchParameters(HttpServletRequest req) {
     return req.getParameter(USERNAME_PARAMETER) != null;
   }
 
+  /** Handles search by username. */
   private void handleSearch(HttpServletRequest req, HttpServletResponse resp) {
     String username = req.getParameter(USERNAME_PARAMETER);
     var auditLogs =
@@ -42,11 +45,13 @@ public class AuditServlet extends HttpServlet {
     writeResponseJson(resp, auditLogs);
   }
 
+  /** Handles retrieval of all audit logs. */
   private void handleGetAll(HttpServletResponse resp) {
     var auditLogs = auditService.findAll().stream().map(AUDIT_LOG_MAPPER::toDto).toList();
     writeResponseJson(resp, auditLogs);
   }
 
+  /** Writes JSON response with the provided object. */
   private void writeResponseJson(HttpServletResponse resp, Object object) {
     resp.setContentType("application/json");
     resp.setStatus(HttpServletResponse.SC_OK);

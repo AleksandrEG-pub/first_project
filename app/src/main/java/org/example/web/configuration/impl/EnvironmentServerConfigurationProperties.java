@@ -1,4 +1,6 @@
-package org.example.web.configuration;
+package org.example.web.configuration.impl;
+
+import org.example.web.configuration.ServerConfigurationProperties;
 
 public class EnvironmentServerConfigurationProperties implements ServerConfigurationProperties {
   @Override

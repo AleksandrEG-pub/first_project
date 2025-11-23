@@ -18,10 +18,16 @@ import org.example.exception.MissingRequestParameterException;
 import org.example.exception.ParameterTypeMismatchException;
 import org.example.exception.ResourceNotFoundException;
 
+/**
+ * Intercept up to Exception level unhandled exceptions from application servlets.
+ *
+ * <p>Covers do* methods: doGet, doPost, doDelete, doPut
+ *
+ * <p>Convert response to ErrorResponse json format
+ */
 @Aspect
 public class ExceptionHandlingAspect {
-  private static final boolean DISABLED =
-          "true".equals(System.getProperty("aspectj.disable"));
+  private static final boolean DISABLED = "true".equals(System.getProperty("aspectj.disable"));
   private final ObjectMapper objectMapper = new ObjectMapper();
 
   @Around("execution(* org.example.web.servlet.*.do*(..))")

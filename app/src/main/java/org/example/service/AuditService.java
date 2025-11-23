@@ -7,7 +7,7 @@ import org.example.model.AuditAction;
 import org.example.model.AuditLog;
 import org.example.model.User;
 
-/** Actions related to auditing user activities. */
+/** Service for auditing user activities. */
 public interface AuditService {
 
   /**
@@ -19,7 +19,9 @@ public interface AuditService {
    */
   void logAction(Supplier<User> userSupplier, AuditAction action, String details);
 
+  /** Returns all audit logs. */
   List<AuditLog> findAll();
 
+  /** Finds audit logs by username. */
   List<AuditLog> findByUsername(String username);
 }

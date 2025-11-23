@@ -4,10 +4,10 @@ import lombok.Getter;
 import org.apache.catalina.LifecycleException;
 import org.example.exception.ApplicationException;
 import org.example.repository.impl.database.ConnectionManager;
-import org.example.web.configuration.EnvironmentServerConfigurationProperties;
+import org.example.web.configuration.impl.EnvironmentServerConfigurationProperties;
 import org.example.web.configuration.ServerConfiguration;
 import org.example.web.configuration.ServletMapping;
-import org.example.web.configuration.ServletMappingImpl;
+import org.example.web.configuration.impl.ServletMappingImpl;
 
 /** Central application configuration and lifecycle coordinator. */
 @Getter

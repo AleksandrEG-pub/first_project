@@ -15,6 +15,7 @@ import org.example.model.Role;
 import org.example.model.User;
 import org.example.service.impl.UserContext;
 
+/** Filter that enforces authorization rules for admin and product search access. */
 public class AuthorizationFilter implements Filter {
   private ObjectMapper objectMapper;
 
@@ -42,6 +43,7 @@ public class AuthorizationFilter implements Filter {
     UserContext.remove();
   }
 
+  /** Sends 401 Unauthorized response with JSON error details. */
   private void sendUnauthorizedResponse(
       HttpServletRequest httpRequest, HttpServletResponse response, String message)
       throws IOException {
@@ -54,6 +56,7 @@ public class AuthorizationFilter implements Filter {
     response.getWriter().write(json);
   }
 
+  /** Checks if request is for product search (GET /products). */
   private static boolean isProductSearchRequest(HttpServletRequest httpRequest) {
     return httpRequest.getRequestURI().startsWith("/products")
         && "GET".equals(httpRequest.getMethod());

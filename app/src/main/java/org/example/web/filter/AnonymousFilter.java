@@ -10,11 +10,13 @@ import org.example.service.impl.UserContext;
 
 import java.io.IOException;
 
+/** Filter that sets anonymous user context when no user is present. */
 public class AnonymousFilter implements Filter {
+
   @Override
   public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
-      throws IOException, ServletException {
-    if (UserContext.getCurrentUser() == null) {
+          throws IOException, ServletException {
+    if (UserContext.getCurrentUser().isEmpty()) {
       UserContext.setCurrentUser(User.anonymous());
     }
     chain.doFilter(request, response);

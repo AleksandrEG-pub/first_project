@@ -33,5 +33,6 @@ public interface ProductService {
   /** Clear if exist product cache, only affects performance, not existence of data */
   void clearCache();
 
+  /** Creates new  product from form */
   Product create(ProductForm productForm);
 }

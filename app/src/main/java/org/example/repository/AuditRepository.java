@@ -9,9 +9,27 @@ import org.example.model.AuditLog;
  * significant application events (user actions, data changes, system events).
  */
 public interface AuditRepository {
+
+  /**
+   * Saves an audit log record.
+   *
+   * @param auditLog the audit record to save
+   * @return the saved audit record
+   */
   AuditLog save(AuditLog auditLog);
 
+  /**
+   * Finds audit logs by username.
+   *
+   * @param username the username to search for
+   * @return list of audit logs for the user
+   */
   List<AuditLog> findByUsername(String username);
 
+  /**
+   * Gets all audit logs.
+   *
+   * @return all audit records
+   */
   List<AuditLog> findAll();
 }

@@ -16,6 +16,7 @@ import org.example.dto.ErrorResponse;
 import org.example.dto.LoginResult;
 import org.example.service.AuthService;
 
+/** Filter that handles Basic Authentication for HTTP requests. */
 public class BasicAuthenticationFilter implements Filter {
 
   private static final String AUTH_HEADER = "Authorization";
@@ -38,6 +39,7 @@ public class BasicAuthenticationFilter implements Filter {
     tryAuthenticate(chain, httpRequest, httpResponse);
   }
 
+  /** Attempts to authenticate user using Basic Auth credentials. */
   private void tryAuthenticate(
       FilterChain chain, HttpServletRequest httpRequest, HttpServletResponse httpResponse)
       throws IOException, ServletException {
@@ -71,6 +73,7 @@ public class BasicAuthenticationFilter implements Filter {
     chain.doFilter(httpRequest, httpResponse);
   }
 
+  /** Sends 401 response with Basic Auth challenge and JSON error. */
   private void sendUnauthorizedResponse(
       HttpServletRequest httpRequest, HttpServletResponse response, String message)
       throws IOException {
@@ -83,6 +86,7 @@ public class BasicAuthenticationFilter implements Filter {
     response.getWriter().write(json);
   }
 
+  /** Extracts username and password from Basic Auth header. */
   private String[] extractCredentials(String authHeader) {
     String base64Credentials = authHeader.substring(BASIC_PREFIX.length());
     byte[] credDecoded = Base64.getDecoder().decode(base64Credentials);

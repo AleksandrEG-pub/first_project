@@ -10,7 +10,9 @@ import org.example.dto.SearchCriteria;
 import org.example.model.AuditAction;
 import org.example.model.Product;
 import org.example.service.impl.AuditEvents;
+import org.example.service.impl.ProductServiceImpl;
 
+/** For all methods of {@link ProductServiceImpl} publish audit event */
 @Aspect
 public class AuditProductAspect {
   private static final boolean DISABLED = "true".equals(System.getProperty("aspectj.disable"));

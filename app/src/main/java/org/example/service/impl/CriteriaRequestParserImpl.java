@@ -1,9 +1,10 @@
-package org.example.service;
+package org.example.service.impl;
 
 import jakarta.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
 import java.util.Optional;
 import org.example.dto.SearchCriteria;
+import org.example.service.CriteriaRequestParser;
 
 public class CriteriaRequestParserImpl implements CriteriaRequestParser {
   @Override

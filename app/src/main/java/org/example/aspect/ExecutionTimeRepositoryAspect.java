@@ -4,6 +4,7 @@ import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 
+/** For all public methods of Repository classes measure execution time and log it */
 @Aspect
 public class ExecutionTimeRepositoryAspect {
   private static final boolean DISABLED = "true".equals(System.getProperty("aspectj.disable"));
@@ -20,8 +21,8 @@ public class ExecutionTimeRepositoryAspect {
       long duration = System.currentTimeMillis() - start;
       String className = joinPoint.getTarget().getClass().getSimpleName();
       String methodName = joinPoint.getSignature().getName();
-      System.out.println("Repository method " + className + "." + methodName +
-                         " executed in " + duration + "ms");
+      System.out.println(
+          "Repository method " + className + "." + methodName + " executed in " + duration + "ms");
     }
   }
 }

@@ -1,4 +1,4 @@
-package org.example.web.configuration;
+package org.example.web.configuration.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServlet;
@@ -6,10 +6,11 @@ import java.util.Map;
 import org.example.service.AuditService;
 import org.example.service.DtoValidator;
 import org.example.service.ProductService;
+import org.example.web.configuration.ServletMapping;
 import org.example.web.servlet.AuditServlet;
-import org.example.service.CriteriaRequestParserImpl;
+import org.example.service.impl.CriteriaRequestParserImpl;
 import org.example.service.ProductFormRequestParser;
-import org.example.service.ProductFormRequestParserImpl;
+import org.example.service.impl.ProductFormRequestParserImpl;
 import org.example.web.servlet.ProductServlet;
 
 public class ServletMappingImpl implements ServletMapping {

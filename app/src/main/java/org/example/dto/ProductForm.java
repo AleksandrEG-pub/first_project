@@ -12,6 +12,7 @@ import lombok.Setter;
 import org.example.model.Product;
 import org.hibernate.validator.constraints.Length;
 
+/** Data received from user, which will be used as a blueprint to create new product */
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter

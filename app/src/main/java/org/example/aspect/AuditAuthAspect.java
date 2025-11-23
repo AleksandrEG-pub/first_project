@@ -8,8 +8,12 @@ import org.example.dto.LoginResult;
 import org.example.model.AuditAction;
 import org.example.model.User;
 import org.example.service.impl.AuditEvents;
+import org.example.service.impl.AuthServiceImpl;
 import org.example.service.impl.UserContext;
 
+/**
+* For all methods of {@link AuthServiceImpl} publish audit event
+*/
 @Aspect
 public class AuditAuthAspect {
   private static final boolean DISABLED = "true".equals(System.getProperty("aspectj.disable"));
