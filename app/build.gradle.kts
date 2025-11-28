@@ -9,6 +9,7 @@ repositories {
 }
 
 dependencies {
+    implementation("org.springframework:spring-webmvc:7.0.1")
     implementation("org.springframework:spring-context:7.0.1")
 
     implementation("org.apache.tomcat.embed:tomcat-embed-core:11.0.14")

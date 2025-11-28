@@ -1,62 +1,79 @@
 package org.example.configuration;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import jakarta.annotation.PostConstruct;
 import jakarta.servlet.Filter;
+import jakarta.servlet.ServletContext;
 import jakarta.servlet.http.HttpServlet;
 import lombok.RequiredArgsConstructor;
+import org.apache.catalina.Container;
 import org.apache.catalina.Context;
-import org.apache.catalina.LifecycleException;
+import org.apache.catalina.core.ApplicationContext;
+import org.apache.catalina.core.StandardContext;
 import org.apache.catalina.startup.Tomcat;
 import org.apache.tomcat.util.descriptor.web.FilterDef;
 import org.apache.tomcat.util.descriptor.web.FilterMap;
+import org.example.exception.InitializationException;
 import org.example.service.AuthService;
-import org.example.web.configuration.ServletMapping;
 import org.example.web.filter.AnonymousFilter;
 import org.example.web.filter.AuthorizationFilter;
 import org.example.web.filter.BasicAuthenticationFilter;
 import org.example.web.filter.GlobalExceptionFilter;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.web.servlet.DispatcherServlet;
 
-@Component
+@Configuration
 @RequiredArgsConstructor
 public class ServerConfiguration {
   private final AuthService authService;
-  private final ServletMapping servletMapping;
   private final ObjectMapper objectMapper;
+
   @Value("${server.port}")
   private int port;
+
   @Value("${server.hostname}")
   private String hostname;
+
   @Value("${server.base_dir}")
   private String baseDir;
 
-  @PostConstruct
-  private void init() throws LifecycleException {
-    startServer();
+  @Bean
+  public ServletContext servletContext(Tomcat tomcat) {
+    Container[] containers = tomcat.getHost().findChildren();
+    if (containers.length == 0) {
+      throw new InitializationException("failed to initialize tomcat, no tomcat context create");
+    }
+    Container container = containers[0];
+    if (container instanceof StandardContext standardContext) {
+      return new ApplicationContext(standardContext);
+    } else {
+      throw new InitializationException(
+          "failed to initialize tomcat, wrong type of context: " + container.getClass());
+    }
   }
 
-  public void startServer() throws LifecycleException {
+  @Bean
+  public DispatcherServlet dispatcherServlet() {
+    return new DispatcherServlet();
+  }
+
+  @Bean
+  public Tomcat tomcat(DispatcherServlet dispatcherServlet) {
     Tomcat tomcat = new Tomcat();
     tomcat.setHostname(hostname);
     tomcat.setPort(port);
     tomcat.setBaseDir(baseDir);
-    Context ctx = tomcat.addContext("", null);
-
-    addServlets(ctx);
-    addFilters(ctx);
-
-    tomcat.getConnector();
-    tomcat.start();
-    System.out.println("Server available at: http://localhost:" + port);
-    tomcat.getServer().await();
+    Context tomcatContext = tomcat.addContext("", null);
+    addServlet(tomcatContext, "/*", dispatcherServlet);
+    addFilters(tomcatContext);
+    return tomcat;
   }
 
-  private void addServlets(Context ctx) {
-    servletMapping
-        .getServletMapping()
-        .forEach((path, httpServlet) -> addServlet(ctx, path, httpServlet));
+  private void addServlet(Context ctx, String pathPattern, HttpServlet servlet) {
+    String servletName = servlet.getClass().getSimpleName();
+    Tomcat.addServlet(ctx, servletName, servlet);
+    ctx.addServletMappingDecoded(pathPattern, servletName);
   }
 
   private void addFilters(Context ctx) {
@@ -64,12 +81,6 @@ public class ServerConfiguration {
     addAnonymousFilter(ctx);
     addBasicAuthenticationFilter(ctx);
     addAuthorizationFilter(ctx);
-  }
-
-  private void addServlet(Context ctx, String pathPattern, HttpServlet servlet) {
-    String servletName = servlet.getClass().getSimpleName();
-    Tomcat.addServlet(ctx, servletName, servlet);
-    ctx.addServletMappingDecoded(pathPattern, servletName);
   }
 
   private void addGlobalExceptionFilter(Context ctx) {
