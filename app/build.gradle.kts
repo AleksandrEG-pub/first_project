@@ -9,6 +9,8 @@ repositories {
 }
 
 dependencies {
+    implementation("org.springframework:spring-context:7.0.1")
+
     implementation("org.apache.tomcat.embed:tomcat-embed-core:11.0.14")
     implementation("com.fasterxml.jackson.core:jackson-databind:2.20.1")
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.18.2")
