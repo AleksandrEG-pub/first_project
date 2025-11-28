@@ -1,84 +1,50 @@
 package org.example.configuration;
 
-import java.util.List;
-
-import org.example.exception.InitializationException;
-import org.example.model.Product;
+import lombok.Getter;
+import org.apache.catalina.LifecycleException;
+import org.example.exception.ApplicationException;
 import org.example.repository.impl.database.ConnectionManager;
-import org.example.repository.impl.file.FileProductRepository;
-import org.example.service.impl.DataInitializerImpl;
+import org.example.web.configuration.impl.EnvironmentServerConfigurationProperties;
+import org.example.web.configuration.ServerConfiguration;
+import org.example.web.configuration.ServletMapping;
+import org.example.web.configuration.impl.ServletMappingImpl;
 
-/**
- * Central application configuration and lifecycle coordinator.
- *
- * <p>Constructs the required service, UI and handler configurations (either file-backed or
- * in-memory), provides lifecycle operations such as data initialization, startup and shutdown, and
- * registers a JVM shutdown hook.
- */
+/** Central application configuration and lifecycle coordinator. */
+@Getter
 public class ApplicationConfiguration {
   private final ServiceConfiguration services;
-  private final UIConfiguration ui;
-  private final MenuConfiguration menus;
 
-  public ApplicationConfiguration(RepositoryType repositoryType) {
-    this.ui = new UIConfiguration();
-    switch (repositoryType) {
-      case IN_MEMORY -> this.services = new InMemoryServiceConfiguration();
-      case FILE -> this.services = new FileServiceConfiguration(ui.getConsoleUI());
-      case DATABASE -> {
-        DatabaseProperties databaseProperties = new EnvDatabaseProperties();
-        ConnectionManager connectionManager = new ConnectionManager(databaseProperties);
-        this.services = new DatabaseServiceConfiguration(connectionManager);
-      }
-      default ->
-          throw new InitializationException("Unsupported repository type: " + repositoryType);
-    }
-    HandlerConfiguration handlers = new HandlerConfiguration(services, ui);
-    this.menus = new MenuConfiguration(services, ui, handlers);
-  }
-
-  public UIConfiguration getUi() {
-    return ui;
+  public ApplicationConfiguration() {
+    DatabaseProperties databaseProperties = new EnvDatabaseProperties();
+    ConnectionManager connectionManager = new ConnectionManager(databaseProperties);
+    services = new DatabaseServiceConfiguration(connectionManager);
   }
 
   public void initializeData() {
-    if (services instanceof FileServiceConfiguration || services instanceof InMemoryServiceConfiguration) {
-      List<Product> allProducts = services.getProductService().getAllProducts();
-      if (allProducts.isEmpty()) {
-        new DataInitializerImpl(
-                services.getUserRepository(),
-                services.getProductService(),
-                services.getAuthService())
-            .initializeDefaultData();
-      } else {
-        allProducts.stream()
-            .mapToLong(Product::getId)
-            .max()
-            .ifPresent(maxId -> FileProductRepository.updateCounter(maxId + 1));
-      }
-    }
-    if (services instanceof DatabaseServiceConfiguration) {
-      LiquibaseConfiguration liquibaseConfiguration =
-          new LiquibaseConfiguration.Builder().fromEnvironment().build();
-      new LiquibaseConfigurationUpdater(ui.getConsoleUI(), liquibaseConfiguration)
-          .runDatabaseUpdate("production");
-    }
+    LiquibaseConfiguration liquibaseConfiguration =
+        new LiquibaseConfiguration.Builder().fromEnvironment().build();
+    new LiquibaseConfigurationUpdater(liquibaseConfiguration).runDatabaseUpdate("production");
   }
 
-  /**
-   * Attempt to gracefully shutdown the application components (UI and other closeable resources).
-   * This method intentionally swallows exceptions because it's called during shutdown.
-   */
-  public void shutdown() {
+  public void startServer(ServiceConfiguration services) {
+    EnvironmentServerConfigurationProperties serverConfigurationProperties =
+        new EnvironmentServerConfigurationProperties();
+    ServletMapping servletMapping =
+        new ServletMappingImpl(
+            services.getAuditService(),
+            services.getProductService(),
+            services.getDtoValidator(),
+            services.getObjectMapper());
+    ServerConfiguration serverConfiguration =
+        new ServerConfiguration(
+            services.getAuthService(),
+            serverConfigurationProperties,
+            servletMapping,
+            services.getObjectMapper());
     try {
-      ui.getConsoleUI().printMessage("Shutting down...");
-    } catch (Exception ignored) {
-      // quit application
+      serverConfiguration.startServer();
+    } catch (LifecycleException e) {
+      throw new ApplicationException(e);
     }
-  }
-
-  /** Start the application's main menu loop. */
-  public void start() {
-    menus.getMenuController().start();
   }
 }

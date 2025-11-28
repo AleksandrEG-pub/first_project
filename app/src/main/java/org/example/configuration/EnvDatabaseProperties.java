@@ -5,8 +5,13 @@ import java.util.Map;
 import org.example.exception.InitializationException;
 
 public class EnvDatabaseProperties implements DatabaseProperties {
+  /** url of database */
   private final String url;
+
+  /** user of database */
   private final String user;
+
+  /** user's password to access database */
   private final String password;
 
   public EnvDatabaseProperties() {

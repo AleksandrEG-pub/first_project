@@ -1,20 +1,44 @@
 package org.example.model;
 
+import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.util.Objects;
+import org.hibernate.validator.constraints.Length;
 
 public class Product {
+
   private Long id;
+
+  @NotNull(message = "name can not be null")
+  @NotBlank(message = "name can not be empty")
+  @Length(max = 255, message = "name can not be longer 255")
   private String name;
+
+  @NotNull(message = "description can not be null")
+  @NotBlank(message = "description can not be empty")
+  @Length(max = 10000, message = "description can not be longer 10000")
   private String description;
+
+  @NotNull(message = "category can not be null")
+  @NotBlank(message = "category can not be empty")
+  @Length(max = 255, message = "category can not be longer 255")
   private String category;
+
+  @NotNull(message = "brand can not be null")
+  @NotBlank(message = "brand can not be empty")
+  @Length(max = 255, message = "brand can not be longer 255")
   private String brand;
+
+  @NotNull(message = "price can not be null")
+  @DecimalMin(value = "0.01", message = "minimal price is 0.01")
   private BigDecimal price;
 
   public Product() {}
 
   public Product(
-          Long id, String name, String description, String category, String brand, BigDecimal price) {
+      Long id, String name, String description, String category, String brand, BigDecimal price) {
     this.id = id;
     this.name = name;
     this.description = description;

@@ -1,14 +1,13 @@
 # First Project
 
 ## Overview
-A small Java console application demonstrating file-based persistence, 
-basic user/product management, and a simple CLI-driven UI. 
-The project uses Gradle (Kotlin DSL) and stores runtime data in files under the project working directory by default.
+A small Java http server application with postgres persistence, 
+basic user/product management
 
 ## Requirements
 - Java JDK 17
-- Gradle Wrapper (use `./gradlew` included in the repo).
-- Read/write permissions for the project directory (the app saves files to the working dir by default).
+- Gradle Wrapper (use `./gradlew` included in the repo)
+- Docker - start will require to have or download postgresql image
 
 ## Setup
 1. Clone the repository and change into the project root:
@@ -26,24 +25,16 @@ echo $JAVA_HOME
 ```
 
 ## How to launch
-- Run using start.sh or start-in-memory.sh scripts:
+- Run using start.sh. This will launch docker
 
 ```bash
-# Run with database repository
-start-with-database.sh
-
-# Run with in-memory repository
-start-in-memory.sh
-
-# Run with in-memory repository
-start-with-file.sh
+# Run the application
+start.sh
 ```
 
 ## Features
-- Console-based UI (CLI) with menu-driven interactions.
-- File-based persistence of users, products, and audit logs by default (stored in project working directory / `data/` files) Option: --repository-type=file 
-- In-memory mode available for ephemeral runs (pass `--repository-type=in-memory`).
-- Database persistence available with option: `--repository-type=database`
+- htto-driven interactions
+- SQL postgres persistence of users, products, and audit logs 
 - Simple authentication and authorization (roles: ADMIN, USER).
 - Product management (add, list, search) and basic audit logging.
 - configuration for database and migrations passed using file, which supplied to application as an argument --file=/path/to/file. By default it is a file application.env in project root. 
@@ -56,7 +47,6 @@ Present initial data added by the initializer includes:
   - user (role USER) with password hashed from `User123!`
 - Sample products (electronics, furniture, sports, appliances), e.g. "Laptop Pro 15", "Wireless Mouse", "Office Chair", etc.
 
-The initializer is implemented in `app/src/main/java/org/example/util/DataInitializer.java` and runs from `ApplicationConfiguration.initializeData()`.
 
 ## Important notes on users
 Application does not support creation of custom users. 
@@ -72,11 +62,34 @@ Not authenticated users can not perform any actions, except log in attempts
 ## Where to look in the code
 - Main entry: `app/src/main/java/org/example/App.java`
 - App configuration and startup: `app/src/main/java/org/example/configuration/ApplicationConfiguration.java`
-- Data initializer: `app/src/main/java/org/example/util/DataInitializer.java`
 - Liquibase configuration: `app/src/main/java/org/example/configuration/LiquibaseConfiguration.java`
 - Service wiring: `app/src/main/java/org/example/configuration/ServiceConfiguration.java`
 - Repositories and services: `app/src/main/java/org/example/repository` and `.../service`
 
-## Troubleshooting
-- Permission errors: ensure the executing user can read/write the project directory.
-- Missing/duplicate data on initialization: check the `data/` files in the project root (e.g. `users.csv`, `products.csv`, `audit.csv`).
+## API
+- GET /products    
+- GET /products?id=1&name={name}&category={category}&brand={brand}&minPrice={0.05}&maxPrice={19.99}
+- GET /products/{id}
+- POST /products/{id}, body ProductForm
+- PUT /products/{id},  body ProductForm
+- DELETE /products/{id}  
+- GET /audits    
+- GET /audits?username={user}  
+
+## API objects examples:
+ProductForm:
+```
+{
+  "name": "Wireless Bluetooth Headphones",
+  "description": "High-quality wireless headphones with noise cancellation",
+  "category": "ElectronicsElectronics",
+  "brand": "TechAudio",
+  "price": 129.99
+}
+```
+
+## API security
+user 'user' authorized only for:
+- GET /products
+
+user 'admin' authorized for all APIs

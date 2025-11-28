@@ -1,12 +1,15 @@
 package org.example.service;
 
+import org.example.dto.LoginResult;
+import org.example.model.User;
+
 /** Provides authentication and authorization methods */
 public interface AuthService {
   /**
    * Make an attempt to login with given credentials if successful, isAuthenticated() will return
    * true afterward, unless logout() is called
    */
-  boolean login(String username, String password);
+  LoginResult login(String username, String password);
 
   /**
    * Validation method to ensure current user has admin role Will throw AccessDeniedException if not
@@ -25,8 +28,8 @@ public interface AuthService {
    */
   void logout();
 
-  /** return username of current user, authenticated or not */
-  String getCurrentUser();
+  /** current user, authenticated or not */
+  User getCurrentUser();
 
   String getAdminUserName();
 }

@@ -3,6 +3,7 @@ package org.example.model;
 import java.util.Objects;
 
 public class User {
+  private static final User ANONYMOUS = new User("ANONYMOUS", "", Role.ANONYMOUS);
   private Long id;
   private String username;
   private String passwordHash;
@@ -14,6 +15,10 @@ public class User {
       this.username = username;
     this.passwordHash = passwordHash;
     this.role = role;
+  }
+
+  public static User anonymous() {
+    return ANONYMOUS;
   }
 
   public Long getId() {

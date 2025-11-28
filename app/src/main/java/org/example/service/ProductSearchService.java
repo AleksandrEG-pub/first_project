@@ -2,6 +2,8 @@ package org.example.service;
 
 import java.util.List;
 import java.util.Optional;
+
+import org.example.dto.SearchCriteria;
 import org.example.model.Product;
 
 /**
