@@ -11,9 +11,11 @@ import org.example.model.AuditAction;
 import org.example.model.Product;
 import org.example.service.impl.AuditEvents;
 import org.example.service.impl.ProductServiceImpl;
+import org.springframework.stereotype.Component;
 
 /** For all methods of {@link ProductServiceImpl} publish audit event */
 @Aspect
+@Component
 public class AuditProductAspect {
   private static final boolean DISABLED = "true".equals(System.getProperty("aspectj.disable"));
 

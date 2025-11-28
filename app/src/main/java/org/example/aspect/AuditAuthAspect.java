@@ -1,5 +1,6 @@
 package org.example.aspect;
 
+import jakarta.annotation.PostConstruct;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -10,11 +11,13 @@ import org.example.model.User;
 import org.example.service.impl.AuditEvents;
 import org.example.service.impl.AuthServiceImpl;
 import org.example.service.impl.UserContext;
+import org.springframework.stereotype.Component;
 
 /**
 * For all methods of {@link AuthServiceImpl} publish audit event
 */
 @Aspect
+@Component
 public class AuditAuthAspect {
   private static final boolean DISABLED = "true".equals(System.getProperty("aspectj.disable"));
 

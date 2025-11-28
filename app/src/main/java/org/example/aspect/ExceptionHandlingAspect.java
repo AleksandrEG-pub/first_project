@@ -17,6 +17,7 @@ import org.example.exception.ApplicationException;
 import org.example.exception.MissingRequestParameterException;
 import org.example.exception.ParameterTypeMismatchException;
 import org.example.exception.ResourceNotFoundException;
+import org.springframework.stereotype.Component;
 
 /**
  * Intercept up to Exception level unhandled exceptions from application servlets.
@@ -26,6 +27,7 @@ import org.example.exception.ResourceNotFoundException;
  * <p>Convert response to ErrorResponse json format
  */
 @Aspect
+@Component
 public class ExceptionHandlingAspect {
   private static final boolean DISABLED = "true".equals(System.getProperty("aspectj.disable"));
   private final ObjectMapper objectMapper = new ObjectMapper();

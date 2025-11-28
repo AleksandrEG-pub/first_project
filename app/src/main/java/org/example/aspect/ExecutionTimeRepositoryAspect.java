@@ -3,9 +3,11 @@ package org.example.aspect;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
+import org.springframework.stereotype.Component;
 
 /** For all public methods of Repository classes measure execution time and log it */
 @Aspect
+@Component
 public class ExecutionTimeRepositoryAspect {
   private static final boolean DISABLED = "true".equals(System.getProperty("aspectj.disable"));
 
