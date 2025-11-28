@@ -5,7 +5,12 @@ database:
     password: ${YLAB_PROJECT_POSTGRES_PASSWORD}
   migration:
     liquibase:
+      changelog_file: db/changelog/db.changelog-master.yaml
       scheme: ${YLAB_PROJECT_LIQUIBASE_SCHEME}
-      application_sheme: ${YLAB_PROJECT_APPLICATION_SCHEME}
+      application_scheme: ${YLAB_PROJECT_APPLICATION_SCHEME}
 server:
   port: 8080
+
+cache:
+  product:
+    size: 1000

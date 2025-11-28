@@ -8,12 +8,15 @@ import jakarta.validation.ValidatorFactory;
 import org.example.cache.Cache;
 import org.example.cache.ProductBaseCache;
 import org.example.model.Product;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class ServiceConfiguration {
-  private static final int PRODUCT_CACHE_SIZE = 1000;
+
+  @Value("${cache.product.size}")
+  private int cacheSize;
 
   @Bean
   public ObjectMapper objectMapper() {
@@ -31,6 +34,6 @@ public class ServiceConfiguration {
 
   @Bean
   public Cache<Long, Product> cache() {
-    return new ProductBaseCache(PRODUCT_CACHE_SIZE);
+    return new ProductBaseCache(cacheSize);
   }
 }
