@@ -7,11 +7,15 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 
 import jakarta.validation.ValidationException;
+import lombok.RequiredArgsConstructor;
 import org.example.dto.ProductForm;
 import org.example.service.ProductFormRequestParser;
+import org.springframework.stereotype.Component;
 
+@Component
+@RequiredArgsConstructor
 public class ProductFormRequestParserImpl implements ProductFormRequestParser {
-  private final ObjectMapper objectMapper = new ObjectMapper();
+  private final ObjectMapper objectMapper;
 
   @Override
   public ProductForm parse(HttpServletRequest req) {

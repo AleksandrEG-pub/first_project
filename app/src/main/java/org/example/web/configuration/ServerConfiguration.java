@@ -13,7 +13,9 @@ import org.example.web.filter.AnonymousFilter;
 import org.example.web.filter.AuthorizationFilter;
 import org.example.web.filter.BasicAuthenticationFilter;
 import org.example.web.filter.GlobalExceptionFilter;
+import org.springframework.stereotype.Component;
 
+@Component
 public class ServerConfiguration {
   private final AuthService authService;
   private final ServerConfigurationProperties serverConfigurationProperties;

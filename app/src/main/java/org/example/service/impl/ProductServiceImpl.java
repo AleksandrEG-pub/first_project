@@ -3,6 +3,8 @@ package org.example.service.impl;
 import jakarta.validation.ValidationException;
 import java.util.List;
 import java.util.Optional;
+
+import lombok.RequiredArgsConstructor;
 import org.example.cache.Cache;
 import org.example.dto.ProductForm;
 import org.example.dto.SearchCriteria;
@@ -10,12 +12,14 @@ import org.example.exception.ResourceNotFoundException;
 import org.example.mapper.ProductMapper;
 import org.example.model.Product;
 import org.example.repository.ProductRepository;
-import org.example.service.AuditService;
 import org.example.service.AuthService;
 import org.example.service.DtoValidator;
 import org.example.service.ProductSearchService;
 import org.example.service.ProductService;
+import org.springframework.stereotype.Component;
 
+@Component
+@RequiredArgsConstructor
 public class ProductServiceImpl implements ProductService {
   private static final ProductMapper PRODUCT_MAPPER = ProductMapper.INSTANCE;
   private final ProductRepository productRepository;
@@ -23,19 +27,6 @@ public class ProductServiceImpl implements ProductService {
   private final AuthService authService;
   private final DtoValidator dtoValidator;
   private final ProductSearchService productSearchService;
-
-  public ProductServiceImpl(
-      ProductRepository productRepository,
-      Cache<Long, Product> productCache,
-      AuthService authService,
-      DtoValidator dtoValidator,
-      ProductSearchService productSearchService) {
-    this.productRepository = productRepository;
-    this.productCache = productCache;
-    this.authService = authService;
-    this.dtoValidator = dtoValidator;
-    this.productSearchService = productSearchService;
-  }
 
   @Override
   public List<Product> search(SearchCriteria criteria) {

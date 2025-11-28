@@ -9,7 +9,9 @@ import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
 import org.example.exception.PasswordHashingException;
 import org.example.exception.PasswordValidationException;
+import org.springframework.stereotype.Component;
 
+@Component
 public class PasswordsImpl implements Passwords {
   private static final int MIN_PASSWORD_LENGTH = 8;
   private static final int SALT_LENGTH = 16;

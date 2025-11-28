@@ -5,7 +5,9 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 import org.example.dto.AuditEvent;
+import org.springframework.stereotype.Component;
 
+@Component
 public class AuditEvents {
   private static Map<String, Consumer<AuditEvent>> listeners = new ConcurrentHashMap<>();
 

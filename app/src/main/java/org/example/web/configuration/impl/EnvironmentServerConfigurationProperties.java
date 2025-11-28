@@ -1,7 +1,9 @@
 package org.example.web.configuration.impl;
 
 import org.example.web.configuration.ServerConfigurationProperties;
+import org.springframework.stereotype.Component;
 
+@Component
 public class EnvironmentServerConfigurationProperties implements ServerConfigurationProperties {
   @Override
   public int getPort() {

@@ -3,19 +3,21 @@ package org.example.configuration;
 import java.util.HashMap;
 import java.util.Map;
 import org.example.exception.InitializationException;
+import org.springframework.stereotype.Component;
 
+@Component
 public class EnvDatabaseProperties implements DatabaseProperties {
   /** url of database */
-  private final String url;
+  private final String url= "";
 
   /** user of database */
-  private final String user;
+  private final String user= "";
 
   /** user's password to access database */
-  private final String password;
+  private final String password= "";
 
   public EnvDatabaseProperties() {
-    String baseUrl = System.getProperty("YLAB_PROJECT_POSTGRES_URL");
+/*    String baseUrl = System.getProperty("YLAB_PROJECT_POSTGRES_URL");
     String scheme = System.getProperty("YLAB_PROJECT_APPLICATION_SCHEME");
     user = System.getProperty("YLAB_PROJECT_POSTGRES_USER");
     password = System.getProperty("YLAB_PROJECT_POSTGRES_PASSWORD");
@@ -25,7 +27,7 @@ public class EnvDatabaseProperties implements DatabaseProperties {
     propertyMap.put("user", user);
     propertyMap.put("password", password);
     validateProperties(propertyMap);
-    url = "%s?currentSchema=%s".formatted(baseUrl, scheme);
+    url = "%s?currentSchema=%s".formatted(baseUrl, scheme);*/
   }
 
   private void validateProperties(Map<String, String> properties) {

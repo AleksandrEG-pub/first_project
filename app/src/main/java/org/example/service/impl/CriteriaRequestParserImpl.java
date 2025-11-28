@@ -5,7 +5,9 @@ import java.math.BigDecimal;
 import java.util.Optional;
 import org.example.dto.SearchCriteria;
 import org.example.service.CriteriaRequestParser;
+import org.springframework.stereotype.Component;
 
+@Component
 public class CriteriaRequestParserImpl implements CriteriaRequestParser {
   @Override
   public SearchCriteria buildSearchCriteria(HttpServletRequest req) {

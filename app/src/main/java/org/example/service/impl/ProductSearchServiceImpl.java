@@ -2,21 +2,20 @@ package org.example.service.impl;
 
 import java.util.List;
 import java.util.Optional;
+
+import lombok.RequiredArgsConstructor;
 import org.example.cache.Cache;
 import org.example.dto.SearchCriteria;
 import org.example.model.Product;
 import org.example.repository.ProductRepository;
 import org.example.service.ProductSearchService;
+import org.springframework.stereotype.Component;
 
+@Component
+@RequiredArgsConstructor
 public class ProductSearchServiceImpl implements ProductSearchService {
   private final ProductRepository productRepository;
   private final Cache<Long, Product> productCache;
-
-  public ProductSearchServiceImpl(
-      ProductRepository productRepository, Cache<Long, Product> productCache) {
-    this.productRepository = productRepository;
-    this.productCache = productCache;
-  }
 
   @Override
   public List<Product> search(SearchCriteria criteria) {

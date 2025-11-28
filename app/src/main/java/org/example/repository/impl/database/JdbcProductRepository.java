@@ -13,7 +13,9 @@ import org.example.exception.DataAccessException;
 import org.example.model.Product;
 import org.example.repository.ProductRepository;
 import org.example.repository.impl.database.mapper.ProductResultMapper;
+import org.springframework.stereotype.Component;
 
+@Component
 public class JdbcProductRepository implements ProductRepository {
 
   private static final String INSERT_SQL =

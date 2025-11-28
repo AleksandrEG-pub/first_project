@@ -6,7 +6,9 @@ import java.sql.SQLException;
 import java.util.function.Function;
 import org.example.configuration.DatabaseProperties;
 import org.example.exception.DataAccessException;
+import org.springframework.stereotype.Component;
 
+@Component
 public class ConnectionManager {
   private final DatabaseProperties properties;
 

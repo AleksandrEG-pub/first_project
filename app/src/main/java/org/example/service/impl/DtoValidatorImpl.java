@@ -4,14 +4,14 @@ import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ValidationException;
 import jakarta.validation.Validator;
 import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
 import org.example.service.DtoValidator;
+import org.springframework.stereotype.Component;
 
+@Component
+@RequiredArgsConstructor
 public class DtoValidatorImpl implements DtoValidator {
   private final Validator validator;
-
-  public DtoValidatorImpl(Validator validator) {
-    this.validator = validator;
-  }
 
   @Override
   public void validate(Object object) {

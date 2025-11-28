@@ -1,5 +1,6 @@
 package org.example.service.impl;
 
+import lombok.RequiredArgsConstructor;
 import org.example.dto.LoginResult;
 import org.example.exception.AccessDeniedException;
 import org.example.model.Role;
@@ -8,23 +9,16 @@ import org.example.repository.UserRepository;
 import org.example.service.AuthLoginAttemptService;
 import org.example.service.AuthService;
 import org.example.util.Passwords;
+import org.springframework.stereotype.Component;
 
+@Component
+@RequiredArgsConstructor
 public class AuthServiceImpl implements AuthService {
   private static final String ADMIN = "admin";
 
   private final UserRepository userRepository;
   private final AuthLoginAttemptService authLoginAttemptService;
-
   private final Passwords passwords;
-
-  public AuthServiceImpl(
-      UserRepository userRepository,
-      AuthLoginAttemptService authLoginAttemptService,
-      Passwords passwords) {
-    this.userRepository = userRepository;
-    this.authLoginAttemptService = authLoginAttemptService;
-    this.passwords = passwords;
-  }
 
   @Override
   public LoginResult login(String username, String password) {

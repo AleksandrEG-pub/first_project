@@ -9,7 +9,9 @@ import org.example.model.AuditLog;
 import org.example.model.User;
 import org.example.repository.AuditRepository;
 import org.example.service.AuditService;
+import org.springframework.stereotype.Component;
 
+@Component
 public class AuditServiceImpl implements AuditService {
   private final AuditRepository auditRepository;
 
