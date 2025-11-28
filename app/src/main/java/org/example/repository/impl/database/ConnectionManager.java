@@ -14,6 +14,9 @@ public class ConnectionManager {
   @Value("${database.connect.url}")
   private String url;
 
+  @Value("${database.connect.application_scheme}")
+  private String applicationScheme;
+
   @Value("${database.connect.user}")
   private String user;
 
@@ -30,7 +33,7 @@ public class ConnectionManager {
   }
 
   private Connection getConnection() throws SQLException {
-    return DriverManager.getConnection(url, user, password);
+    return DriverManager.getConnection(url + "?currentSchema=" + applicationScheme, user, password);
   }
 
   private <T> T invokeWithConnection(
@@ -45,7 +48,7 @@ public class ConnectionManager {
     }
   }
 
-  private static void tryRollback(SQLException e, Connection connection) {
+  private void tryRollback(SQLException e, Connection connection) {
     try {
       connection.rollback();
     } catch (SQLException rollbackEx) {

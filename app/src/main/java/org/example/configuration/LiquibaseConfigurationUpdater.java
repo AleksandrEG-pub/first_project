@@ -4,6 +4,8 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
+
+import jakarta.annotation.PostConstruct;
 import liquibase.Liquibase;
 import liquibase.database.Database;
 import liquibase.database.DatabaseFactory;
@@ -12,7 +14,9 @@ import liquibase.exception.LiquibaseException;
 import liquibase.resource.ClassLoaderResourceAccessor;
 import org.example.exception.InitializationException;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
+@Component
 public class LiquibaseConfigurationUpdater {
 
   /** liquibase configuration file location */
@@ -36,8 +40,13 @@ public class LiquibaseConfigurationUpdater {
   private String liquibaseScheme;
 
   /** name of database scheme with application tables and data */
-  @Value("${database.migration.liquibase.application_scheme}")
+  @Value("${database.connect.application_scheme}")
   private String applicationScheme;
+
+  @PostConstruct
+  private void init() {
+    runDatabaseUpdate("test");
+  }
 
   public void runDatabaseUpdate(String context) {
     try (Connection connection = DriverManager.getConnection(url, username, password)) {

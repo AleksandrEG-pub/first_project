@@ -1,23 +1,39 @@
 package org.example.configuration;
 
-import lombok.RequiredArgsConstructor;
-import org.apache.catalina.LifecycleException;
-import org.example.exception.ApplicationException;
-import org.example.web.configuration.ServerConfiguration;
-import org.springframework.stereotype.Component;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import jakarta.validation.Validation;
+import jakarta.validation.Validator;
+import jakarta.validation.ValidatorFactory;
+import org.example.cache.Cache;
+import org.example.cache.ProductBaseCache;
+import org.example.model.Product;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
-/** Central application configuration and lifecycle coordinator. */
-@Component
-@RequiredArgsConstructor
+@Configuration
 public class ApplicationConfiguration {
 
-  private final ServerConfiguration serverConfiguration;
+  @Value("${cache.product.size}")
+  private int cacheSize;
 
-  public void startServer() {
-    try {
-      serverConfiguration.startServer();
-    } catch (LifecycleException e) {
-      throw new ApplicationException(e);
+  @Bean
+  public ObjectMapper objectMapper() {
+    var objectMapper = new ObjectMapper();
+    objectMapper.registerModule(new JavaTimeModule());
+    return objectMapper;
+  }
+
+  @Bean
+  public Validator validator() {
+    try (ValidatorFactory factory = Validation.buildDefaultValidatorFactory()) {
+      return factory.getValidator();
     }
+  }
+
+  @Bean
+  public Cache<Long, Product> cache() {
+    return new ProductBaseCache(cacheSize);
   }
 }

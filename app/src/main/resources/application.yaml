@@ -3,13 +3,15 @@ database:
     url: ${YLAB_PROJECT_POSTGRES_URL}
     user: ${YLAB_PROJECT_POSTGRES_USER}
     password: ${YLAB_PROJECT_POSTGRES_PASSWORD}
+    application_scheme: ${YLAB_PROJECT_APPLICATION_SCHEME}
   migration:
     liquibase:
       changelog_file: db/changelog/db.changelog-master.yaml
       scheme: ${YLAB_PROJECT_LIQUIBASE_SCHEME}
-      application_scheme: ${YLAB_PROJECT_APPLICATION_SCHEME}
 server:
-  port: 8080
+  port: ${YLAB_PROJECT_SERVER_PORT}
+  hostname: "localhost"
+  base_dir: "./web-static"
 
 cache:
   product:

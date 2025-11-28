@@ -1,43 +1,46 @@
-package org.example.web.configuration;
+package org.example.configuration;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.annotation.PostConstruct;
 import jakarta.servlet.Filter;
 import jakarta.servlet.http.HttpServlet;
+import lombok.RequiredArgsConstructor;
 import org.apache.catalina.Context;
 import org.apache.catalina.LifecycleException;
 import org.apache.catalina.startup.Tomcat;
 import org.apache.tomcat.util.descriptor.web.FilterDef;
 import org.apache.tomcat.util.descriptor.web.FilterMap;
 import org.example.service.AuthService;
+import org.example.web.configuration.ServletMapping;
 import org.example.web.filter.AnonymousFilter;
 import org.example.web.filter.AuthorizationFilter;
 import org.example.web.filter.BasicAuthenticationFilter;
 import org.example.web.filter.GlobalExceptionFilter;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 @Component
+@RequiredArgsConstructor
 public class ServerConfiguration {
   private final AuthService authService;
-  private final ServerConfigurationProperties serverConfigurationProperties;
   private final ServletMapping servletMapping;
   private final ObjectMapper objectMapper;
+  @Value("${server.port}")
+  private int port;
+  @Value("${server.hostname}")
+  private String hostname;
+  @Value("${server.base_dir}")
+  private String baseDir;
 
-  public ServerConfiguration(
-          AuthService authService,
-          ServerConfigurationProperties serverConfigurationProperties,
-          ServletMapping servletMapping, ObjectMapper objectMapper) {
-    this.authService = authService;
-    this.serverConfigurationProperties = serverConfigurationProperties;
-    this.servletMapping = servletMapping;
-      this.objectMapper = objectMapper;
+  @PostConstruct
+  private void init() throws LifecycleException {
+    startServer();
   }
 
   public void startServer() throws LifecycleException {
-    int port = serverConfigurationProperties.getPort();
     Tomcat tomcat = new Tomcat();
-    tomcat.setHostname("localhost");
+    tomcat.setHostname(hostname);
     tomcat.setPort(port);
-    String baseDir = "./web-static";
     tomcat.setBaseDir(baseDir);
     Context ctx = tomcat.addContext("", null);
 

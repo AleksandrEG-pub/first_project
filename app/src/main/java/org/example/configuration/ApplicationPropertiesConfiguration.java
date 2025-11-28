@@ -5,4 +5,4 @@ import org.springframework.context.annotation.PropertySource;
 
 @Configuration
 @PropertySource(value = "classpath:application.yaml", factory = YamlPropertySourceFactory.class)
-public class EnvDatabaseProperties {}
+public class ApplicationPropertiesConfiguration {}
