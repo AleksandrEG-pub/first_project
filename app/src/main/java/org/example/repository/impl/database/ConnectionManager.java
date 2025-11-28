@@ -4,17 +4,21 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.function.Function;
-import org.example.configuration.DatabaseProperties;
 import org.example.exception.DataAccessException;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 @Component
 public class ConnectionManager {
-  private final DatabaseProperties properties;
 
-  public ConnectionManager(DatabaseProperties prop) {
-    this.properties = prop;
-  }
+  @Value("${database.connect.url}")
+  private String url;
+
+  @Value("${database.connect.user}")
+  private String user;
+
+  @Value("${database.connect.password}")
+  private String password;
 
   public <T> T doInTransaction(Function<Connection, T> connectionFunction) {
     try (Connection connection = getConnection()) {
@@ -26,11 +30,11 @@ public class ConnectionManager {
   }
 
   private Connection getConnection() throws SQLException {
-    return DriverManager.getConnection(
-        properties.getUrl(), properties.getUser(), properties.getPassword());
+    return DriverManager.getConnection(url, user, password);
   }
 
-  private <T> T invokeWithConnection(Function<Connection, T> connectionFunction, Connection connection) {
+  private <T> T invokeWithConnection(
+      Function<Connection, T> connectionFunction, Connection connection) {
     try {
       T result = connectionFunction.apply(connection);
       connection.commit();

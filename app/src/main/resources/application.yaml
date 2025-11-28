@@ -1,0 +1,11 @@
+database:
+  connect:
+    url: ${YLAB_PROJECT_POSTGRES_URL}
+    user: ${YLAB_PROJECT_POSTGRES_USER}
+    password: ${YLAB_PROJECT_POSTGRES_PASSWORD}
+  migration:
+    liquibase:
+      scheme: ${YLAB_PROJECT_LIQUIBASE_SCHEME}
+      application_sheme: ${YLAB_PROJECT_APPLICATION_SCHEME}
+server:
+  port: 8080
