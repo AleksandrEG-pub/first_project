@@ -26,8 +26,8 @@ import org.springframework.stereotype.Component;
  *
  * <p>Convert response to ErrorResponse json format
  */
-@Aspect
-@Component
+//@Aspect
+//@Component
 public class ExceptionHandlingAspect {
   private static final boolean DISABLED = "true".equals(System.getProperty("aspectj.disable"));
   private final ObjectMapper objectMapper = new ObjectMapper();
