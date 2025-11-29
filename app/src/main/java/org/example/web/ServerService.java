@@ -16,11 +16,6 @@ public class ServerService {
 
   private final Tomcat tomcat;
 
-  @PostConstruct
-  public void init() {
-    log.info("ServerService PostConstruct");
-  }
-
   @Async
   public void start() throws LifecycleException {
     Connector connector = tomcat.getConnector();

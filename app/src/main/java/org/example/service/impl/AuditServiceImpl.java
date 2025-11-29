@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.function.Supplier;
 
+import lombok.RequiredArgsConstructor;
 import org.example.model.AuditAction;
 import org.example.model.AuditLog;
 import org.example.model.User;
@@ -12,14 +13,9 @@ import org.example.service.AuditService;
 import org.springframework.stereotype.Component;
 
 @Component
+@RequiredArgsConstructor
 public class AuditServiceImpl implements AuditService {
   private final AuditRepository auditRepository;
-
-  public AuditServiceImpl(AuditRepository auditRepository) {
-    this.auditRepository = auditRepository;
-    AuditEvents.addListener(
-        auditEvent -> logAction(UserContext::getValidatedCurrentUser, auditEvent.getAuditAction(), auditEvent.getDetails()));
-  }
 
   @Override
   public void logAction(Supplier<User> userSupplier, AuditAction action, String details) {

@@ -1,11 +1,10 @@
 package org.example.service.impl;
 
-import org.example.service.AuthLoginAttemptService;
-import org.springframework.stereotype.Component;
-
 import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import org.example.service.AuthLoginAttemptService;
+import org.springframework.stereotype.Component;
 
 @Component
 public class AuthLoginAttemptServiceImpl implements AuthLoginAttemptService {
