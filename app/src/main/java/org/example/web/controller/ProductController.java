@@ -1,4 +1,4 @@
-package org.example.web;
+package org.example.web.controller;
 
 import jakarta.validation.Valid;
 import java.math.BigDecimal;

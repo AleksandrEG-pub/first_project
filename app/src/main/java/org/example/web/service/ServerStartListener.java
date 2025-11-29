@@ -1,4 +1,4 @@
-package org.example.web;
+package org.example.web.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;

@@ -1,4 +1,4 @@
-package org.example.web;
+package org.example.web.controller;
 
 import java.util.List;
 import lombok.RequiredArgsConstructor;
