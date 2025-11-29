@@ -55,7 +55,8 @@ public class ServerConfiguration {
 
   @Bean
   public DispatcherServlet dispatcherServlet() {
-    return new DispatcherServlet();
+    DispatcherServlet dispatcherServlet = new DispatcherServlet();
+    return dispatcherServlet;
   }
 
   @Bean

@@ -1,7 +1,7 @@
 plugins {
     application
     id("com.gradleup.shadow") version "9.1.0"
-    id("io.freefair.aspectj.post-compile-weaving") version "9.1.0"
+//    id("io.freefair.aspectj.post-compile-weaving") version "9.1.0"
 }
 
 repositories {
@@ -9,6 +9,9 @@ repositories {
 }
 
 dependencies {
+    implementation("org.apache.logging.log4j:log4j-core:2.24.2")
+    implementation("org.apache.logging.log4j:log4j-api:2.24.2")
+
     implementation("org.springframework:spring-webmvc:7.0.1")
     implementation("org.springframework:spring-context:7.0.1")
 
@@ -16,8 +19,10 @@ dependencies {
     implementation("com.fasterxml.jackson.core:jackson-databind:2.20.1")
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.18.2")
 
-    compileOnly("org.projectlombok:lombok:1.18.36")
-    annotationProcessor("org.projectlombok:lombok:1.18.36")
+    compileOnly("org.projectlombok:lombok:1.18.42")
+    annotationProcessor("org.projectlombok:lombok:1.18.42")
+    testCompileOnly("org.projectlombok:lombok:1.18.42")
+    testAnnotationProcessor("org.projectlombok:lombok:1.18.42")
     annotationProcessor("org.mapstruct:mapstruct-processor:1.6.3")
     implementation("org.mapstruct:mapstruct:1.6.3")
     testAnnotationProcessor("org.mapstruct:mapstruct-processor:1.6.3")
@@ -45,6 +50,10 @@ java {
     toolchain {
         languageVersion = JavaLanguageVersion.of(17)
     }
+}
+
+tasks.withType<JavaCompile> {
+    options.compilerArgs.add("-parameters")
 }
 
 application {

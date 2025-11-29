@@ -2,25 +2,19 @@ package org.example.web;
 
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
-import org.apache.catalina.connector.Connector;
-import org.apache.catalina.startup.Tomcat;
-import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
+import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class ServerStartListener implements ApplicationListener<ContextRefreshedEvent> {
+public class ServerStartListener {
 
-  private final Tomcat tomcat;
+  private final ServerService serverService;
 
   @SneakyThrows
-  @Override
+  @EventListener
   public void onApplicationEvent(ContextRefreshedEvent event) {
-    Connector connector = tomcat.getConnector();
-    tomcat.start();
-    System.out.printf(
-        "Server available at: http://%s:%s%n", tomcat.getHost().getName(), connector.getPort());
-    tomcat.getServer().await();
+    serverService.start();
   }
 }
