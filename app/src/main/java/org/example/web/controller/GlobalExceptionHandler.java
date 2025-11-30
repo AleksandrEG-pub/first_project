@@ -42,7 +42,7 @@ public class GlobalExceptionHandler {
     log.error("{} {} [{}]", title, ex.getClass().getSimpleName(), ex.getMessage());
     ProblemDetail problemDetail = ProblemDetail.forStatus(httpStatus);
     return ErrorResponse.builder(ex, problemDetail)
-        .detail(details.formatted(detailsArguments))
+        .detail(details.formatted((Object [])detailsArguments))
         .title(title)
         .build();
   }
