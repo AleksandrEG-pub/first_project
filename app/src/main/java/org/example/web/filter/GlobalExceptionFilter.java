@@ -2,7 +2,6 @@ package org.example.web.filter;
 
 import jakarta.servlet.Filter;
 import jakarta.servlet.FilterChain;
-import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServletResponse;
@@ -13,7 +12,7 @@ import java.io.PrintWriter;
 public class GlobalExceptionFilter implements Filter {
   @Override
   public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
-      throws IOException, ServletException {
+      throws IOException {
     try {
       chain.doFilter(request, response);
     } catch (Exception e) {
@@ -22,8 +21,17 @@ public class GlobalExceptionFilter implements Filter {
       if (!httpResponse.isCommitted()) {
         httpResponse.setStatus(500);
         httpResponse.setContentType("application/json");
-        try(PrintWriter writer = httpResponse.getWriter()) {
-          writer.write("{\"error\": \"internal_server_error\"}");
+        try (PrintWriter writer = httpResponse.getWriter()) {
+          String message =
+              """
+                      {
+                      "type": "about:blank",
+                      "title": "internal_server_error",
+                      "status": 500,
+                      "detail": "Application experiencing problems, if error repeats, please report to developer team"
+                      }
+                      """;
+          writer.write(message);
         }
       }
     }
