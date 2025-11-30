@@ -22,8 +22,8 @@ public abstract class BaseRepositoryTest {
     registry.add("database.connect.url", postgreSQLContainer::getJdbcUrl);
     registry.add("database.connect.user", postgreSQLContainer::getUsername);
     registry.add("database.connect.password", postgreSQLContainer::getPassword);
-    registry.add("database.connect.application_scheme", () -> "test_app");
-    registry.add("database.migration.liquibase.scheme", () -> "test_liq");
+    registry.add("database.migration.liquibase.scheme", () -> "liquibase_data");
+    registry.add("database.connect.application_scheme", () -> "application_data");
     registry.add("database.migration.liquibase.changelog_file", () -> "db/changelog/db.changelog-master.yaml");
   }
 
