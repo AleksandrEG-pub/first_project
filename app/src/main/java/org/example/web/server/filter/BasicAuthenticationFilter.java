@@ -1,6 +1,5 @@
 package org.example.web.server.filter;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.Filter;
 import jakarta.servlet.FilterChain;
@@ -12,22 +11,22 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
-
-import lombok.RequiredArgsConstructor;
-import org.example.dto.ErrorResponse;
 import org.example.dto.LoginResult;
 import org.example.service.AuthService;
 import org.springframework.stereotype.Component;
 
 /** Filter that handles Basic Authentication for HTTP requests. */
 @Component
-@RequiredArgsConstructor
-public class BasicAuthenticationFilter implements Filter {
+public class BasicAuthenticationFilter extends BasicFilter implements Filter {
 
   private static final String AUTH_HEADER = "Authorization";
   private static final String BASIC_PREFIX = "Basic ";
   private final AuthService authService;
-  private final ObjectMapper objectMapper;
+
+  public BasicAuthenticationFilter(AuthService authService, ObjectMapper objectMapper) {
+    super(objectMapper);
+    this.authService = authService;
+  }
 
   @Override
   public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
@@ -78,9 +77,12 @@ public class BasicAuthenticationFilter implements Filter {
     response.setHeader("WWW-Authenticate", "Basic realm=\"User Visible Realm\"");
     response.setContentType("application/json");
     response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-    ErrorResponse errorResponse =
-        getResponse(message, HttpServletResponse.SC_UNAUTHORIZED, httpRequest);
-    String json = toJson(errorResponse);
+    String json =
+        getResponse(
+            "basic_authentication_error",
+            message,
+            HttpServletResponse.SC_UNAUTHORIZED,
+            httpRequest);
     response.getWriter().write(json);
   }
 
@@ -90,21 +92,5 @@ public class BasicAuthenticationFilter implements Filter {
     byte[] credDecoded = Base64.getDecoder().decode(base64Credentials);
     String credentials = new String(credDecoded, StandardCharsets.UTF_8);
     return credentials.split(":", 2);
-  }
-
-  private ErrorResponse getResponse(String message, int status, HttpServletRequest httpRequest) {
-    return ErrorResponse.builder()
-        .status(status)
-        .title("basic_authentication_error " + message)
-        .instance(toInstance(httpRequest))
-        .build();
-  }
-
-  private String toJson(Object object) throws JsonProcessingException {
-    return objectMapper.writeValueAsString(object);
-  }
-
-  private String toInstance(HttpServletRequest request) {
-    return request.getContextPath() + request.getRequestURI();
   }
 }
