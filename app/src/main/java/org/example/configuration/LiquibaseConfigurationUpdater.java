@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Set;
 
 import jakarta.annotation.PostConstruct;
 import liquibase.Liquibase;
@@ -20,6 +21,8 @@ import org.springframework.stereotype.Component;
 @Log4j2
 @Component
 public class LiquibaseConfigurationUpdater {
+
+  private static final Set<String> validSchemes = Set.of("liquibase_data", "application_data", "app_data");
 
   /** liquibase configuration file location */
   @Value("${database.migration.liquibase.changelog_file}")
@@ -56,6 +59,9 @@ public class LiquibaseConfigurationUpdater {
       Database database =
           DatabaseFactory.getInstance()
               .findCorrectDatabaseImplementation(new JdbcConnection(connection));
+      validateSchemes(liquibaseScheme);
+      validateSchemes(applicationScheme);
+      connection.getMetaData().getIdentifierQuoteString();
       database.setLiquibaseSchemaName(liquibaseScheme);
       database.setDefaultSchemaName(applicationScheme);
       Liquibase liquibase =
@@ -64,6 +70,12 @@ public class LiquibaseConfigurationUpdater {
     } catch (LiquibaseException | SQLException e) {
       log.error("Failed to update database: {}", e.getMessage(), e);
       throw new InitializationException(e);
+    }
+  }
+
+  private void validateSchemes(String scheme) {
+    if (!validSchemes.contains(scheme)) {
+      throw new InitializationException("Invalid schema name format");
     }
   }
 
