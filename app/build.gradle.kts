@@ -15,8 +15,8 @@ dependencies {
     implementation("org.apache.logging.log4j:log4j-core:2.24.2")
     implementation("org.apache.logging.log4j:log4j-api:2.24.2")
 
-    implementation("org.springframework:spring-webmvc:7.0.1")
-    implementation("org.springframework:spring-context:7.0.1")
+    implementation("org.springframework:spring-webmvc:6.2.14")
+    implementation("org.springframework:spring-context:6.2.14")
 
     implementation("org.apache.tomcat.embed:tomcat-embed-core:11.0.14")
     implementation("com.fasterxml.jackson.core:jackson-databind:2.20.1")
@@ -43,10 +43,14 @@ dependencies {
     testImplementation("org.testcontainers:testcontainers-junit-jupiter:2.0.2")
     testImplementation("org.testcontainers:postgresql:1.21.3")
 
-    testImplementation("org.junit.jupiter:junit-jupiter:5.8.1")
+    testImplementation("org.junit.jupiter:junit-jupiter:5.9.3")
 
     testImplementation("org.assertj:assertj-core:4.0.0-M1")
     testImplementation("org.mockito:mockito-core:5.20.0")
+    testImplementation("org.skyscreamer:jsonassert:1.5.3")
+    implementation("com.jayway.jsonpath:json-path:2.10.0")
+    testImplementation("org.hamcrest:hamcrest:3.0")
+    testImplementation("org.springframework:spring-test:6.2.14")
 }
 
 java {

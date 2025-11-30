@@ -21,7 +21,7 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 public class ProductServiceImpl implements ProductService {
-  private static final ProductMapper PRODUCT_MAPPER = ProductMapper.INSTANCE;
+  private final ProductMapper productMapper;
   private final ProductRepository productRepository;
   private final Cache<Long, Product> productCache;
   private final AuthService authService;
@@ -64,7 +64,7 @@ public class ProductServiceImpl implements ProductService {
     if (id == null) {
       throw new ValidationException("Product ID cannot be null");
     }
-    Product product = PRODUCT_MAPPER.toProduct(newProductData);
+    Product product = productMapper.toProduct(newProductData);
     dtoValidator.validate(product);
     Optional<Product> existingOpt = findById(id);
     if (existingOpt.isEmpty()) {
@@ -96,7 +96,7 @@ public class ProductServiceImpl implements ProductService {
 
   @Override
   public Product create(ProductForm productForm) {
-    Product product = PRODUCT_MAPPER.toProduct(productForm);
+    Product product = productMapper.toProduct(productForm);
     return addProduct(product);
   }
 

@@ -33,7 +33,11 @@ public class ConnectionManager {
   }
 
   private Connection getConnection() throws SQLException {
-    return DriverManager.getConnection(url + "?currentSchema=" + applicationScheme, user, password);
+    String newUrl =
+        url.contains("?")
+            ? "%s&currentSchema=%s".formatted(url, applicationScheme)
+            : "%s?currentSchema=%s".formatted(url, applicationScheme);
+    return DriverManager.getConnection(newUrl, user, password);
   }
 
   private <T> T invokeWithConnection(

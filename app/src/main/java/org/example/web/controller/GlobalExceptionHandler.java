@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.stereotype.Component;
 import org.springframework.web.ErrorResponse;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -68,6 +69,12 @@ public class GlobalExceptionHandler {
         "incorrect_method_parameter_value",
         "wrong argument %s",
         message);
+  }
+
+  @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
+  public ErrorResponse handle(HttpRequestMethodNotSupportedException ex) {
+    log.error("method_not_supported [{}]", ex.getMessage());
+    return ex;
   }
 
   @ExceptionHandler(ConstraintViolationException.class)

@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 public class CriteriaRequestParserImpl implements CriteriaRequestParser {
   @Override
   public SearchCriteria buildSearchCriteria(HttpServletRequest req) {
-    var builder = new SearchCriteria.Builder();
+    var builder = SearchCriteria.builder();
     getParameter(req, "id").ifPresent(id -> builder.id(Long.valueOf(id)));
     getParameter(req, "name").ifPresent(builder::name);
     getParameter(req, "category").ifPresent(builder::category);

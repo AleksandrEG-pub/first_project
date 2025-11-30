@@ -1,12 +1,20 @@
 package org.example.dto;
 
 import java.math.BigDecimal;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import org.example.model.Product;
 
 /**
  * Parameter for product search. Minimal sensible validation, so search can be as flexible as
  * possible, excluding most unrealistic values, like negative price.
  */
+@EqualsAndHashCode
+@Builder
+@Getter
+@AllArgsConstructor
 public class SearchCriteria {
   private final Long id;
   private final String name;
@@ -14,15 +22,6 @@ public class SearchCriteria {
   private final String brand;
   private final BigDecimal minPrice;
   private final BigDecimal maxPrice;
-
-  private SearchCriteria(Builder builder) {
-    this.id = builder.id;
-    this.name = builder.name;
-    this.category = builder.category;
-    this.brand = builder.brand;
-    this.minPrice = builder.minPrice;
-    this.maxPrice = builder.maxPrice;
-  }
 
   public boolean matchesId(Product product) {
     return product.getId() != null && product.getId().equals(this.id);
@@ -62,26 +61,6 @@ public class SearchCriteria {
     return matchesMin && matchesMax;
   }
 
-  public String getName() {
-    return name;
-  }
-
-  public String getCategory() {
-    return category;
-  }
-
-  public String getBrand() {
-    return brand;
-  }
-
-  public BigDecimal getMinPrice() {
-    return minPrice;
-  }
-
-  public BigDecimal getMaxPrice() {
-    return maxPrice;
-  }
-
   public boolean isEmpty() {
     return id == null
         && name == null
@@ -89,48 +68,5 @@ public class SearchCriteria {
         && brand == null
         && minPrice == null
         && maxPrice == null;
-  }
-
-  public static class Builder {
-    private Long id;
-    private String name;
-    private String category;
-    private String brand;
-    private BigDecimal minPrice;
-    private BigDecimal maxPrice;
-
-    public Builder id(Long id) {
-      this.id = id;
-      return this;
-    }
-
-    public Builder name(String name) {
-      this.name = name;
-      return this;
-    }
-
-    public Builder category(String category) {
-      this.category = category;
-      return this;
-    }
-
-    public Builder brand(String brand) {
-      this.brand = brand;
-      return this;
-    }
-
-    public Builder minPrice(BigDecimal minPrice) {
-      this.minPrice = minPrice;
-      return this;
-    }
-
-    public Builder maxPrice(BigDecimal maxPrice) {
-      this.maxPrice = maxPrice;
-      return this;
-    }
-
-    public SearchCriteria build() {
-      return new SearchCriteria(this);
-    }
   }
 }

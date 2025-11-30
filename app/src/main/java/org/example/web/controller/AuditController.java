@@ -15,15 +15,15 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class AuditController {
 
-  private static final AuditLogMapper AUDIT_LOG_MAPPER = AuditLogMapper.INSTANCE;
-  private final transient AuditService auditService;
+  private final AuditLogMapper auditLogMapper;
+  private final AuditService auditService;
 
   @GetMapping
   public List<AuditLogDto> getByUsername(@RequestParam(required = false) String username) {
     if (username != null) {
-      return auditService.findByUsername(username).stream().map(AUDIT_LOG_MAPPER::toDto).toList();
+      return auditService.findByUsername(username).stream().map(auditLogMapper::toDto).toList();
     } else {
-      return auditService.findAll().stream().map(AUDIT_LOG_MAPPER::toDto).toList();
+      return auditService.findAll().stream().map(auditLogMapper::toDto).toList();
     }
   }
 }

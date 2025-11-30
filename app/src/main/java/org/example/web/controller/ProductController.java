@@ -30,43 +30,66 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 public class ProductController {
-  private static final ProductMapper PRODUCT_MAPPER = ProductMapper.INSTANCE;
-  private final transient ProductService productService;
+  private final ProductMapper productMapper;
+  private final ProductService productService;
 
   @GetMapping(value = "/{id}")
-  public ProductDto getById(@PathVariable Long id) {
+  public ResponseEntity<ProductDto> getById(@PathVariable Long id) {
     return productService
         .findById(id)
-        .map(PRODUCT_MAPPER::toDto)
+        .map(productMapper::toDto)
+        .map(
+            productDto ->
+                ResponseEntity.status(HttpStatus.OK)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(productDto))
         .orElseThrow(() -> new ResourceNotFoundException("product", String.valueOf(id)));
   }
 
   @GetMapping
-  public List<ProductDto> getFilter(
+  public ResponseEntity<List<ProductDto>> getFilter(
       @RequestParam(required = false) Long id,
       @RequestParam(required = false) String name,
       @RequestParam(required = false) String category,
       @RequestParam(required = false) String brand,
       @RequestParam(required = false) BigDecimal minPrice,
       @RequestParam(required = false) BigDecimal maxPrice) {
-    SearchCriteria criteria = new SearchCriteria.Builder().build();
-    if (criteria == null) {
-      return productService.getAllProducts().stream().map(PRODUCT_MAPPER::toDto).toList();
+    SearchCriteria criteria =
+        SearchCriteria.builder()
+            .id(id)
+            .name(name)
+            .category(category)
+            .brand(brand)
+            .minPrice(minPrice)
+            .maxPrice(maxPrice)
+            .build();
+    var response = ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON);
+    if (criteria.isEmpty()) {
+      List<ProductDto> products =
+          productService.getAllProducts().stream().map(productMapper::toDto).toList();
+      return response.body(products);
     } else {
-      return productService.search(criteria).stream().map(PRODUCT_MAPPER::toDto).toList();
+      List<ProductDto> products =
+          productService.search(criteria).stream().map(productMapper::toDto).toList();
+      return response.body(products);
     }
   }
 
   @PostMapping
   public ResponseEntity<ProductDto> create(@RequestBody @Valid ProductForm productForm) {
     Product product = productService.create(productForm);
-    return ResponseEntity.status(HttpStatus.CREATED).body(PRODUCT_MAPPER.toDto(product));
+    return ResponseEntity.status(HttpStatus.CREATED)
+        .contentType(MediaType.APPLICATION_JSON)
+        .body(productMapper.toDto(product));
   }
 
   @PutMapping(value = "/{id}")
-  public ProductDto update(@PathVariable long id, @RequestBody @Valid ProductForm productForm) {
+  public ResponseEntity<ProductDto> update(
+      @PathVariable long id, @RequestBody @Valid ProductForm productForm) {
     Product product = productService.updateProduct(id, productForm);
-    return PRODUCT_MAPPER.toDto(product);
+    return ResponseEntity.ok()
+        .contentType(MediaType.APPLICATION_JSON)
+        .body(productMapper.toDto(product));
   }
 
   @DeleteMapping(value = "/{id}")

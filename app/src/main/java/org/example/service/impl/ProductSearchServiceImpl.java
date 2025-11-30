@@ -70,6 +70,7 @@ public class ProductSearchServiceImpl implements ProductSearchService {
   private List<Product> applyCombinedFilters(SearchCriteria criteria) {
     List<Product> allProducts = productRepository.findAll();
     return allProducts.stream()
+        .filter(criteria::matchesId)
         .filter(criteria::matchesName)
         .filter(criteria::matchesCategory)
         .filter(criteria::matchesBrand)
