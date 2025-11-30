@@ -1,7 +1,6 @@
 plugins {
     application
     id("com.gradleup.shadow") version "9.1.0"
-//    id("io.freefair.aspectj.post-compile-weaving") version "9.1.0"
 }
 
 repositories {
@@ -9,6 +8,10 @@ repositories {
 }
 
 dependencies {
+    implementation("io.swagger.core.v3:swagger-annotations:2.2.3")
+    implementation("io.swagger.core.v3:swagger-models:2.2.3")
+    implementation("org.webjars:swagger-ui:4.18.2")
+
     implementation("org.apache.logging.log4j:log4j-core:2.24.2")
     implementation("org.apache.logging.log4j:log4j-api:2.24.2")
 

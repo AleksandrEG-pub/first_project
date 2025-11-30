@@ -6,6 +6,7 @@ import org.apache.catalina.startup.Tomcat;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.event.EventListener;
+import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 import org.springframework.web.servlet.DispatcherServlet;
@@ -25,6 +26,7 @@ public class WebApplicationConfiguration {
     webContext.scan("org.example.web");
     ServletContext servletContext = applicationContext.getBean(ServletContext.class);
     webContext.setServletContext(servletContext);
+    webContext.setEnvironment((ConfigurableEnvironment) applicationContext.getEnvironment());
     DispatcherServlet dispatcherServlet = applicationContext.getBean(DispatcherServlet.class);
     dispatcherServlet.setApplicationContext(webContext);
     dispatcherServlet.setContextAttribute("my-ds");

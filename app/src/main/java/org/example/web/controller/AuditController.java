@@ -22,7 +22,7 @@ public class AuditController {
   public List<AuditLogDto> getByUsername(@RequestParam(required = false) String username) {
     if (username != null) {
       return auditService.findByUsername(username).stream().map(AUDIT_LOG_MAPPER::toDto).toList();
-    } else{
+    } else {
       return auditService.findAll().stream().map(AUDIT_LOG_MAPPER::toDto).toList();
     }
   }

@@ -11,7 +11,9 @@ import org.example.exception.ResourceNotFoundException;
 import org.example.mapper.ProductMapper;
 import org.example.model.Product;
 import org.example.service.ProductService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -56,9 +58,9 @@ public class ProductController {
   }
 
   @PostMapping
-  public ProductDto create(@RequestBody @Valid ProductForm productForm) {
+  public ResponseEntity<ProductDto> create(@RequestBody @Valid ProductForm productForm) {
     Product product = productService.create(productForm);
-    return PRODUCT_MAPPER.toDto(product);
+    return ResponseEntity.status(HttpStatus.CREATED).body(PRODUCT_MAPPER.toDto(product));
   }
 
   @PutMapping(value = "/{id}")
@@ -68,7 +70,8 @@ public class ProductController {
   }
 
   @DeleteMapping(value = "/{id}")
-  public void delete(@PathVariable long id) {
+  public ResponseEntity<Void> delete(@PathVariable long id) {
     productService.deleteProduct(id);
+    return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
   }
 }

@@ -1,0 +1,467 @@
+openapi: 3.0.3
+info:
+  title: Company Management API
+  version: 1.0.11
+  description: API for managing products and audit logs
+  contact:
+    name: API Support
+    email: support@example.com
+
+servers:
+  - url: http://localhost:8094
+    description: Development Server
+
+paths:
+  /audits:
+    get:
+      operationId: getAudits
+      security:
+        - basicAuth: ["admin"]
+      tags:
+        - Audit API
+      summary: Get audit logs by username
+      description: Retrieve audit logs filtered by username, or all logs if no username provided
+      parameters:
+        - name: username
+          in: query
+          required: false
+          description: Filter by username
+          schema:
+            type: string
+            example: user
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AuditLogDto'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /products:
+    get:
+      operationId: searchProducts
+      security:
+        - basicAuth: ["user", "admin"]
+      tags:
+        - Products API
+      summary: Search and filter products
+      description: Get products with optional filtering by various criteria
+      parameters:
+        - name: id
+          in: query
+          required: false
+          description: Filter by product ID
+          schema:
+            type: integer
+            example: 123
+        - name: name
+          in: query
+          required: false
+          description: Filter by product name
+          schema:
+            type: string
+            example: "android"
+        - name: category
+          in: query
+          required: false
+          description: Filter by product category
+          schema:
+            type: string
+            example: "electronics"
+        - name: brand
+          in: query
+          required: false
+          description: Filter by product brand
+          schema:
+            type: string
+            example: "Orange"
+        - name: minPrice
+          in: query
+          required: false
+          description: Minimum price filter
+          schema:
+            type: number
+            format: decimal
+            example: 100.00
+        - name: maxPrice
+          in: query
+          required: false
+          description: Maximum price filter
+          schema:
+            type: number
+            format: decimal
+            example: 1000.00
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ProductDto'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    post:
+      operationId: createProduct
+      security:
+        - basicAuth: ["admin"]
+      tags:
+        - Products API
+      summary: Create a new product
+      description: Create a new product with the provided details
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductForm'
+      responses:
+        '201':
+          description: Product created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductDto'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/NotFound'
+        '404':
+          $ref: '#/components/responses/Forbidden'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /products/{id}:
+    get:
+      operationId: getProductById
+      security:
+        - basicAuth: ["user", "admin"]
+      tags:
+        - Products API
+      summary: Get product by ID
+      description: Retrieve a specific product by its ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Product ID
+          schema:
+            type: integer
+            example: 123
+      responses:
+        '200':
+          description: Product found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductDto'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/NotFound'
+        '404':
+          $ref: '#/components/responses/Forbidden'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    put:
+      operationId: updateProduct
+      security:
+        - basicAuth: ["admin"]
+      tags:
+        - Products API
+      summary: Update an existing product
+      description: Update a product with the provided details
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Product ID to update
+          schema:
+            type: integer
+            example: 123
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductForm'
+      responses:
+        '200':
+          description: Product updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductDto'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/NotFound'
+        '404':
+          $ref: '#/components/responses/Forbidden'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    delete:
+      operationId: deleteProduct
+      security:
+        - basicAuth: ["admin"]
+      tags:
+        - Products API
+      summary: Delete a product
+      description: Delete a product by its ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Product ID to delete
+          schema:
+            type: integer
+            example: 123
+      responses:
+        '204':
+          description: Product deleted successfully
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/NotFound'
+        '404':
+          $ref: '#/components/responses/Forbidden'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+security:
+  - basicAuth: []
+
+components:
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic
+      description: Basic authentication with username and password
+  schemas:
+    AuditLogDto:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Audit log ID
+          example: 123
+        username:
+          type: string
+          description: Username who performed the action
+          example: john.doe
+        action:
+          type: string
+          description: Action performed
+          example: USER_LOGIN
+        timestamp:
+          type: string
+          format: date-time
+          description: When the action occurred
+          example: 2024-01-15T10:30:00Z
+        details:
+          type: string
+          description: Additional details about the action
+          example: User logged in from IP 192.168.1.100
+
+    ProductDto:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 123
+        name:
+          type: string
+          example: "Wireless Bluetooth Headphones"
+        description:
+          type: string
+          example: "High-quality wireless headphones with noise cancellation"
+        category:
+          type: string
+          example: "Electronics"
+        brand:
+          type: string
+          example: "AudioTech"
+        price:
+          type: number
+          format: bigdecimal
+          example: 149.99
+
+    ProductForm:
+      type: object
+      required:
+        - name
+        - description
+        - category
+        - brand
+        - price
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 255
+          example: "Wireless Bluetooth Headphones"
+        description:
+          type: string
+          minLength: 1
+          maxLength: 10000
+          example: "High-quality wireless headphones with noise cancellation"
+        category:
+          type: string
+          minLength: 1
+          maxLength: 255
+          example: "Electronics"
+        brand:
+          type: string
+          minLength: 1
+          maxLength: 255
+          example: "AudioTech"
+        price:
+          type: number
+          format: bigdecimal
+          minimum: 0.01
+          example: 149.99
+
+    ProblemDetail:
+      type: object
+      required:
+        - type
+        - title
+        - status
+        - detail
+      properties:
+        type:
+          type: string
+          format: uri
+          description: A URI reference that identifies the problem type
+          example: "about:blank"
+        title:
+          type: string
+          description: A short, human-readable summary of the problem type
+          example: "resource_not_found"
+        status:
+          type: integer
+          format: int32
+          description: The HTTP status code generated by the origin server
+          example: 404
+        detail:
+          type: string
+          description: A human-readable explanation specific to this occurrence
+          example: "Resource [User] not found by id: [123]"
+        instance:
+          type: string
+          format: uri
+          description: A URI reference that identifies the specific occurrence
+          example: "/users/123"
+
+  responses:
+    # 404 - Resource Not Found
+    NotFound:
+      description: The requested resource was not found
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ProblemDetail'
+          examples:
+            ResourceNotFound:
+              summary: Specific resource not found
+              value:
+                type: "about:blank"
+                title: "resource_not_found"
+                status: 404
+                detail: "Resource [User] not found by id: [123]"
+            NoHandlerFound:
+              summary: Endpoint does not exist
+              value:
+                type: "about:blank"
+                title: "resource_does_not_exist"
+                status: 404
+                detail: "Resource does not exist for path /api/invalid-endpoint"
+
+    # 400 - Bad Request
+    BadRequest:
+      description: The request contains invalid parameters or data
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ProblemDetail'
+          examples:
+            MethodArgumentNotValid:
+              summary: Request body validation failed
+              value:
+                type: "about:blank"
+                title: "incorrect_method_parameter_value"
+                status: 400
+                detail: "wrong argument [email:must not be blank],[age:must be greater than 0]"
+            ConstraintViolation:
+              summary: Parameter constraint violation
+              value:
+                type: "about:blank"
+                title: "incorrect_parameter_value"
+                status: 400
+                detail: "Validation fail [must be a valid email address]"
+            MissingParameter:
+              summary: Required parameter missing
+              value:
+                type: "about:blank"
+                title: "missing_parameter"
+                status: 400
+                detail: "expected parameter, but not given [userId, String]"
+            TypeMismatch:
+              summary: Parameter type mismatch
+              value:
+                type: "about:blank"
+                title: "incorrect_parameter_type"
+                status: 400
+                detail: "Argument has wrong type: [userId, Failed to convert value of type 'java.lang.String' to required type 'java.lang.Long']"
+            ValidationException:
+              summary: General validation failure
+              value:
+                type: "about:blank"
+                title: "incorrect_parameter_value"
+                status: 400
+                detail: "Validation fail [Email already exists]"
+
+    # 403 - Forbidden
+    Forbidden:
+      description: Access to the resource is denied
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ProblemDetail'
+          examples:
+            AccessDenied:
+              summary: Insufficient permissions
+              value:
+                type: "about:blank"
+                title: "access_denied"
+                status: 403
+                detail: "ask administrator for additional details"
+
+    # 500 - Internal Server Error
+    InternalServerError:
+      description: An unexpected error occurred on the server
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ProblemDetail'
+          examples:
+            GenericError:
+              summary: Unexpected server error
+              value:
+                type: "about:blank"
+                title: "internal_app_fail"
+                status: 500
+                detail: "Application experiencing problems, if error repeats, please report to developer team"

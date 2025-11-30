@@ -1,4 +1,4 @@
-package org.example.web;
+package org.example.web.controller;
 
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.ValidationException;
@@ -23,75 +23,107 @@ import org.springframework.web.servlet.NoHandlerFoundException;
 public class GlobalExceptionHandler {
   @ExceptionHandler(ResourceNotFoundException.class)
   public ErrorResponse handle(ResourceNotFoundException ex) {
-    log.error("resource_not_found [{}]", ex.getMessage());
-    String title = "resource_not_found: [%s, %s]".formatted(ex.getResource(), ex.getId());
-    return errorResponse(ex, HttpStatus.NOT_FOUND, title);
+    return errorResponse(
+        ex,
+        HttpStatus.NOT_FOUND,
+        "resource_not_found",
+        "Resource [%s] not found by id: [%s]",
+        ex.getResource(),
+        ex.getId());
   }
 
-  private ErrorResponse errorResponse(Exception ex, HttpStatus httpStatus, String title) {
+  private ErrorResponse errorResponse(
+      Exception ex,
+      HttpStatus httpStatus,
+      String title,
+      String details,
+      String... detailsArguments) {
+    log.error("{} {} [{}]", title, ex.getClass().getSimpleName(), ex.getMessage());
     ProblemDetail problemDetail = ProblemDetail.forStatus(httpStatus);
-    return ErrorResponse.builder(ex, problemDetail).title(title).build();
+    return ErrorResponse.builder(ex, problemDetail)
+        .detail(details.formatted(detailsArguments))
+        .title(title)
+        .build();
   }
 
   @ExceptionHandler(NoHandlerFoundException.class)
   public ErrorResponse handle(NoHandlerFoundException ex) {
-    log.error("resource_does_not_exist [{}]", ex.getMessage());
     return errorResponse(
-        ex, HttpStatus.NOT_FOUND, "resource_does_not_exist, %s".formatted(ex.getRequestURL()));
+        ex,
+        HttpStatus.NOT_FOUND,
+        "resource_does_not_exist",
+        "Resource does not exist for path %s",
+        ex.getRequestURL());
   }
 
   @ExceptionHandler(MethodArgumentNotValidException.class)
   public ErrorResponse handle(MethodArgumentNotValidException ex) {
-    log.error("incorrect_method_parameter_value [{}]", ex.getMessage());
     String message =
         ex.getBindingResult().getFieldErrors().stream()
             .map(error -> "[%s:%s]".formatted(error.getField(), error.getDefaultMessage()))
             .collect(Collectors.joining(","));
     return errorResponse(
-        ex, HttpStatus.BAD_REQUEST, "incorrect_method_parameter_value, %s".formatted(message));
+        ex,
+        HttpStatus.BAD_REQUEST,
+        "incorrect_method_parameter_value",
+        "wrong argument %s",
+        message);
   }
 
   @ExceptionHandler(ConstraintViolationException.class)
   public ErrorResponse handle(ConstraintViolationException ex) {
-    log.error("incorrect_parameter_value [{}]", ex.getMessage());
     String[] messageParts = ex.getMessage().split(":");
     String message = messageParts.length > 1 ? messageParts[1].trim() : ex.getMessage();
     return errorResponse(
-        ex, HttpStatus.BAD_REQUEST, "incorrect_parameter_value, %s".formatted(message));
+        ex, HttpStatus.BAD_REQUEST, "incorrect_parameter_value", "Validation fail [%s]", message);
   }
 
   @ExceptionHandler(MissingServletRequestParameterException.class)
   public ErrorResponse handle(MissingServletRequestParameterException ex) {
-    log.error("missing_parameter [{}]", ex.getMessage());
-    return errorResponse(ex, HttpStatus.BAD_REQUEST, "missing_parameter, %s".formatted("message"));
+    return errorResponse(
+        ex,
+        HttpStatus.BAD_REQUEST,
+        "missing_parameter",
+        "expected parameter, but not given [%s, %s]",
+        ex.getParameterName(),
+        ex.getParameterType());
   }
 
   @ExceptionHandler(MethodArgumentTypeMismatchException.class)
   public ErrorResponse handle(MethodArgumentTypeMismatchException ex) {
-    log.error("incorrect_parameter_type [{}]", ex.getMessage());
     return errorResponse(
         ex,
         HttpStatus.BAD_REQUEST,
-        "incorrect_parameter_type, parameter: %s, value %s".formatted(ex.getName(), ex.getValue()));
+        "incorrect_parameter_type",
+        "Argument has wrong type: [%s, %s]",
+        ex.getName(),
+        ex.getMessage());
   }
 
   @ExceptionHandler(ValidationException.class)
   public ErrorResponse handle(ValidationException ex) {
-    log.error("validation_fail [{}]", ex.getMessage());
     return errorResponse(
-        ex, HttpStatus.BAD_REQUEST, "validation_fail, [%s]".formatted(ex.getMessage()));
+        ex,
+        HttpStatus.BAD_REQUEST,
+        "incorrect_parameter_value",
+        "Validation fail [%s]",
+        ex.getMessage());
   }
 
   @ExceptionHandler(AccessDeniedException.class)
   public ErrorResponse handle(AccessDeniedException ex) {
-    log.error("access_denied [{}]", ex.getMessage());
-    return errorResponse(ex, HttpStatus.FORBIDDEN, "access_denied");
+    return errorResponse(
+        ex, HttpStatus.FORBIDDEN, "access_denied", "ask administrator for additional details");
   }
 
   @ExceptionHandler(Exception.class)
   public ErrorResponse handle(Exception ex) {
     log.error(
         "Unexpected error happened: [{}, {}]", ex.getClass().getSimpleName(), ex.getMessage(), ex);
-    return errorResponse(ex, HttpStatus.INTERNAL_SERVER_ERROR, "internal_app_fail");
+    return errorResponse(
+        ex,
+        HttpStatus.INTERNAL_SERVER_ERROR,
+        "internal_app_fail",
+        "Application experiencing problems, if error repeats, please report to developer team");
   }
 }
