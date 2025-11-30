@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 ./start-database.sh
 ./gradlew shadowJar && java -jar ./app/build/libs/app-all.jar --file=application.env
