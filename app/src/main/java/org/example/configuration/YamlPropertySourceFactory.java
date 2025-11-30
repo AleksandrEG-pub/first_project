@@ -11,6 +11,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.EncodedResource;
 import org.springframework.core.io.support.PropertySourceFactory;
 
+/** Converts yaml to properties */
 public class YamlPropertySourceFactory implements PropertySourceFactory {
   @Override
   public PropertySource<?> createPropertySource(String name, EncodedResource encodedResource) {

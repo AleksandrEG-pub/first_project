@@ -1,5 +1,6 @@
 package org.example.aspect;
 
+/** Provides list of possible variations in ways of processing audit actions */
 public enum AuditType {
   /** Basic message formatting */
   SIMPLE,

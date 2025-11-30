@@ -19,7 +19,7 @@ public class WebApplicationConfiguration {
 
   @EventListener
   public void initWebContext(ContextRefreshedEvent contextRefreshedEvent) {
-    // Only proceed if this is the root/parent application context
+    // Only proceed if this is the root/parent application context, otherwise infinite loop is possible
     if (contextRefreshedEvent.getApplicationContext().getParent() != null) {
       return;
     }
