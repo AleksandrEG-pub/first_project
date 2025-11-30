@@ -12,10 +12,12 @@ import liquibase.database.DatabaseFactory;
 import liquibase.database.jvm.JdbcConnection;
 import liquibase.exception.LiquibaseException;
 import liquibase.resource.ClassLoaderResourceAccessor;
+import lombok.extern.log4j.Log4j2;
 import org.example.exception.InitializationException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+@Log4j2
 @Component
 public class LiquibaseConfigurationUpdater {
 
@@ -60,7 +62,7 @@ public class LiquibaseConfigurationUpdater {
           new Liquibase(changelogFile, new ClassLoaderResourceAccessor(), database);
       liquibase.update(context);
     } catch (LiquibaseException | SQLException e) {
-      System.err.println("Failed to update database: " + e.getMessage());
+      log.error("Failed to update database: {}", e.getMessage(), e);
       throw new InitializationException(e);
     }
   }

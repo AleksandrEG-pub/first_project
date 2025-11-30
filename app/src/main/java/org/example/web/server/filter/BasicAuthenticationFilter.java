@@ -1,4 +1,4 @@
-package org.example.web.filter;
+package org.example.web.server.filter;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -12,24 +12,22 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
+
+import lombok.RequiredArgsConstructor;
 import org.example.dto.ErrorResponse;
 import org.example.dto.LoginResult;
 import org.example.service.AuthService;
+import org.springframework.stereotype.Component;
 
 /** Filter that handles Basic Authentication for HTTP requests. */
+@Component
+@RequiredArgsConstructor
 public class BasicAuthenticationFilter implements Filter {
 
   private static final String AUTH_HEADER = "Authorization";
   private static final String BASIC_PREFIX = "Basic ";
-  private AuthService authService;
-  private ObjectMapper objectMapper;
-
-  public BasicAuthenticationFilter(AuthService authService, ObjectMapper objectMapper) {
-    this.authService = authService;
-    this.objectMapper = objectMapper;
-  }
-
-  public BasicAuthenticationFilter() {}
+  private final AuthService authService;
+  private final ObjectMapper objectMapper;
 
   @Override
   public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)

@@ -1,6 +1,5 @@
-package org.example.configuration;
+package org.example.web.server;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.Filter;
 import jakarta.servlet.ServletContext;
 import jakarta.servlet.http.HttpServlet;
@@ -13,11 +12,10 @@ import org.apache.catalina.startup.Tomcat;
 import org.apache.tomcat.util.descriptor.web.FilterDef;
 import org.apache.tomcat.util.descriptor.web.FilterMap;
 import org.example.exception.InitializationException;
-import org.example.service.AuthService;
-import org.example.web.filter.AnonymousFilter;
-import org.example.web.filter.AuthorizationFilter;
-import org.example.web.filter.BasicAuthenticationFilter;
-import org.example.web.filter.GlobalExceptionFilter;
+import org.example.web.server.filter.AnonymousFilter;
+import org.example.web.server.filter.AuthorizationFilter;
+import org.example.web.server.filter.BasicAuthenticationFilter;
+import org.example.web.server.filter.GlobalExceptionFilter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -26,8 +24,10 @@ import org.springframework.web.servlet.DispatcherServlet;
 @Configuration
 @RequiredArgsConstructor
 public class ServerConfiguration {
-  private final AuthService authService;
-  private final ObjectMapper objectMapper;
+  private final GlobalExceptionFilter globalExceptionFilter;
+  private final AnonymousFilter anonymousFilter;
+  private final BasicAuthenticationFilter basicAuthenticationFilter;
+  private final AuthorizationFilter authorizationFilter;
 
   @Value("${server.port}")
   private int port;
@@ -78,30 +78,9 @@ public class ServerConfiguration {
   }
 
   private void addFilters(Context ctx) {
-    addGlobalExceptionFilter(ctx);
-    addAnonymousFilter(ctx);
-    addBasicAuthenticationFilter(ctx);
-    addAuthorizationFilter(ctx);
-  }
-
-  private void addGlobalExceptionFilter(Context ctx) {
-    GlobalExceptionFilter globalExceptionFilter = new GlobalExceptionFilter();
     addFilter(ctx, globalExceptionFilter, "/*");
-  }
-
-  private void addAnonymousFilter(Context ctx) {
-    AnonymousFilter anonymousFilter = new AnonymousFilter();
     addFilter(ctx, anonymousFilter, "/*");
-  }
-
-  private void addBasicAuthenticationFilter(Context ctx) {
-    BasicAuthenticationFilter basicAuthenticationFilter =
-        new BasicAuthenticationFilter(authService, objectMapper);
     addFilter(ctx, basicAuthenticationFilter, "/*");
-  }
-
-  private void addAuthorizationFilter(Context ctx) {
-    AuthorizationFilter authorizationFilter = new AuthorizationFilter(objectMapper);
     addFilter(ctx, authorizationFilter, "/*");
   }
 

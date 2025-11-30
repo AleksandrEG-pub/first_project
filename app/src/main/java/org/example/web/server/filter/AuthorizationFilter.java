@@ -1,4 +1,4 @@
-package org.example.web.filter;
+package org.example.web.server.filter;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -10,20 +10,19 @@ import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
+
+import lombok.RequiredArgsConstructor;
 import org.example.dto.ErrorResponse;
 import org.example.model.Role;
 import org.example.model.User;
 import org.example.service.impl.UserContext;
+import org.springframework.stereotype.Component;
 
 /** Filter that enforces authorization rules for admin and product search access. */
+@Component
+@RequiredArgsConstructor
 public class AuthorizationFilter implements Filter {
   private ObjectMapper objectMapper;
-
-  public AuthorizationFilter(ObjectMapper objectMapper) {
-    this.objectMapper = objectMapper;
-  }
-
-  public AuthorizationFilter() {}
 
   @Override
   public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
@@ -56,12 +55,6 @@ public class AuthorizationFilter implements Filter {
     response.getWriter().write(json);
   }
 
-  /** Checks if request is for product search (GET /products). */
-  private static boolean isProductSearchRequest(HttpServletRequest httpRequest) {
-    return httpRequest.getRequestURI().startsWith("/products")
-        && "GET".equals(httpRequest.getMethod());
-  }
-
   private ErrorResponse getResponse(String message, int status, HttpServletRequest httpRequest) {
     return ErrorResponse.builder()
         .status(status)
@@ -70,11 +63,17 @@ public class AuthorizationFilter implements Filter {
         .build();
   }
 
+  private String toInstance(HttpServletRequest request) {
+    return request.getContextPath() + request.getRequestURI();
+  }
+
   private String toJson(Object object) throws JsonProcessingException {
     return objectMapper.writeValueAsString(object);
   }
 
-  private String toInstance(HttpServletRequest request) {
-    return request.getContextPath() + request.getRequestURI();
+  /** Checks if request is for product search (GET /products). */
+  private static boolean isProductSearchRequest(HttpServletRequest httpRequest) {
+    return httpRequest.getRequestURI().startsWith("/products")
+        && "GET".equals(httpRequest.getMethod());
   }
 }
