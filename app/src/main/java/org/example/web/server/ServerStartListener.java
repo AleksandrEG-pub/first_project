@@ -6,6 +6,9 @@ import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
+/**
+* Start the server after application context is ready
+*/
 @Component
 @RequiredArgsConstructor
 public class ServerStartListener {

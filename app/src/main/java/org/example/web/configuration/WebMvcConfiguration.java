@@ -5,10 +5,12 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+/** Contains mvc related beans, except Dispatcher servlet */
 @EnableWebMvc
 @Configuration
 public class WebMvcConfiguration implements WebMvcConfigurer {
 
+  /** Configuration of swagger resources */
   @Override
   public void addResourceHandlers(ResourceHandlerRegistry registry) {
     registry

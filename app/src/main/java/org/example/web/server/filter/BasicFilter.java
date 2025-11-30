@@ -11,12 +11,14 @@ import org.example.exception.AccessDeniedException;
 import org.springframework.http.ProblemDetail;
 import org.springframework.web.ErrorResponse;
 
+/** Provides method for writing error response to filters */
 @RequiredArgsConstructor
 public class BasicFilter {
   private final ObjectMapper objectMapper;
 
   @SneakyThrows
-  protected String getResponse(String title, String message, int status, HttpServletRequest httpRequest) {
+  protected String getResponse(
+      String title, String message, int status, HttpServletRequest httpRequest) {
     ProblemDetail problemDetail = ProblemDetail.forStatus(status);
     problemDetail.setInstance(toInstance(httpRequest));
     ErrorResponse errorResponse =

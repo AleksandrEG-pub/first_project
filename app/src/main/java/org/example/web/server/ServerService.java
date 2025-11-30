@@ -8,6 +8,10 @@ import org.apache.catalina.connector.Connector;
 import org.apache.catalina.startup.Tomcat;
 import org.springframework.stereotype.Component;
 
+/**
+* Starts the Tomcat server
+ * Only 1 instance of server can be running at same time
+*/
 @Log4j2
 @Component
 @RequiredArgsConstructor

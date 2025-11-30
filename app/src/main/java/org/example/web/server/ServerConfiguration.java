@@ -21,6 +21,12 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.DispatcherServlet;
 
+
+/**
+ * Contains configuration server related beans: server, dispatcher servlet, filters, servlet context
+ * <p/>
+ * Does not include controller beans
+ * */
 @Configuration
 @RequiredArgsConstructor
 public class ServerConfiguration {
