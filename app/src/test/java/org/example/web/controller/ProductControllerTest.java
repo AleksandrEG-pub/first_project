@@ -31,9 +31,9 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -44,7 +44,8 @@ class ProductControllerTest {
 
   MockMvc mockMvc;
 
-  @MockitoBean ProductService productService;
+  @MockBean
+  ProductService productService;
   @Autowired ObjectMapper objectMapper;
   ProductMapper productMapper = Mappers.getMapper(ProductMapper.class);
 
