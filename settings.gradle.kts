@@ -4,3 +4,4 @@ plugins {
 
 rootProject.name = "first_project"
 include("app")
+include("logging")

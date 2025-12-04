@@ -13,6 +13,7 @@ import org.example.exception.DataAccessException;
 import org.example.model.Product;
 import org.example.repository.ProductRepository;
 import org.example.repository.impl.database.mapper.ProductResultMapper;
+import org.example_logging.annotation.WithTimingLog;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -75,6 +76,7 @@ public class JdbcProductRepository implements ProductRepository {
     this.connectionManager = connectionManager;
   }
 
+  @WithTimingLog
   @Override
   public Product save(Product product) {
     return connectionManager.doInTransaction(
@@ -135,6 +137,7 @@ public class JdbcProductRepository implements ProductRepository {
     }
   }
 
+  @WithTimingLog
   @Override
   public Optional<Product> findById(Long id) {
     return connectionManager.doInTransaction(
@@ -155,6 +158,7 @@ public class JdbcProductRepository implements ProductRepository {
         });
   }
 
+  @WithTimingLog
   @Override
   public List<Product> findAll() {
     return connectionManager.doInTransaction(
@@ -173,6 +177,7 @@ public class JdbcProductRepository implements ProductRepository {
         });
   }
 
+  @WithTimingLog
   @Override
   public boolean delete(Long id) {
     return connectionManager.doInTransaction(
@@ -188,6 +193,7 @@ public class JdbcProductRepository implements ProductRepository {
         });
   }
 
+  @WithTimingLog
   @Override
   public List<Product> searchByName(String name) {
     return executeFilter(SEARCH_BY_NAME_SQL, "%" + name + "%");
@@ -212,16 +218,19 @@ public class JdbcProductRepository implements ProductRepository {
         });
   }
 
+  @WithTimingLog
   @Override
   public List<Product> filterByCategory(String category) {
     return executeFilter(FILTER_BY_CATEGORY_SQL, category);
   }
 
+  @WithTimingLog
   @Override
   public List<Product> filterByBrand(String brand) {
     return executeFilter(FILTER_BY_BRAND_SQL, brand);
   }
 
+  @WithTimingLog
   @Override
   public List<Product> filterByPriceRange(BigDecimal minPrice, BigDecimal maxPrice) {
     return connectionManager.doInTransaction(

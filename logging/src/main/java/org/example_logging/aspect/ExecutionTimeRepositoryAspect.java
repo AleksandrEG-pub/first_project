@@ -1,23 +1,17 @@
-package org.example.aspect;
+package org.example_logging.aspect;
 
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
-import org.springframework.stereotype.Component;
 
 /** For all public methods of Repository classes measure execution time and log it */
 @Slf4j
 @Aspect
-@Component
 public class ExecutionTimeRepositoryAspect {
-  private static final boolean DISABLED = "true".equals(System.getProperty("aspectj.disable"));
 
-  @Around("execution(public * org.example.repository.impl.database.*Repository.*(..))")
+  @Around("@annotation(org.example_logging.annotation.WithTimingLog)")
   public Object executionTime(ProceedingJoinPoint joinPoint) throws Throwable {
-    if (DISABLED) {
-      return joinPoint.proceed();
-    }
     long start = System.currentTimeMillis();
     try {
       return joinPoint.proceed();

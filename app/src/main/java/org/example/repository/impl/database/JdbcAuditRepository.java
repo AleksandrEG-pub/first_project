@@ -11,6 +11,7 @@ import org.example.exception.DataAccessException;
 import org.example.model.AuditLog;
 import org.example.repository.AuditRepository;
 import org.example.repository.impl.database.mapper.AuditLogResultMapper;
+import org.example_logging.annotation.WithTimingLog;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -37,6 +38,7 @@ public class JdbcAuditRepository implements AuditRepository {
     this.connectionManager = connectionManager;
   }
 
+  @WithTimingLog
   @Override
   public AuditLog save(AuditLog auditLog) {
     return connectionManager.doInTransaction(
@@ -67,6 +69,7 @@ public class JdbcAuditRepository implements AuditRepository {
         });
   }
 
+  @WithTimingLog
   @Override
   public List<AuditLog> findByUsername(String username) {
     return connectionManager.doInTransaction(
@@ -87,6 +90,7 @@ public class JdbcAuditRepository implements AuditRepository {
         });
   }
 
+  @WithTimingLog
   @Override
   public List<AuditLog> findAll() {
     return connectionManager.doInTransaction(

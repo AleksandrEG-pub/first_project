@@ -4,16 +4,11 @@ plugins {
     id("io.spring.dependency-management") version "1.1.4"
 }
 
-group = "org.example"
-version = "1.0.0"
-
 repositories {
-    mavenLocal()
     mavenCentral()
 }
 
 dependencies {
-    implementation("org.example_logging:logging:1.0.2")
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.1.0")
 
     implementation("org.springframework.boot:spring-boot-starter-web")
@@ -25,7 +20,6 @@ dependencies {
         }
     }
 
-//    implementation("com.fasterxml.jackson.core:jackson-databind:2.20.1")
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.18.2")
 
     compileOnly("org.projectlombok:lombok:1.18.42")
@@ -47,8 +41,6 @@ dependencies {
     testImplementation("org.testcontainers:testcontainers:2.0.2")
     testImplementation("org.testcontainers:testcontainers-junit-jupiter:2.0.2")
     testImplementation("org.testcontainers:postgresql:1.21.3")
-
-//    testImplementation("org.junit.jupiter:junit-jupiter:5.9.3")
 
     testImplementation("org.assertj:assertj-core:4.0.0-M1")
     testImplementation("org.mockito:mockito-core:5.20.0")
