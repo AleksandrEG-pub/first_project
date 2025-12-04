@@ -9,9 +9,7 @@ repositories {
 }
 
 dependencies {
-    implementation("io.swagger.core.v3:swagger-annotations:2.2.3")
-    implementation("io.swagger.core.v3:swagger-models:2.2.3")
-    implementation("org.webjars:swagger-ui:4.18.2")
+    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.1.0")
 
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-validation")
