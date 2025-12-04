@@ -1,6 +1,7 @@
 plugins {
     application
-    id("com.gradleup.shadow") version "9.1.0"
+    id("org.springframework.boot") version "3.2.2"
+    id("io.spring.dependency-management") version "1.1.4"
 }
 
 repositories {
@@ -12,13 +13,15 @@ dependencies {
     implementation("io.swagger.core.v3:swagger-models:2.2.3")
     implementation("org.webjars:swagger-ui:4.18.2")
 
-    implementation("org.apache.logging.log4j:log4j-core:2.24.2")
-    implementation("org.apache.logging.log4j:log4j-api:2.24.2")
+    implementation("org.springframework.boot:spring-boot-starter-web")
+    implementation("org.springframework.boot:spring-boot-starter-validation")
+    implementation("org.springframework.boot:spring-boot-starter-log4j2")
+    modules {
+        module("org.springframework.boot:spring-boot-starter-logging") {
+            replacedBy("org.springframework.boot:spring-boot-starter-log4j2", "Use Log4j2 instead of Logback")
+        }
+    }
 
-    implementation("org.springframework:spring-webmvc:6.2.14")
-    implementation("org.springframework:spring-context:6.2.14")
-
-    implementation("org.apache.tomcat.embed:tomcat-embed-core:11.0.14")
     implementation("com.fasterxml.jackson.core:jackson-databind:2.20.1")
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.18.2")
 
@@ -34,7 +37,6 @@ dependencies {
     implementation("org.glassfish:jakarta.el:4.0.2")
 
     implementation("jakarta.validation:jakarta.validation-api:4.0.0-M1")
-    implementation("org.hibernate.validator:hibernate-validator:9.1.0.Final")
 
     implementation("org.liquibase:liquibase-core:4.30.0")
     implementation("org.postgresql:postgresql:42.7.8")
@@ -70,12 +72,4 @@ application {
 tasks.named<Test>("test") {
     useJUnitPlatform()
     systemProperty("aspectj.disable", "true")
-}
-
-tasks.shadowJar {
-    duplicatesStrategy = DuplicatesStrategy.INCLUDE
-    mergeServiceFiles()
-    manifest {
-        attributes["Main-Class"] = "org.example.App"
-    }
 }

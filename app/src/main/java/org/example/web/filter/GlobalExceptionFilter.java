@@ -1,4 +1,4 @@
-package org.example.web.server.filter;
+package org.example.web.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.Filter;
@@ -9,13 +9,13 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 
 /** Filter that catches all exceptions and returns a JSON error response. */
-@Log4j2
+@Slf4j
 @Component
 public class GlobalExceptionFilter extends BasicFilter implements Filter {
 

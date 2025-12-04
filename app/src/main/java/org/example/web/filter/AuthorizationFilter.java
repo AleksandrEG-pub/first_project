@@ -1,4 +1,4 @@
-package org.example.web.server.filter;
+package org.example.web.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.Filter;

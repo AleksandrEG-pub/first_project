@@ -2,9 +2,6 @@ package org.example.configuration;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import jakarta.validation.Validation;
-import jakarta.validation.Validator;
-import jakarta.validation.ValidatorFactory;
 import org.example.cache.Cache;
 import org.example.cache.ProductBaseCache;
 import org.example.model.Product;
@@ -12,9 +9,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-/**
-* Main application context beans
-*/
+/** Main application context beans */
 @Configuration
 public class BeanConfiguration {
   @Value("${cache.product.size}")
@@ -25,13 +20,6 @@ public class BeanConfiguration {
     var objectMapper = new ObjectMapper();
     objectMapper.registerModule(new JavaTimeModule());
     return objectMapper;
-  }
-
-  @Bean
-  public Validator validator() {
-    try (ValidatorFactory factory = Validation.buildDefaultValidatorFactory()) {
-      return factory.getValidator();
-    }
   }
 
   @Bean

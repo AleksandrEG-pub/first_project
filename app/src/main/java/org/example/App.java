@@ -1,13 +1,17 @@
 package org.example;
 
-import org.example.configuration.ApplicationConfiguration;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.boot.Banner;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.builder.SpringApplicationBuilder;
 
 /** Application entry point. */
+@SpringBootApplication
 public class App {
   public static void main(String[] args) {
-    var applicationContext = new AnnotationConfigApplicationContext();
-    applicationContext.register(ApplicationConfiguration.class);
-    applicationContext.refresh();
+    SpringApplication application = new SpringApplicationBuilder(App.class)
+            .bannerMode(Banner.Mode.OFF)
+            .build();
+    application.run(args);
   }
 }

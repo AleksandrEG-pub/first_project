@@ -1,13 +1,13 @@
 package org.example.aspect;
 
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.springframework.stereotype.Component;
 
 /** For all public methods of Repository classes measure execution time and log it */
-@Log4j2
+@Slf4j
 @Aspect
 @Component
 public class ExecutionTimeRepositoryAspect {
