@@ -13,6 +13,7 @@ import org.example.exception.DataAccessException;
 import org.example.model.Product;
 import org.example.repository.ProductRepository;
 import org.example.repository.impl.database.mapper.ProductResultMapper;
+import org.example_database.database.ConnectionManager;
 import org.example_logging.annotation.WithTimingLog;
 import org.springframework.stereotype.Component;
 

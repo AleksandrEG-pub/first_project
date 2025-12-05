@@ -9,9 +9,8 @@ import org.springframework.boot.builder.SpringApplicationBuilder;
 @SpringBootApplication
 public class App {
   public static void main(String[] args) {
-    SpringApplication application = new SpringApplicationBuilder(App.class)
-            .bannerMode(Banner.Mode.OFF)
-            .build();
+    SpringApplication application =
+        new SpringApplicationBuilder(App.class).bannerMode(Banner.Mode.OFF).build();
     application.run(args);
   }
 }

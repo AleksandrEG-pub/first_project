@@ -5,3 +5,4 @@ plugins {
 rootProject.name = "first_project"
 include("app")
 include("logging")
+include("database-connector")

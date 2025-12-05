@@ -5,21 +5,16 @@ plugins {
     id("io.spring.dependency-management") version "1.1.4"
 }
 
-group = "org.example_logging"
-version = "1.0.2"
+group = "org.example_database"
+version = "1.0.1"
 
 repositories {
     mavenCentral()
 }
 
 dependencies {
-    implementation("org.springframework.boot:spring-boot-starter")
-    implementation("org.aspectj:aspectjrt:1.9.25")
-    implementation("org.aspectj:aspectjweaver:1.9.25")
-    compileOnly("org.projectlombok:lombok:1.18.42")
-    annotationProcessor("org.projectlombok:lombok:1.18.42")
-    testCompileOnly("org.projectlombok:lombok:1.18.42")
-    testAnnotationProcessor("org.projectlombok:lombok:1.18.42")
+    implementation("org.springframework.boot:spring-boot-autoconfigure")
+    implementation("org.postgresql:postgresql:42.7.8")
 }
 
 java {
