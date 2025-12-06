@@ -1,6 +1,6 @@
 [versions]
 # Core frameworks / libraries
-spring-boot = "3.2.2"
+spring-boot = "3.2.0"
 springdoc-openapi = "2.1.0"
 mapstruct = "1.6.3"
 liquibase = "4.30.0"
