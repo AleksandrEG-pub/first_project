@@ -20,17 +20,17 @@ import org.springframework.stereotype.Component;
 public class JdbcAuditRepository implements AuditRepository {
   private static final String INSERT_SQL =
       """
-        INSERT INTO audit_logs (timestamp, username, action, details)
-        VALUES (?, ?, ?, ?)
+        INSERT INTO audit_logs (timestamp, username, action, details, resource)
+        VALUES (?, ?, ?, ?, ?)
         """;
   private static final String FIND_BY_USERNAME_SQL =
       """
-        SELECT id, timestamp, username, action, details
+        SELECT id, timestamp, username, action, details, resource
         FROM audit_logs WHERE username = ? ORDER BY timestamp DESC
         """;
   private static final String FIND_ALL_SQL =
       """
-        SELECT id, timestamp, username, action, details
+        SELECT id, timestamp, username, action, details, resource
         FROM audit_logs ORDER BY timestamp DESC
         """;
   private final ConnectionManager connectionManager;
@@ -51,6 +51,7 @@ public class JdbcAuditRepository implements AuditRepository {
             stmt.setString(2, auditLog.getUsername());
             stmt.setString(3, auditLog.getAction().name());
             stmt.setString(4, auditLog.getDetails());
+            stmt.setString(5, auditLog.getResource());
 
             int affectedRows = stmt.executeUpdate();
             if (affectedRows == 0) {

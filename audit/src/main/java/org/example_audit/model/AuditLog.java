@@ -1,13 +1,13 @@
 package org.example_audit.model;
 
+import java.time.LocalDateTime;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.time.LocalDateTime;
-import java.util.Objects;
-
 @Getter
 @Setter
+@EqualsAndHashCode
 public class AuditLog {
   private Long id;
   private LocalDateTime timestamp;
@@ -23,23 +23,8 @@ public class AuditLog {
     auditLog.setUsername(other.getUsername());
     auditLog.setAction(other.getAction());
     auditLog.setDetails(other.getDetails());
+    auditLog.setResource(other.getResource());
     return auditLog;
-  }
-
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
-    AuditLog auditLog = (AuditLog) o;
-    return Objects.equals(timestamp, auditLog.timestamp)
-        && Objects.equals(username, auditLog.username)
-        && action == auditLog.action
-        && Objects.equals(details, auditLog.details);
-  }
-
-  @Override
-  public int hashCode() {
-    return Objects.hash(timestamp, username, action, details);
   }
 
   @Override
