@@ -9,15 +9,9 @@ package org.example.exception;
  * <p/> Expected to be caught by global exception handler with full stacktrace log
  */
 public class ApplicationException extends RuntimeException {
-  public ApplicationException(String message, Throwable cause) {
-    super(message, cause);
-  }
 
   public ApplicationException(String message) {
     super(message);
   }
 
-  public ApplicationException(Throwable cause) {
-    super(cause);
-  }
 }

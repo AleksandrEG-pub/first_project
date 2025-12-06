@@ -23,7 +23,6 @@ import org.mockito.Mockito;
 class AuthServiceImplTest {
 
   private UserRepository userRepository;
-  private AuditServiceImpl auditService;
   private AuthLoginAttemptService authLoginAttemptService;
 
   private AuthServiceImpl authService;
@@ -32,7 +31,6 @@ class AuthServiceImplTest {
   @BeforeEach
   void setUp() {
     userRepository = Mockito.mock(UserRepository.class);
-    auditService = Mockito.mock(AuditServiceImpl.class);
     passwords = Mockito.mock(PasswordsImpl.class);
     authLoginAttemptService = Mockito.mock(AuthLoginAttemptService.class);
     authService = new AuthServiceImpl(userRepository, authLoginAttemptService, passwords);
@@ -45,7 +43,6 @@ class AuthServiceImplTest {
 
     // Then
     assertThat(result.isSuccess()).isFalse();
-    verify(auditService, never()).logAction(any(), any(), any());
   }
 
   @Test
