@@ -6,7 +6,7 @@ import org.example.model.Product;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", config = DefaultMappingConfig.class)
 public interface ProductMapper {
   @Mapping(target = "id", ignore = true)
   Product toProduct(ProductForm productForm);

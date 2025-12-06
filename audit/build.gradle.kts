@@ -17,7 +17,6 @@ dependencies {
     implementation(libs.bundles.validation)
     implementation(libs.mapstruct)
     annotationProcessor(libs.mapstruct.processor)
-    implementation(libs.mapstruct)
     testAnnotationProcessor(libs.mapstruct.processor)
     testImplementation(libs.bundles.testing)
     testImplementation(libs.bundles.testcontainers.all)
