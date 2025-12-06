@@ -2,4 +2,5 @@
 
 ./start-database.sh
 
-./gradlew :app:bootRun
+./gradlew :app:bootJar
+java -jar ./app/build/libs/app-1.0.0.jar
