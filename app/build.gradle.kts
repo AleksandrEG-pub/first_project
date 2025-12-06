@@ -15,7 +15,7 @@ repositories {
 dependencies {
     implementation(project(":logging"))
     implementation(project(":audit"))
-    implementation(project(":database-connector"))
+    implementation(project(":database"))
     implementation(libs.bundles.spring.web)
     implementation(libs.bundles.validation)
     implementation(libs.liquibase.core)
@@ -29,4 +29,22 @@ application {
 
 tasks.named<Test>("test") {
     systemProperty("aspectj.disable", "true")
+}
+
+tasks.register<Copy>("collectModuleConfigs") {
+    val otherModules = rootProject.subprojects.filter { it.name != project.name }
+    otherModules.forEach { otherModule ->
+        val configFile = file("${otherModule.projectDir}/src/main/resources/application.yaml")
+        if (configFile.exists()) {
+            from(configFile) {
+                rename("application.yaml", "application-${otherModule.name}.yaml")
+            }
+            println("Module1: Collecting from ${otherModule.name}")
+        }
+    }
+    into("src/main/resources/modules")
+}
+
+tasks.processResources {
+    dependsOn("collectModuleConfigs")
 }

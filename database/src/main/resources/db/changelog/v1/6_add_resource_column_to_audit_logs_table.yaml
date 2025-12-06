@@ -10,5 +10,6 @@ databaseChangeLog:
               - column:
                   name: resource
                   type: varchar(255)
+                  defaultValue: "unknown"
                   constraints:
                     nullable: false

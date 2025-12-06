@@ -6,4 +6,4 @@ rootProject.name = "first_project"
 include("app")
 include("audit")
 include("logging")
-include("database-connector")
+include("database")
