@@ -1,3 +1,13 @@
 databaseChangeLog:
-  - includeAll:
-      path: db/changelog/v1
+  - include:
+    - file: db/changelog/v1/1_create_users_table.yaml
+  - include:
+    - file: db/changelog/v1/2_create_products_table.yaml
+  - include:
+    - file: db/changelog/v1/3_create_audit_logs_table.yaml
+  - include:
+    - file: db/changelog/v1/4_init_products.yaml
+  - include:
+    - file: db/changelog/v1/5_init_users.yaml
+  - include:
+    - file: db/changelog/v1/6_add_resource_column_to_audit_logs_table.yaml
