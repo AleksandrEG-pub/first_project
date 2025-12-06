@@ -15,9 +15,6 @@ dependencies {
     implementation(libs.bundles.spring.web)
     implementation(libs.liquibase.core)
     implementation(libs.bundles.validation)
-    implementation(libs.mapstruct)
-    annotationProcessor(libs.mapstruct.processor)
-    testAnnotationProcessor(libs.mapstruct.processor)
     testImplementation(libs.bundles.testing)
     testImplementation(libs.bundles.testcontainers.all)
 }
