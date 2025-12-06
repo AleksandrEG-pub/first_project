@@ -1,11 +1,9 @@
-package org.example.web.controller;
+package org.example_web_common.web;
 
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.ValidationException;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
-import org.example.exception.AccessDeniedException;
-import org.example.exception.ResourceNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.stereotype.Component;
@@ -22,15 +20,15 @@ import org.springframework.web.servlet.NoHandlerFoundException;
 @Component
 @ControllerAdvice
 public class GlobalExceptionHandler {
-  @ExceptionHandler(ResourceNotFoundException.class)
-  public ErrorResponse handle(ResourceNotFoundException ex) {
+
+  @ExceptionHandler(NoHandlerFoundException.class)
+  public ErrorResponse handle(NoHandlerFoundException ex) {
     return errorResponse(
         ex,
         HttpStatus.NOT_FOUND,
-        "resource_not_found",
-        "Resource [%s] not found by id: [%s]",
-        ex.getResource(),
-        ex.getId());
+        "resource_does_not_exist",
+        "Resource does not exist for path %s",
+        ex.getRequestURL());
   }
 
   private ErrorResponse errorResponse(
@@ -42,19 +40,9 @@ public class GlobalExceptionHandler {
     log.error("{} {} [{}]", title, ex.getClass().getSimpleName(), ex.getMessage());
     ProblemDetail problemDetail = ProblemDetail.forStatus(httpStatus);
     return ErrorResponse.builder(ex, problemDetail)
-        .detail(details.formatted((Object [])detailsArguments))
+        .detail(details.formatted((Object[]) detailsArguments))
         .title(title)
         .build();
-  }
-
-  @ExceptionHandler(NoHandlerFoundException.class)
-  public ErrorResponse handle(NoHandlerFoundException ex) {
-    return errorResponse(
-        ex,
-        HttpStatus.NOT_FOUND,
-        "resource_does_not_exist",
-        "Resource does not exist for path %s",
-        ex.getRequestURL());
   }
 
   @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -115,12 +103,6 @@ public class GlobalExceptionHandler {
         "incorrect_parameter_value",
         "Validation fail [%s]",
         ex.getMessage());
-  }
-
-  @ExceptionHandler(AccessDeniedException.class)
-  public ErrorResponse handle(AccessDeniedException ex) {
-    return errorResponse(
-        ex, HttpStatus.FORBIDDEN, "access_denied", "ask administrator for additional details");
   }
 
   @ExceptionHandler(Exception.class)

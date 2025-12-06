@@ -26,6 +26,7 @@ import org.example.exception.ResourceNotFoundException;
 import org.example.mapper.ProductMapper;
 import org.example.model.Product;
 import org.example.service.ProductService;
+import org.example_web_common.web.GlobalExceptionHandler;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -53,7 +54,7 @@ class ProductControllerTest {
   void setup() {
     this.mockMvc =
         MockMvcBuilders.standaloneSetup(new ProductController(productMapper, productService))
-            .setControllerAdvice(GlobalExceptionHandler.class)
+            .setControllerAdvice(AppExceptionHandler.class, GlobalExceptionHandler.class)
             .build();
   }
 

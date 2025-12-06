@@ -10,17 +10,16 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.util.List;
-
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import java.util.List;
 import org.example_audit.dto.AuditLogDto;
 import org.example_audit.mapper.AuditLogMapper;
 import org.example_audit.model.AuditAction;
 import org.example_audit.model.AuditLog;
 import org.example_audit.service.AuditService;
 import org.example_audit.web.AuditController;
+import org.example_web_common.web.GlobalExceptionHandler;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -43,7 +42,7 @@ class AuditControllerTest {
   void setup() {
     this.mockMvc =
         MockMvcBuilders.standaloneSetup(new AuditController(auditLogMapper, auditService))
-            //            .setControllerAdvice(GlobalExceptionHandler.class)
+            .setControllerAdvice(GlobalExceptionHandler.class)
             .build();
     objectMapper.registerModule(new JavaTimeModule());
   }
@@ -140,7 +139,6 @@ class AuditControllerTest {
   }
 
   @Test
-  @Disabled("works only with global exception handler")
   void getByUsername_WhenServiceThrowsException_ShouldReturnInternalServerError() throws Exception {
     // Arrange
     when(auditService.findAll()).thenThrow(new RuntimeException("Database error"));

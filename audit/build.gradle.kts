@@ -11,6 +11,7 @@ version = "1.0.0"
 dependencies {
     implementation(project(":logging"))
     implementation(project(":database"))
+    implementation(project(":web-common"))
     implementation(libs.bundles.aspectj.all)
     implementation(libs.bundles.spring.web)
     implementation(libs.liquibase.core)

@@ -5,14 +5,12 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.example.cache.Cache;
 import org.example.cache.ProductBaseCache;
 import org.example.model.Product;
-import org.example_audit.annotation.EnableAudit;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /** Main application context beans */
 @Configuration
-@EnableAudit
 public class BeanConfiguration {
   @Value("${cache.product.size}")
   private int cacheSize;

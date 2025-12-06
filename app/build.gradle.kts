@@ -16,6 +16,7 @@ dependencies {
     implementation(project(":logging"))
     implementation(project(":audit"))
     implementation(project(":database"))
+    implementation(project(":web-common"))
     implementation(libs.bundles.spring.web)
     implementation(libs.bundles.validation)
     implementation(libs.liquibase.core)
