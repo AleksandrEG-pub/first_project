@@ -1,7 +1,6 @@
 package org.example.web.controller;
 
 import jakarta.validation.Valid;
-import java.math.BigDecimal;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.example.dto.ProductDto;
@@ -22,7 +21,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @Validated
@@ -47,22 +45,7 @@ public class ProductController {
   }
 
   @GetMapping
-  public ResponseEntity<List<ProductDto>> getFilter(
-      @RequestParam(required = false) Long id,
-      @RequestParam(required = false) String name,
-      @RequestParam(required = false) String category,
-      @RequestParam(required = false) String brand,
-      @RequestParam(required = false) BigDecimal minPrice,
-      @RequestParam(required = false) BigDecimal maxPrice) {
-    SearchCriteria criteria =
-        SearchCriteria.builder()
-            .id(id)
-            .name(name)
-            .category(category)
-            .brand(brand)
-            .minPrice(minPrice)
-            .maxPrice(maxPrice)
-            .build();
+  public ResponseEntity<List<ProductDto>> getFilter(SearchCriteria criteria) {
     var response = ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON);
     if (criteria.isEmpty()) {
       List<ProductDto> products =
