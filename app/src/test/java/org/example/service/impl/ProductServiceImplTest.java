@@ -62,7 +62,7 @@ class ProductServiceImplTest {
         SearchCriteria.builder()
             .name("laptop")
             .category("Electronics")
-            .category("Dell")
+            .brand("Dell")
             .minPrice(null)
             .maxPrice(null)
             .build();

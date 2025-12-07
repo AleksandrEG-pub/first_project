@@ -16,10 +16,6 @@ public class LoginResult {
    */
   String message = "";
 
-  public LoginResult(boolean isSuccess) {
-    this.isSuccess = isSuccess;
-  }
-
   public LoginResult(String message) {
     this.message = message;
   }

@@ -3,8 +3,6 @@ package org.example.service.impl;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatNoException;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -23,7 +21,6 @@ import org.mockito.Mockito;
 class AuthServiceImplTest {
 
   private UserRepository userRepository;
-  private AuditServiceImpl auditService;
   private AuthLoginAttemptService authLoginAttemptService;
 
   private AuthServiceImpl authService;
@@ -32,7 +29,6 @@ class AuthServiceImplTest {
   @BeforeEach
   void setUp() {
     userRepository = Mockito.mock(UserRepository.class);
-    auditService = Mockito.mock(AuditServiceImpl.class);
     passwords = Mockito.mock(PasswordsImpl.class);
     authLoginAttemptService = Mockito.mock(AuthLoginAttemptService.class);
     authService = new AuthServiceImpl(userRepository, authLoginAttemptService, passwords);
@@ -45,7 +41,6 @@ class AuthServiceImplTest {
 
     // Then
     assertThat(result.isSuccess()).isFalse();
-    verify(auditService, never()).logAction(any(), any(), any());
   }
 
   @Test

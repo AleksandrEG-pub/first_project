@@ -1,17 +1,10 @@
-database:
-  connect:
-    url: jdbc:postgresql://localhost:10350/first_project_database
-    user: first_project_user
-    password: first_project_password
-    application_scheme: application_data
-  migration:
-    liquibase:
-      changelog_file: db/changelog/db.changelog-master.yaml
-      scheme: liquibase_data
+spring:
+  config:
+    import:
+      - optional:classpath:modules/application-database.yaml
+
 server:
   port: 8094
-  hostname: "localhost"
-  base_dir: "./web-static"
 
 cache:
   product:

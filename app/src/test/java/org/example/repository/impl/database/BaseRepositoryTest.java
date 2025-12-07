@@ -1,5 +1,6 @@
 package org.example.repository.impl.database;
 
+import org.example_database.database.ConnectionManager;
 import org.junit.jupiter.api.AfterEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.DynamicPropertyRegistry;
@@ -19,12 +20,18 @@ public abstract class BaseRepositoryTest {
 
   @DynamicPropertySource
   static void applicationProperties(DynamicPropertyRegistry registry) {
-    registry.add("database.connect.url", postgreSQLContainer::getJdbcUrl);
-    registry.add("database.connect.user", postgreSQLContainer::getUsername);
-    registry.add("database.connect.password", postgreSQLContainer::getPassword);
-    registry.add("database.migration.liquibase.scheme", () -> "liquibase_data");
-    registry.add("database.connect.application_scheme", () -> "application_data");
-    registry.add("database.migration.liquibase.changelog_file", () -> "db/changelog/db.changelog-master.yaml");
+    String appSchema = "application_data";
+    String jdbcUrl = postgreSQLContainer.getJdbcUrl();
+    String url =
+            jdbcUrl.contains("?")
+                    ? jdbcUrl + "&currentSchema=" + appSchema
+                    : jdbcUrl + "?currentSchema=" + appSchema;
+    registry.add("spring.datasource.url", () -> url);
+    registry.add("spring.datasource.username", postgreSQLContainer::getUsername);
+    registry.add("spring.datasource.password", postgreSQLContainer::getPassword);
+    registry.add("spring.liquibase.liquibase-schema", () -> "liquibase_data");
+    registry.add("spring.liquibase.default-schema", () -> "application_data");
+    registry.add("spring.liquibase.change-log", () -> "db/changelog/db.changelog-master.yaml");
   }
 
   @Autowired

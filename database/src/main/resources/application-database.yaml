@@ -1,0 +1,14 @@
+database:
+  application_scheme: application_data
+  liquibase_scheme: liquibase_data
+
+spring:
+  liquibase:
+    enabled: true
+    change-log: db/changelog/db.changelog-master.yaml
+    default-schema: ${database.application_scheme}
+    liquibase-schema: ${database.liquibase_scheme}
+  datasource:
+    url: jdbc:postgresql://localhost:10350/first_project_database?currentSchema=${database.application_scheme}
+    username: first_project_user
+    password: first_project_password

@@ -25,7 +25,7 @@ echo $JAVA_HOME
 ```
 
 ## How to launch
-- Run using start.sh. This will launch docker
+- Run using start.sh. This will launch docker with database. Application will start as a java process. 
 
 ```bash
 # Run the application
@@ -58,17 +58,17 @@ Not authenticated users can not perform any actions, except log in attempts
 
 
 ## Where to look in the code
-- Main entry: `app/src/main/java/org/example/App.java`
-- App configuration and startup: `app/src/main/java/org/example/configuration/ApplicationConfiguration.java`
-- Liquibase configuration: `app/src/main/java/org/example/configuration/LiquibaseConfiguration.java`
-- Repositories and services: `app/src/main/java/org/example/repository` and `.../service`
+- module app - main entry
+- module audit - provides functionality for audit, enabled by @EnableAudit
+- module database - contains Liquibase migration configuration, autoconfigured
+- module logging - measures processing time, autoconfigured  
 
 
 ## API
 API can be discovered by swagger-ui after application start by address:
 
 ```
-http://localhost:8094/swagger-ui/index.html
+http://localhost:8094/swagger-ui.html
 ```
 
 Note that swagger UI accessible only for admin users.

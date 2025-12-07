@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+/** Response entity for user for of the application */
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter

@@ -3,22 +3,20 @@ package org.example.service.impl;
 import jakarta.validation.ValidationException;
 import java.util.List;
 import java.util.Optional;
-
 import lombok.RequiredArgsConstructor;
-import org.example.aspect.AuditProduct;
-import org.example.aspect.AuditType;
 import org.example.cache.Cache;
 import org.example.dto.ProductForm;
 import org.example.dto.SearchCriteria;
 import org.example.exception.ResourceNotFoundException;
 import org.example.mapper.ProductMapper;
-import org.example.model.AuditAction;
 import org.example.model.Product;
 import org.example.repository.ProductRepository;
 import org.example.service.AuthService;
 import org.example.service.DtoValidator;
 import org.example.service.ProductSearchService;
 import org.example.service.ProductService;
+import org.example_audit.dto.Auditable;
+import org.example_audit.model.AuditAction;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -31,19 +29,31 @@ public class ProductServiceImpl implements ProductService {
   private final DtoValidator dtoValidator;
   private final ProductSearchService productSearchService;
 
-  @AuditProduct(action = AuditAction.SEARCH, type = AuditType.SEARCH)
+  @Auditable(
+      resource = "product",
+      username = "@auditMessageBuilder.getUsername()",
+      auditAction = AuditAction.SEARCH,
+      message = "@auditMessageBuilder.buildSearchMessage(#args[0], #result)")
   @Override
   public List<Product> search(SearchCriteria criteria) {
     return productSearchService.search(criteria);
   }
 
-  @AuditProduct(action = AuditAction.SEARCH, type = AuditType.SEARCH, message = "Get all products")
+  @Auditable(
+      resource = "product",
+      username = "@auditMessageBuilder.getUsername()",
+      auditAction = AuditAction.SEARCH,
+      message = "'Get all products. Found: ' + #result.size()")
   @Override
   public List<Product> getAllProducts() {
     return productSearchService.getAllProducts();
   }
 
-  @AuditProduct(action = AuditAction.DELETE_PRODUCT, type = AuditType.ID_BASED, message = "Removed product: [%d]")
+  @Auditable(
+      resource = "product",
+      username = "@auditMessageBuilder.getUsername()",
+      auditAction = AuditAction.DELETE,
+      message = "'Removed product: ' + #args[0]")
   @Override
   public void deleteProduct(Long id) {
     authService.requireAdmin();
@@ -58,13 +68,16 @@ public class ProductServiceImpl implements ProductService {
     boolean deleted = productRepository.delete(id);
     if (deleted) {
       productCache.remove(id);
-      ;
     } else {
       throw new ResourceNotFoundException("product", String.valueOf(id));
     }
   }
 
-  @AuditProduct(action = AuditAction.EDIT_PRODUCT, type = AuditType.ID_BASED, message = "Updated product: [%d]")
+  @Auditable(
+      resource = "product",
+      username = "@auditMessageBuilder.getUsername()",
+      auditAction = AuditAction.EDIT,
+      message = "'Updated product: ' + #args[0]")
   @Override
   public Product updateProduct(Long id, ProductForm newProductData) {
     authService.requireAdmin();
@@ -90,27 +103,43 @@ public class ProductServiceImpl implements ProductService {
     return updated;
   }
 
-  @AuditProduct(action = AuditAction.VIEW_PRODUCT, type = AuditType.VIEW)
+  @Auditable(
+      resource = "product",
+      username = "@auditMessageBuilder.getUsername()",
+      auditAction = AuditAction.VIEW,
+      message = "'Viewed product: ' + #args[0]")
   @Override
   public Optional<Product> findById(Long id) {
     return productSearchService.findById(id);
   }
 
-  @AuditProduct(action = AuditAction.CACHE_CLEAN_PRODUCT, message = "Cleared product cache")
+  @Auditable(
+      resource = "product",
+      username = "@auditMessageBuilder.getUsername()",
+      auditAction = AuditAction.CUSTOM,
+      message = "Cleared product cache")
   @Override
   public void clearCache() {
     authService.requireAdmin();
     productCache.clear();
   }
 
-  @AuditProduct(action = AuditAction.ADD_PRODUCT, type = AuditType.ID_BASED, message = "Created product: [%d]")
+  @Auditable(
+      resource = "product",
+      username = "@auditMessageBuilder.getUsername()",
+      auditAction = AuditAction.ADD,
+      message = "'Created product: ' + #result.getId()")
   @Override
   public Product create(ProductForm productForm) {
     Product product = productMapper.toProduct(productForm);
     return addProduct(product);
   }
 
-  @AuditProduct(action = AuditAction.ADD_PRODUCT, type = AuditType.ID_BASED, message = "Added product: [%d]")
+  @Auditable(
+      resource = "product",
+      username = "@auditMessageBuilder.getUsername()",
+      auditAction = AuditAction.ADD,
+      message = "'Created product: ' + #result.getId()")
   @Override
   public Product addProduct(Product product) {
     authService.requireAdmin();

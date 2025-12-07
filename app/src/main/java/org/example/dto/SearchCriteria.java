@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.example.model.Product;
 
 /**
@@ -14,14 +16,16 @@ import org.example.model.Product;
 @EqualsAndHashCode
 @Builder
 @Getter
+@Setter
+@NoArgsConstructor
 @AllArgsConstructor
 public class SearchCriteria {
-  private final Long id;
-  private final String name;
-  private final String category;
-  private final String brand;
-  private final BigDecimal minPrice;
-  private final BigDecimal maxPrice;
+  private Long id;
+  private String name;
+  private String category;
+  private String brand;
+  private BigDecimal minPrice;
+  private BigDecimal maxPrice;
 
   public boolean matchesId(Product product) {
     return product.getId() != null && product.getId().equals(this.id);

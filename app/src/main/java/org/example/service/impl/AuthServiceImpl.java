@@ -9,6 +9,8 @@ import org.example.repository.UserRepository;
 import org.example.service.AuthLoginAttemptService;
 import org.example.service.AuthService;
 import org.example.util.Passwords;
+import org.example_audit.dto.Auditable;
+import org.example_audit.model.AuditAction;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -20,6 +22,11 @@ public class AuthServiceImpl implements AuthService {
   private final AuthLoginAttemptService authLoginAttemptService;
   private final Passwords passwords;
 
+  @Auditable(
+      auditAction = AuditAction.LOGIN,
+      username = "@auditMessageBuilder.getUsername()",
+      resource = "auth",
+      message = "#result.getMessage()")
   @Override
   public LoginResult login(String username, String password) {
     if (username == null || password == null) {
@@ -61,6 +68,11 @@ public class AuthServiceImpl implements AuthService {
     return currentUser != User.anonymous();
   }
 
+  @Auditable(
+      auditAction = AuditAction.LOGOUT,
+      username = "@auditMessageBuilder.getUsername()",
+      resource = "auth",
+      message = "user logout")
   @Override
   public void logout() {
     UserContext.setCurrentUser(User.anonymous());

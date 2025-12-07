@@ -1,0 +1,15 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1
+      author: developer
+      comment: add new_column to audit_logs table
+      changes:
+        - addColumn:
+            tableName: audit_logs
+            columns:
+              - column:
+                  name: resource
+                  type: varchar(255)
+                  defaultValue: "unknown"
+                  constraints:
+                    nullable: false

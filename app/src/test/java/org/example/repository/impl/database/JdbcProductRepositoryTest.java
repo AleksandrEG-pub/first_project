@@ -6,9 +6,10 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
-import org.example.configuration.LiquibaseConfigurationUpdater;
-import org.example.exception.DataAccessException;
 import org.example.model.Product;
+import org.example_database.database.ConnectionManagerImpl;
+import org.example_database.exception.DataAccessException;
+import org.example_database.migration.LiquibaseConfigurationUpdater;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
@@ -16,7 +17,7 @@ import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 @SpringJUnitConfig(
     classes = {
       JdbcProductRepository.class,
-      ConnectionManager.class,
+      ConnectionManagerImpl.class,
       LiquibaseConfigurationUpdater.class
     })
 class JdbcProductRepositoryTest extends BaseRepositoryTest {
