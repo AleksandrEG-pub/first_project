@@ -4,6 +4,7 @@ import org.mapstruct.MapperConfig;
 import org.mapstruct.NullValuePropertyMappingStrategy;
 import org.mapstruct.ReportingPolicy;
 
+/** Defines rules of mappings for mapstruct */
 @MapperConfig(
     unmappedTargetPolicy = ReportingPolicy.ERROR,
     unmappedSourcePolicy = ReportingPolicy.IGNORE,

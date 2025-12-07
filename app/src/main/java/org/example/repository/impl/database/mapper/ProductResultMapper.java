@@ -4,6 +4,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import org.example.model.Product;
 
+/** Jdbc result set mapping for products table to Product entity */
 public class ProductResultMapper {
   public Product mapToProduct(ResultSet rs) throws SQLException {
     Product product = new Product();

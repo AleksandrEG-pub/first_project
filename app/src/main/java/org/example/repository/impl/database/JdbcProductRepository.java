@@ -9,11 +9,11 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import org.example.exception.DataAccessException;
 import org.example.model.Product;
 import org.example.repository.ProductRepository;
 import org.example.repository.impl.database.mapper.ProductResultMapper;
 import org.example_database.database.ConnectionManager;
+import org.example_database.exception.DataAccessException;
 import org.example_logging.annotation.WithTimingLog;
 import org.springframework.stereotype.Component;
 

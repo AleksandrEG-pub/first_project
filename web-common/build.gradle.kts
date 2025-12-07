@@ -1,6 +1,5 @@
 plugins {
     id("java-library")
-    id("maven-publish")
     alias(libs.plugins.spring.boot)
     alias(libs.plugins.spring.dependency.management)
 }

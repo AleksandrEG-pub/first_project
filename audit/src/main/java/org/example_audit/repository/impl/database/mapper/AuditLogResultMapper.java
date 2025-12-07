@@ -5,6 +5,7 @@ import java.sql.SQLException;
 import org.example_audit.model.AuditAction;
 import org.example_audit.model.AuditLog;
 
+/** Jdbc result set mapping for audit_log table to AuditLog entity */
 public class AuditLogResultMapper {
   public AuditLog mapToAuditLog(ResultSet rs) throws SQLException {
     AuditLog log = new AuditLog();

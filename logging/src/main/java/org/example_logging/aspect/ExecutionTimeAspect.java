@@ -5,10 +5,10 @@ import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 
-/** For all public methods of Repository classes measure execution time and log it */
+/** Aspect processing WithTimingLog annotation */
 @Slf4j
 @Aspect
-public class ExecutionTimeRepositoryAspect {
+public class ExecutionTimeAspect {
 
   @Around("@annotation(org.example_logging.annotation.WithTimingLog)")
   public Object executionTime(ProceedingJoinPoint joinPoint) throws Throwable {
@@ -19,7 +19,7 @@ public class ExecutionTimeRepositoryAspect {
       long duration = System.currentTimeMillis() - start;
       String className = joinPoint.getTarget().getClass().getSimpleName();
       String methodName = joinPoint.getSignature().getName();
-      log.info("Repository method {}.{} executed in {} ms", className, methodName, duration);
+      log.info("Method {}.{} executed in {} ms", className, methodName, duration);
     }
   }
 }

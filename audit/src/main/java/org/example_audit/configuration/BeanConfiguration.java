@@ -18,7 +18,7 @@ import org.springframework.expression.MethodResolver;
 import org.springframework.expression.spel.support.DataBindingMethodResolver;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
 
-/** Main application context beans */
+/** Audit application context beans */
 @Configuration
 public class BeanConfiguration {
 

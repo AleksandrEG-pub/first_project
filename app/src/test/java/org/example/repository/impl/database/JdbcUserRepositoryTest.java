@@ -3,10 +3,10 @@ package org.example.repository.impl.database;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import org.example.exception.DataAccessException;
 import org.example.model.Role;
 import org.example.model.User;
 import org.example_database.database.ConnectionManagerImpl;
+import org.example_database.exception.DataAccessException;
 import org.example_database.migration.LiquibaseConfigurationUpdater;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

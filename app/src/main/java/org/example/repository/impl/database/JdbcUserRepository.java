@@ -5,11 +5,11 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import org.example.exception.DataAccessException;
 import org.example.model.User;
 import org.example.repository.UserRepository;
 import org.example.repository.impl.database.mapper.UserResultMapper;
 import org.example_database.database.ConnectionManager;
+import org.example_database.exception.DataAccessException;
 import org.example_logging.annotation.WithTimingLog;
 import org.springframework.stereotype.Component;
 

@@ -1,9 +1,9 @@
 package org.example_audit.aspect;
 
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
-import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.example_audit.dto.Auditable;
@@ -13,8 +13,6 @@ import org.springframework.expression.ExpressionParser;
 import org.springframework.expression.MethodResolver;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
-
-import java.util.List;
 
 @Aspect
 @Slf4j
@@ -40,7 +38,8 @@ public class AuditAspect {
     try {
       ExpressionParser parser = new SpelExpressionParser();
       String message = parser.parseExpression(auditable.message()).getValue(context, String.class);
-      String username = parser.parseExpression(auditable.username()).getValue(context, String.class);
+      String username =
+          parser.parseExpression(auditable.username()).getValue(context, String.class);
       auditService.logAction(username, auditable.auditAction(), message, auditable.resource());
     } catch (Exception e) {
       log.error("Failed to log audit event", e);

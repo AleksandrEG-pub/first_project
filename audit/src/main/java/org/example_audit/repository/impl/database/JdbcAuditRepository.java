@@ -8,11 +8,11 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.example_audit.exception.DataAccessException;
 import org.example_audit.model.AuditLog;
 import org.example_audit.repository.AuditRepository;
 import org.example_audit.repository.impl.database.mapper.AuditLogResultMapper;
 import org.example_database.database.ConnectionManager;
+import org.example_database.exception.DataAccessException;
 import org.example_logging.annotation.WithTimingLog;
 import org.springframework.stereotype.Component;
 

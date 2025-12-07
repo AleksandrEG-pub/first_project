@@ -5,6 +5,7 @@ import java.sql.SQLException;
 import org.example.model.Role;
 import org.example.model.User;
 
+/** Jdbc result set mapping for users table to User entity */
 public class UserResultMapper {
   public User mapToUser(ResultSet rs) throws SQLException {
     User user = new User();

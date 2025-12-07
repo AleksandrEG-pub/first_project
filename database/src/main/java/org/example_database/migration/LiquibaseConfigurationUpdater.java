@@ -1,12 +1,11 @@
 package org.example_database.migration;
 
+import jakarta.annotation.PostConstruct;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Set;
-
-import jakarta.annotation.PostConstruct;
 import liquibase.Liquibase;
 import liquibase.database.Database;
 import liquibase.database.DatabaseFactory;
@@ -18,6 +17,7 @@ import org.example_database.exception.InitializationException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+/** Performs database migration */
 @Slf4j
 @Component
 public class LiquibaseConfigurationUpdater {
