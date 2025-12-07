@@ -18,7 +18,7 @@ import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
       ConnectionManagerImpl.class,
       LiquibaseConfigurationUpdater.class
     })
-public class JdbcUserRepositoryTest extends BaseRepositoryTest {
+class JdbcUserRepositoryTest extends BaseRepositoryTest {
   @Autowired JdbcUserRepository userRepository;
 
   @Test
