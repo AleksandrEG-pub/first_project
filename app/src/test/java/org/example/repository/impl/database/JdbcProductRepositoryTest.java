@@ -6,17 +6,21 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
+import org.example.configuration.LiquibaseConfigurationUpdater;
 import org.example.exception.DataAccessException;
 import org.example.model.Product;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
+@SpringJUnitConfig(
+    classes = {
+      JdbcProductRepository.class,
+      ConnectionManager.class,
+      LiquibaseConfigurationUpdater.class
+    })
 class JdbcProductRepositoryTest extends BaseRepositoryTest {
-  private JdbcProductRepository productRepository;
-
-  @Override
-  void setupBeforeEach() {
-    productRepository = new JdbcProductRepository(connectionManager);
-  }
+  @Autowired JdbcProductRepository productRepository;
 
   @Test
   void save_ShouldInsertNewProductAndReturnWithGeneratedId() {
@@ -311,11 +315,12 @@ class JdbcProductRepositoryTest extends BaseRepositoryTest {
   @Test
   void save_ShouldThrowDataAccessException_WhenInsertFails() {
     // Given
-    Product product = createTestProduct(null, "Description", "Category", "Brand", new BigDecimal("99.99"));
+    Product product =
+        createTestProduct(null, "Description", "Category", "Brand", new BigDecimal("99.99"));
 
     // When & Then
     assertThatThrownBy(() -> productRepository.save(product))
-            .isInstanceOf(DataAccessException.class)
-            .hasMessageContaining("Failed to insert product");
+        .isInstanceOf(DataAccessException.class)
+        .hasMessageContaining("Failed to insert product");
   }
 }

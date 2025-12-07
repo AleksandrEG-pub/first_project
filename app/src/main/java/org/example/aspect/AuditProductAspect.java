@@ -2,6 +2,7 @@ package org.example.aspect;
 
 import java.util.List;
 import java.util.Optional;
+import lombok.RequiredArgsConstructor;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -9,32 +10,80 @@ import org.example.dto.AuditEvent;
 import org.example.dto.SearchCriteria;
 import org.example.model.AuditAction;
 import org.example.model.Product;
-import org.example.service.impl.AuditEvents;
 import org.example.service.impl.ProductServiceImpl;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.stereotype.Component;
 
 /** For all methods of {@link ProductServiceImpl} publish audit event */
 @Aspect
+@Component
+@RequiredArgsConstructor
 public class AuditProductAspect {
   private static final boolean DISABLED = "true".equals(System.getProperty("aspectj.disable"));
+  private final ApplicationEventPublisher eventPublisher;
 
-  @Around("execution(* org.example.service.impl.ProductServiceImpl.search(..))")
-  public Object auditSearch(ProceedingJoinPoint jp) throws Throwable {
+  @Around("@annotation(auditProduct)")
+  public Object auditProductOperation(ProceedingJoinPoint jp, AuditProduct auditProduct)
+      throws Throwable {
     if (DISABLED) {
       return jp.proceed();
     }
     Object result = jp.proceed();
-    if (jp.getArgs().length > 0 && jp.getArgs()[0] instanceof SearchCriteria criteria) {
-      if (result instanceof List resultList) {
-        String message = buildSearchAuditMessage(criteria, resultList.size());
-        AuditEvents.publish(new AuditEvent(AuditAction.SEARCH, message));
-      }
-    } else {
-      AuditEvents.publish(new AuditEvent(AuditAction.SEARCH, "Product search"));
-    }
+    String message = buildAuditMessage(auditProduct, jp.getArgs(), result);
+    publish(auditProduct.action(), message);
     return result;
   }
 
-  private String buildSearchAuditMessage(SearchCriteria criteria, int resultCount) {
+  private String buildAuditMessage(AuditProduct auditProduct, Object[] args, Object result) {
+    return switch (auditProduct.type()) {
+      case SEARCH -> buildSearchMessage(args, result, auditProduct.message());
+      case VIEW -> buildViewMessage(args, result, auditProduct.message());
+      case ID_BASED -> buildIdBasedMessage(args, result, auditProduct.message());
+      case SIMPLE -> buildSimpleMessage(auditProduct.message());
+    };
+  }
+
+  private String buildSimpleMessage(String baseMessage) {
+    if (baseMessage.isEmpty()) {
+      return "Product operation completed";
+    }
+    return baseMessage;
+  }
+
+  private String buildIdBasedMessage(Object[] args, Object result, String baseMessage) {
+    Optional<Long> id = extractIdFromArgsOrResult(args, result);
+    if (baseMessage.isEmpty()) {
+      return id.map("Product operation: [%d]"::formatted).orElse("Product operation");
+    }
+    return id.map(baseMessage::formatted)
+        .orElse(baseMessage.replace(": [%d]", "")); // Remove ID placeholder if no ID found
+  }
+
+  private Optional<Long> extractIdFromArgsOrResult(Object[] args, Object result) {
+    Optional<Long> idFromArgs = extractIdFromArgs(args);
+    if (idFromArgs.isPresent()) {
+      return idFromArgs;
+    }
+    if (result instanceof Product product) {
+      return Optional.of(product.getId());
+    }
+    return Optional.empty();
+  }
+
+  private String buildSearchMessage(Object[] args, Object result, String baseMessage) {
+    if (args.length > 0 && args[0] instanceof SearchCriteria criteria) {
+      if (result instanceof List resultList) {
+        return buildDetailedSearchMessage(criteria, resultList.size());
+      }
+    }
+    if (result instanceof List resultList) {
+      String defaultMessage = baseMessage.isEmpty() ? "Product search" : baseMessage;
+      return defaultMessage + ", found: [%d]".formatted(resultList.size());
+    }
+    return baseMessage.isEmpty() ? "Product search" : baseMessage;
+  }
+
+  private String buildDetailedSearchMessage(SearchCriteria criteria, int resultCount) {
     StringBuilder message = new StringBuilder("Search: ");
     if (criteria.getName() != null) {
       message.append("name='").append(criteria.getName()).append("' ");
@@ -57,90 +106,25 @@ public class AuditProductAspect {
     return message.toString();
   }
 
-  @Around("execution(* org.example.service.impl.ProductServiceImpl.getAllProducts(..))")
-  public Object auditGetAllProducts(ProceedingJoinPoint jp) throws Throwable {
-    Object result = jp.proceed();
-    if (result instanceof List resultList) {
-      String message = "Product search, found: [%d]".formatted(resultList.size());
-      AuditEvents.publish(new AuditEvent(AuditAction.SEARCH, message));
-    } else {
-      AuditEvents.publish(new AuditEvent(AuditAction.SEARCH, "Product search"));
+  private String buildViewMessage(Object[] args, Object result, String baseMessage) {
+    if (result instanceof Optional opt && opt.isPresent() && opt.get() instanceof Product product) {
+      return "Viewed product (found): [%d]".formatted(product.getId());
     }
-    return result;
+    String defaultMessage = baseMessage.isEmpty() ? "Viewed product" : baseMessage;
+    Optional<Long> productId = extractIdFromArgs(args);
+    return productId
+        .map(aLong -> defaultMessage + ": [%d]".formatted(aLong))
+        .orElseGet(() -> defaultMessage + " without id");
   }
 
-  @Around("execution(* org.example.service.impl.ProductServiceImpl.findById(..))")
-  public Object auditFindById(ProceedingJoinPoint jp) throws Throwable {
-    Long productId = null;
-    if (jp.getArgs().length > 0 && jp.getArgs()[0] instanceof Long id) {
-      productId = id;
+  private Optional<Long> extractIdFromArgs(Object[] args) {
+    if (args.length > 0 && args[0] instanceof Long id) {
+      return Optional.of(id);
     }
-    Object result = jp.proceed();
-    if (result instanceof Optional resultOpt
-        && resultOpt.isPresent()
-        && resultOpt.get() instanceof Product product) {
-      String message = "Viewed product (found): [%d]".formatted(product.getId());
-      AuditEvents.publish(new AuditEvent(AuditAction.VIEW_PRODUCT, message));
-    }
-    if (productId != null) {
-      AuditEvents.publish(
-          new AuditEvent(AuditAction.VIEW_PRODUCT, "Viewed product: [%d]".formatted(productId)));
-    } else {
-      AuditEvents.publish(new AuditEvent(AuditAction.VIEW_PRODUCT, "Viewed product without id"));
-    }
-    return result;
+    return Optional.empty();
   }
 
-  @Around("execution(* org.example.service.impl.ProductServiceImpl.addProduct(..))")
-  public Object auditAddProduct(ProceedingJoinPoint jp) throws Throwable {
-    Object result = jp.proceed();
-    if (result instanceof Product product) {
-      AuditEvents.publish(
-          new AuditEvent(
-              AuditAction.ADD_PRODUCT, "Added product: [%d]".formatted(product.getId())));
-    } else {
-      AuditEvents.publish(new AuditEvent(AuditAction.ADD_PRODUCT, "Added product"));
-    }
-    return result;
-  }
-
-  @Around("execution(* org.example.service.impl.ProductServiceImpl.deleteProduct(..))")
-  public Object auditDeleteProduct(ProceedingJoinPoint jp) throws Throwable {
-    Object result = jp.proceed();
-    if (jp.getArgs().length > 0 && jp.getArgs()[0] instanceof Long id) {
-      AuditEvents.publish(
-          new AuditEvent(AuditAction.DELETE_PRODUCT, "removed product [%d]".formatted(id)));
-    }
-    return result;
-  }
-
-  @Around("execution(* org.example.service.impl.ProductServiceImpl.updateProduct(..))")
-  public Object auditUpdateProduct(ProceedingJoinPoint jp) throws Throwable {
-    Object result = jp.proceed();
-    if (jp.getArgs().length > 0 && jp.getArgs()[0] instanceof Long id) {
-      AuditEvents.publish(
-          new AuditEvent(AuditAction.ADD_PRODUCT, "Updated product: [%d]".formatted(id)));
-    }
-    return result;
-  }
-
-  @Around("execution(* org.example.service.impl.ProductServiceImpl.clearCache(..))")
-  public Object auditClearCache(ProceedingJoinPoint jp) throws Throwable {
-    Object result = jp.proceed();
-    AuditEvents.publish(new AuditEvent(AuditAction.CACHE_CLEAN_PRODUCT, "Cleared product cache"));
-    return result;
-  }
-
-  @Around("execution(* org.example.service.impl.ProductServiceImpl.create(..))")
-  public Object auditCreate(ProceedingJoinPoint jp) throws Throwable {
-    Object result = jp.proceed();
-    if (result instanceof Product product) {
-      AuditEvents.publish(
-          new AuditEvent(
-              AuditAction.ADD_PRODUCT, "Created product: [%d]".formatted(product.getId())));
-    } else {
-      AuditEvents.publish(new AuditEvent(AuditAction.ADD_PRODUCT, "Created product"));
-    }
-    return result;
+  private void publish(AuditAction action, String message) {
+    eventPublisher.publishEvent(new AuditEvent(action, message));
   }
 }

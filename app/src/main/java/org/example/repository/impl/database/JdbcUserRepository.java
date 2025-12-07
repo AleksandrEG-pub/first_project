@@ -9,7 +9,9 @@ import org.example.exception.DataAccessException;
 import org.example.model.User;
 import org.example.repository.UserRepository;
 import org.example.repository.impl.database.mapper.UserResultMapper;
+import org.springframework.stereotype.Component;
 
+@Component
 public class JdbcUserRepository implements UserRepository {
 
   private static final String FIND_BY_USERNAME_SQL =

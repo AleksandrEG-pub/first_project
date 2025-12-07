@@ -1,21 +1,24 @@
 package org.example.repository.impl.database;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import org.example.configuration.LiquibaseConfigurationUpdater;
 import org.example.exception.DataAccessException;
 import org.example.model.Role;
 import org.example.model.User;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-
+@SpringJUnitConfig(
+    classes = {
+      JdbcUserRepository.class,
+      ConnectionManager.class,
+      LiquibaseConfigurationUpdater.class
+    })
 public class JdbcUserRepositoryTest extends BaseRepositoryTest {
-  private JdbcUserRepository userRepository;
-
-  @Override
-  void setupBeforeEach() {
-    userRepository = new JdbcUserRepository(connectionManager);
-  }
+  @Autowired JdbcUserRepository userRepository;
 
   @Test
   void save_ShouldInsertNewUserAndReturnWithGeneratedId() {
@@ -31,6 +34,14 @@ public class JdbcUserRepositoryTest extends BaseRepositoryTest {
     assertThat(savedUser.getUsername()).isEqualTo("alice");
     assertThat(savedUser.getPasswordHash()).isEqualTo("secure_hash");
     assertThat(savedUser.getRole()).isEqualTo(Role.ADMIN);
+  }
+
+  private User createTestUser(String username, String passwordHash, Role role) {
+    User user = new User();
+    user.setUsername(username);
+    user.setPasswordHash(passwordHash);
+    user.setRole(role);
+    return user;
   }
 
   @Test
@@ -139,7 +150,6 @@ public class JdbcUserRepositoryTest extends BaseRepositoryTest {
     assertThat(foundUser.getRole()).isEqualTo(Role.ADMIN);
   }
 
-
   @Test
   void save_ShouldThrowDataAccessException_WhenUpdateFails() {
     // Given
@@ -151,8 +161,8 @@ public class JdbcUserRepositoryTest extends BaseRepositoryTest {
 
     // Then
     assertThatThrownBy(() -> userRepository.save(savedUser))
-            .isInstanceOf(DataAccessException.class)
-            .hasMessageContaining("Failed to update user");
+        .isInstanceOf(DataAccessException.class)
+        .hasMessageContaining("Failed to update user");
   }
 
   @Test
@@ -216,14 +226,5 @@ public class JdbcUserRepositoryTest extends BaseRepositoryTest {
 
     // Verify all have different IDs
     assertThat(saved1.getId()).isNotEqualTo(saved2.getId());
-  }
-
-
-  private User createTestUser(String username, String passwordHash, Role role) {
-    User user = new User();
-    user.setUsername(username);
-    user.setPasswordHash(passwordHash);
-    user.setRole(role);
-    return user;
   }
 }

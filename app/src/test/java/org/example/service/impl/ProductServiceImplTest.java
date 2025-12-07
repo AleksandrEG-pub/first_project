@@ -15,12 +15,12 @@ import jakarta.validation.ValidationException;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
-
 import org.assertj.core.api.Assertions;
 import org.example.cache.Cache;
 import org.example.dto.ProductForm;
 import org.example.dto.SearchCriteria;
 import org.example.exception.ResourceNotFoundException;
+import org.example.mapper.ProductMapper;
 import org.example.model.Product;
 import org.example.repository.ProductRepository;
 import org.example.service.AuthService;
@@ -28,32 +28,38 @@ import org.example.service.DtoValidator;
 import org.example.service.ProductSearchService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mapstruct.factory.Mappers;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 class ProductServiceImplTest {
 
-  @Mock private ProductRepository productRepository;
-  @Mock private Cache<Long, Product> productCache;
-  @Mock private AuthService authService;
-  @Mock private DtoValidator dtoValidator;
-  @Mock private ProductSearchService productSearchService;
-
-  private ProductServiceImpl productService;
+  @Mock ProductRepository productRepository;
+  @Mock Cache<Long, Product> productCache;
+  @Mock AuthService authService;
+  @Mock DtoValidator dtoValidator;
+  @Mock ProductSearchService productSearchService;
+  ProductMapper productMapper = Mappers.getMapper(ProductMapper.class);
+  ProductServiceImpl productService;
 
   @BeforeEach
   void setUp() {
     MockitoAnnotations.openMocks(this);
     productService =
         new ProductServiceImpl(
-            productRepository, productCache, authService, dtoValidator, productSearchService);
+            productMapper,
+            productRepository,
+            productCache,
+            authService,
+            dtoValidator,
+            productSearchService);
   }
 
   @Test
   void search_ShouldDelegateToProductSearchService() {
     // Given
     SearchCriteria criteria =
-        new SearchCriteria.Builder()
+        SearchCriteria.builder()
             .name("laptop")
             .category("Electronics")
             .category("Dell")
@@ -303,10 +309,10 @@ class ProductServiceImplTest {
     // When & Then
     var asserted = assertThatThrownBy(() -> productService.updateProduct(productId, productForm));
     asserted.isInstanceOf(ResourceNotFoundException.class);
-    asserted.extracting(e -> Long.parseLong(((ResourceNotFoundException) e).getId()))
-                    .isEqualTo(productId);
-    asserted.extracting(e -> ((ResourceNotFoundException) e).getResource())
-                    .isEqualTo("product");
+    asserted
+        .extracting(e -> Long.parseLong(((ResourceNotFoundException) e).getId()))
+        .isEqualTo(productId);
+    asserted.extracting(e -> ((ResourceNotFoundException) e).getResource()).isEqualTo("product");
 
     verify(productRepository, never()).save(any());
   }

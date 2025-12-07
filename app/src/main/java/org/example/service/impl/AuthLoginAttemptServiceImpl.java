@@ -1,11 +1,12 @@
 package org.example.service.impl;
 
-import org.example.service.AuthLoginAttemptService;
-
 import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import org.example.service.AuthLoginAttemptService;
+import org.springframework.stereotype.Component;
 
+@Component
 public class AuthLoginAttemptServiceImpl implements AuthLoginAttemptService {
   private static final int MAX_LOGIN_ATTEMPTS = 3;
   private static final int LOCKOUT_DURATION_MINUTES = 3;
